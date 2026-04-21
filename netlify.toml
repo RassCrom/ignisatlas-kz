@@ -1,0 +1,20 @@
+[build]
+  command = "yarn build"
+  publish = "dist"
+
+[context.production]  # Для main
+  command = "yarn build"
+  environment = { VITE_API_URL = "https://api.production.com" }
+
+[context.deploy-preview]
+  command = "yarn build"
+  environment = { VITE_API_URL = "https://api.staging.com" }
+
+[context.dev]  # Для develop
+  command = "yarn build"
+  environment = { VITE_API_URL = "https://api.dev.com" }
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

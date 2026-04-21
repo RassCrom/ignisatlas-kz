@@ -1,0 +1,10 @@
+@use '../../shared/variables' as *;
+
+.wrapper {
+  padding: $section-padding;
+  max-width: $container-max;
+  margin: 0 auto;
+}
+
+.title { @include section-title; }
+.subtitle { @include section-subtitle; }

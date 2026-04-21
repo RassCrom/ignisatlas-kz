@@ -1,0 +1,16 @@
+@use '../../shared/variables' as *;
+
+.wrapper {
+  padding: $section-padding;
+  max-width: $container-max;
+  margin: 0 auto;
+}
+
+.title { @include section-title; }
+.subtitle { @include section-subtitle; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}

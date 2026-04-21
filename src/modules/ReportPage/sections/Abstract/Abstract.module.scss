@@ -1,0 +1,26 @@
+@use '../../shared/variables' as *;
+
+.abstract {
+  padding: 100px 24px;
+  max-width: $container-narrow;
+  margin: 0 auto;
+}
+
+.title {
+  @include section-title;
+  margin-bottom: 32px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+
+  p {
+    color: rgba(217, 218, 245, 0.75);
+    line-height: 1.8;
+    font-size: 15px;
+    margin: 0;
+    text-align: justify;
+  }
+}

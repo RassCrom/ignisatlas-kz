@@ -1,0 +1,32 @@
+@use '../../shared/variables' as *;
+
+.wrapper {
+  padding: $section-padding;
+  max-width: $container-max;
+  margin: 0 auto;
+}
+
+.title { @include section-title; }
+.subtitle { @include section-subtitle; }
+
+.legend {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: $text-secondary;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}

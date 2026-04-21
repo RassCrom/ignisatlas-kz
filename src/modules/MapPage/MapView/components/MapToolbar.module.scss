@@ -1,0 +1,55 @@
+@use "src/shared/styles/variables" as *;
+
+.toolbar {
+    position: absolute;
+    top: 3rem;
+    right: 0.5rem;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(9, 10, 36, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(136, 139, 224, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    padding: 2px;
+    overflow: visible;
+}
+
+.btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 8px;
+    color: rgba(217, 218, 245, 0.7);
+    transition: color 0.2s ease, background 0.2s ease;
+
+    &:hover {
+        background: rgba(136, 139, 224, 0.1);
+        color: rgba(217, 218, 245, 0.95);
+    }
+
+    &:active {
+        background: rgba(136, 139, 224, 0.15);
+    }
+}
+
+.divider {
+    width: 1.5rem;
+    height: 1px;
+    background: rgba(136, 139, 224, 0.1);
+    margin: 0 auto;
+}

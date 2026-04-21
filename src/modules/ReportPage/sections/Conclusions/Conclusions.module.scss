@@ -1,0 +1,63 @@
+@use '../../shared/variables' as *;
+
+.wrapper {
+  padding: 80px 24px 120px;
+  max-width: $container-narrow;
+  margin: 0 auto;
+}
+
+.title { @include section-title; margin-bottom: 32px; }
+
+.card {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 28px;
+  padding: 20px 24px;
+  border-radius: 16px;
+  background: rgba(20, 20, 50, 0.4);
+  border: 1px solid $border-subtle;
+  align-items: flex-start;
+}
+
+.num {
+  font-family: $font-mono;
+  font-size: 28px;
+  font-weight: 700;
+  color: rgba(236, 72, 153, 0.4);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  font-weight: 700;
+  color: $text-primary;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.cardText {
+  color: $text-secondary;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer {
+  margin-top: 48px;
+  text-align: center;
+  padding: 32px 24px;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(71, 135, 227, 0.1) 100%);
+  border-radius: $radius-lg;
+  border: 1px solid $border-subtle;
+}
+
+.sources {
+  color: $text-muted;
+  font-size: 13px;
+  margin: 0;
+}
+
+.period {
+  color: rgba(217, 218, 245, 0.3);
+  font-size: 12px;
+  margin: 8px 0 0 0;
+}

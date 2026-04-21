@@ -1,0 +1,16 @@
+@use '../../shared/styles/globals' as *;
+
+.landing {
+    min-height: 100vh;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    overflow-x: hidden;
+    background-image:
+        radial-gradient(ellipse at 15% 10%, rgba(236, 72, 153, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 30%, rgba(71, 135, 227, 0.03) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 80%, rgba(136, 139, 224, 0.03) 0%, transparent 45%);
+}
+
+.main {
+    position: relative;
+}

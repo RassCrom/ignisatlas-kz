@@ -1,0 +1,629 @@
+.ol-control {
+    background-color: transparent;
+
+    button {
+        background: rgba(9, 10, 36, 0.85) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(136, 139, 224, 0.1) !important;
+        border-radius: 10px !important;
+        color: rgba(217, 218, 245, 0.7) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        transition: all 0.25s ease !important;
+        width: 2.25rem !important;
+        height: 2.25rem !important;
+        font-size: 1.1rem !important;
+        line-height: 2.25rem !important;
+
+        &:hover {
+            background: rgba(9, 10, 36, 0.95) !important;
+            border-color: rgba(136, 139, 224, 0.25) !important;
+            color: rgba(217, 218, 245, 0.95) !important;
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+}
+
+.ol-zoom {
+    display: none;
+}
+
+.ol-rotate {
+    display: none;
+}
+
+.ol-attribution {
+    background: rgba(9, 10, 36, 0.7) !important;
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    padding: 2px 8px;
+    font-size: 10px;
+
+    a {
+        color: rgba(136, 139, 224, 0.5);
+    }
+
+    &.ol-uncollapsible {
+        background: rgba(9, 10, 36, 0.6) !important;
+    }
+}
+
+.ol-geocoder.gcd-gl-container {
+    top: 16.5rem;
+    left: auto;
+    right: 0.5rem;
+    max-width: 320px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .5rem;
+    font-size: 1rem;
+
+    .gcd-gl-control.ol-control {
+        background-color: transparent;
+
+        .gcd-gl-input {
+            font-size: 0.9rem;
+            width: 12rem;
+            background: rgba(9, 10, 36, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(136, 139, 224, 0.12);
+            border-radius: 10px;
+            color: rgba(217, 218, 245, 0.85);
+            padding: 0.5rem 0.75rem;
+
+            &::placeholder {
+                color: rgba(217, 218, 245, 0.25);
+            }
+
+            &:focus {
+                border-color: rgba(136, 139, 224, 0.35);
+                outline: none;
+                box-shadow: 0 0 0 2px rgba(136, 139, 224, 0.08);
+            }
+        }
+
+        .gcd-gl-btn {
+            left: .15rem;
+            background: rgba(9, 10, 36, 0.85);
+            border: 1px solid rgba(136, 139, 224, 0.1);
+            border-radius: 10px;
+            color: rgba(217, 218, 245, 0.7);
+            transition: all 0.25s ease;
+
+            &:hover {
+                background: rgba(9, 10, 36, 0.95);
+                border-color: rgba(136, 139, 224, 0.25);
+            }
+        }
+
+        .gcd-gl-search {
+            position: absolute;
+            top: -.25rem;
+            right: 2.5rem;
+        }
+    }
+}
+
+.gcd-gl-control.ol-control.gcd-gl-expanded {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: .5rem;
+    width: 100%;
+
+    input {
+        border-radius: 10px;
+        background: rgba(9, 10, 36, 0.88);
+        border: 1px solid rgba(136, 139, 224, 0.12);
+        color: rgba(217, 218, 245, 0.85);
+    }
+
+    button, input, a {
+        position: static;
+    }
+}
+
+.gcd-gl-result {
+    background: rgba(9, 10, 36, 0.94) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(136, 139, 224, 0.1) !important;
+    border-radius: 12px !important;
+    overflow: hidden;
+
+    > ul > li {
+        border-bottom: 1px solid rgba(136, 139, 224, 0.06);
+
+        > a {
+            color: rgba(217, 218, 245, 0.7);
+            padding: 0.6rem 0.85rem;
+            transition: all 0.2s ease;
+
+            &:hover {
+                background: rgba(136, 139, 224, 0.08);
+                color: rgba(217, 218, 245, 0.95);
+            }
+        }
+    }
+}
+
+// Fire Popups
+.ol-popup {
+    position: absolute;
+    background: rgba(9, 10, 36, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.55),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    padding: 0;
+    border-radius: 16px;
+    border: 1px solid rgba(136, 139, 224, 0.14);
+    bottom: 14px;
+    left: -50px;
+    min-width: 240px;
+    max-width: 310px;
+    font-family: "IBM Plex Sans", "Roboto", sans-serif;
+    z-index: 10000;
+    overflow: hidden;
+    transform: translateZ(0);
+    animation: popup-fade-in 0.25s ease;
+}
+
+.ol-popup:after, .ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.ol-popup:after {
+    border-top-color: rgba(9, 10, 36, 0.94);
+    border-width: 10px;
+    left: 50%;
+    margin-left: -10px;
+}
+
+.ol-popup:before {
+    border-top-color: rgba(136, 139, 224, 0.1);
+    border-width: 11px;
+    left: 50%;
+    margin-left: -11px;
+}
+
+.ol-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    color: rgba(217, 218, 245, 0.4);
+    font-size: 16px;
+    width: 22px;
+    height: 22px;
+    text-align: center;
+    line-height: 20px;
+    z-index: 1;
+    background: rgba(136, 139, 224, 0.08);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.ol-popup-closer:after {
+    content: "×";
+}
+
+.ol-popup-closer:hover {
+    color: rgba(217, 218, 245, 0.9);
+    background: rgba(136, 139, 224, 0.15);
+}
+
+.fire-popup {
+    padding: 0;
+    width: 280px;
+}
+
+.fire-popup-header {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.85), rgba(249, 115, 22, 0.8));
+    color: white;
+    padding: 12px 15px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    letter-spacing: 0.01em;
+}
+
+@keyframes fire-icon-floating {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+    100% { transform: translateY(0); }
+}
+
+.fire-popup-header .fire-icon {
+    font-size: 1rem;
+    margin-right: 5px;
+    animation: fire-icon-floating 1.8s linear infinite;
+}
+
+.fire-popup-content {
+    padding: 1rem;
+    max-height: 250px;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(136, 139, 224, 0.2);
+        border-radius: 2px;
+    }
+}
+
+.fire-popup-row {
+    display: flex;
+    margin-bottom: 8px;
+    align-items: flex-start;
+}
+
+.fire-popup-label {
+    width: 100px;
+    color: rgba(217, 218, 245, 0.4);
+    font-size: 12.5px;
+    margin-right: 8px;
+}
+
+.fire-popup-value {
+    flex: 1;
+    font-weight: 500;
+    color: rgba(217, 218, 245, 0.85);
+    font-size: 13px;
+}
+
+.fire-popup-footer {
+    background: rgba(136, 139, 224, 0.04);
+    padding: 8px 15px;
+    border-top: 1px solid rgba(136, 139, 224, 0.08);
+    font-size: 11.5px;
+    color: rgba(217, 218, 245, 0.3);
+    text-align: center;
+
+    button {
+        margin-top: 8px;
+        padding: 6px 12px;
+        background: linear-gradient(135deg, rgba(136, 139, 224, 0.25), rgba(71, 135, 227, 0.2)) !important;
+        color: rgba(217, 218, 245, 0.9) !important;
+        border: 1px solid rgba(136, 139, 224, 0.2) !important;
+        border-radius: 8px !important;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        backdrop-filter: none;
+        box-shadow: none !important;
+        width: auto !important;
+        height: auto !important;
+        line-height: normal !important;
+
+        &:hover {
+            background: linear-gradient(135deg, rgba(136, 139, 224, 0.35), rgba(71, 135, 227, 0.3)) !important;
+            border-color: rgba(136, 139, 224, 0.35) !important;
+        }
+    }
+}
+
+.fire-cluster .fire-popup-header {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.85), rgba(236, 72, 153, 0.8));
+}
+
+.cluster-count {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.confidence-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-left: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.confidence-high {
+    background: rgba(76, 175, 80, 0.2);
+    color: #66BB6A;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.confidence-medium {
+    background: rgba(249, 115, 22, 0.2);
+    color: #f97316;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.confidence-low {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+// OL tooltip styles (used by measurement tools via DOM)
+.ol-tooltip {
+    position: relative;
+    background: rgba(9, 10, 36, 0.88);
+    backdrop-filter: blur(8px);
+    color: rgba(217, 218, 245, 0.8);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    border: 1px solid rgba(136, 139, 224, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-family: "IBM Plex Sans", sans-serif;
+}
+
+.ol-tooltip-measure {
+    opacity: 1;
+}
+
+.ol-tooltip-static {
+    background: rgba(136, 139, 224, 0.2);
+    border: 1px solid rgba(136, 139, 224, 0.35);
+    color: #fff;
+    font-weight: 600;
+}
+
+.ol-tooltip.hidden {
+    display: none;
+}
+
+@keyframes popup-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Improved fire popup elements (fp-*) ────────── */
+
+.fp-header-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.fp-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+}
+
+/* Date chip row directly below header */
+.fp-date-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(136, 139, 224, 0.06);
+    border-bottom: 1px solid rgba(136, 139, 224, 0.07);
+    font-size: 11.5px;
+    color: rgba(217, 218, 245, 0.55);
+}
+
+/* KPI 3-column grid */
+.fp-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    margin: 10px 0 4px;
+}
+
+.fp-kpi {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 7px 4px 6px;
+    background: rgba(136, 139, 224, 0.06);
+    border: 1px solid rgba(136, 139, 224, 0.09);
+    border-radius: 9px;
+    gap: 2px;
+}
+
+.fp-kpi-val {
+    font-size: 14px;
+    font-weight: 700;
+    color: rgba(217, 218, 245, 0.92);
+    text-align: center;
+    line-height: 1;
+}
+
+.fp-kpi-val--sm {
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.fp-kpi-lbl {
+    font-size: 9px;
+    color: rgba(217, 218, 245, 0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    text-align: center;
+}
+
+/* Separator before extra props */
+.fp-extra {
+    border-top: 1px solid rgba(136, 139, 224, 0.07);
+    padding-top: 8px;
+    margin-top: 6px;
+}
+
+/* Footer action buttons */
+.fp-actions {
+    display: flex !important;
+    gap: 6px;
+    padding: 8px 12px !important;
+    text-align: unset !important;
+}
+
+.fp-btn {
+    flex: 1;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 11.5px;
+    font-weight: 500;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: background 0.18s, border-color 0.18s;
+    /* reset OL button overrides */
+    width: auto !important;
+    height: auto !important;
+    line-height: normal !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+
+.fp-btn--weather {
+    background: rgba(96, 165, 250, 0.1) !important;
+    color: rgba(147, 197, 253, 0.95) !important;
+    border: 1px solid rgba(96, 165, 250, 0.22) !important;
+
+    &:hover {
+        background: rgba(96, 165, 250, 0.2) !important;
+        border-color: rgba(96, 165, 250, 0.38) !important;
+    }
+}
+
+.fp-btn--model {
+    background: rgba(249, 115, 22, 0.1) !important;
+    color: rgba(253, 186, 116, 0.95) !important;
+    border: 1px solid rgba(249, 115, 22, 0.22) !important;
+
+    &:hover {
+        background: rgba(249, 115, 22, 0.2) !important;
+        border-color: rgba(249, 115, 22, 0.38) !important;
+    }
+}
+
+/* ── Fire Model Popup (fmp-*) ────────────────────── */
+
+/* Red-to-orange header (distinct from pink-to-orange fire point header) */
+.fmp-header {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.88), rgba(249, 115, 22, 0.82)) !important;
+}
+
+/* Accuracy badge in header */
+.fmp-accuracy-badge {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 7px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* Step badge inside the date chip */
+.fmp-dn-badge {
+    margin-left: auto;
+    background: rgba(136, 139, 224, 0.14);
+    border: 1px solid rgba(136, 139, 224, 0.2);
+    border-radius: 6px;
+    padding: 1px 7px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: rgba(217, 218, 245, 0.7);
+}
+
+/* ID value — monospace, truncated */
+.fmp-id {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Timeline legend row in footer */
+.fmp-legend {
+    display: flex !important;
+    align-items: center;
+    gap: 7px;
+    text-align: left !important;
+}
+
+.fmp-legend-label {
+    font-size: 9.5px;
+    color: rgba(217, 218, 245, 0.35);
+    white-space: nowrap;
+}
+
+/* Gradient bar matching colorFireModel.js color ramp */
+.fmp-legend-bar {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(
+        to right,
+        #ff0000  0%,
+        #ff6633 15%,
+        #ffcc33 30%,
+        #dcff33 44%,
+        #a5ff87 55%,
+        #33fffe 65%,
+        #615dff 80%,
+        #190080 92%,
+        #000000 100%
+    );
+    opacity: 0.75;
+}
+
+/* ── Emergency Popup (emp-*) ─────────────────────── */
+
+/* Name chip — slightly more prominent than a date chip */
+.emp-name-chip {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: rgba(217, 218, 245, 0.8) !important;
+}
+
+/* Address value — allow wrapping, slightly dimmed */
+.emp-address {
+    font-size: 12px !important;
+    color: rgba(217, 218, 245, 0.7) !important;
+    line-height: 1.4;
+}

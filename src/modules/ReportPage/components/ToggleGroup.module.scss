@@ -1,0 +1,37 @@
+@use '../shared/variables' as *;
+
+.group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.btn {
+  padding: 10px 28px;
+  border-radius: 12px;
+  border: none;
+  font-family: $font-display;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s $ease-smooth;
+}
+
+.active {
+  background-color: $accent-pink;
+  color: #fff;
+  box-shadow: $shadow-glow-pink;
+  transform: translateY(-2px);
+}
+
+.inactive {
+  background-color: rgba(108, 117, 125, 0.25);
+  color: rgba(156, 163, 175, 1);
+
+  &:hover {
+    background-color: rgba(108, 117, 125, 0.4);
+    transform: translateY(-2px);
+  }
+}

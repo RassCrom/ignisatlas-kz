@@ -1,0 +1,157 @@
+.popup {
+  position: absolute;
+  top: 100%;
+  right: -1.25rem;
+  margin-top: 0.6rem;
+  width: 280px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: fadeInUp 0.2s ease-out;
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+.popupContent {
+  padding: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.infoIcon {
+  color: #007bff;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff !important;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.description {
+  margin-bottom: 12px;
+
+  p {
+    font-size: 13px;
+    color: #5a6c7d;
+    line-height: 1.4;
+    margin: 0;
+  }
+}
+
+.details {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+
+  &:not(:last-child) {
+    margin-bottom: 6px;
+  }
+}
+
+.detailLabel {
+  color: #7a8699;
+  font-weight: 500;
+}
+
+.detailValue {
+  color: #495057;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 11px;
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.arrow {
+  position: absolute;
+  top: -6px;
+  right: 20px;
+  width: 12px;
+  height: 12px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-bottom: none;
+  border-right: none;
+  transform: rotate(45deg);
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .popup {
+    background: #2c3e50;
+    border-color: #4a5568;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .title {
+    color: #ffffff;
+  }
+
+  .description p {
+    color: #cbd5e0;
+  }
+
+  .details {
+    border-top-color: #4a5568;
+  }
+
+  .detailLabel {
+    color: #a0aec0;
+  }
+
+  .detailValue {
+    color: #e2e8f0;
+    background: #374151;
+  }
+
+  .arrow {
+    background: #2c3e50;
+    border-color: #4a5568;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .popup {
+    width: 260px;
+    right: -20px;
+  }
+
+  .popupContent {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 13px;
+  }
+
+  .description p {
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,331 @@
+@use "src/shared/styles/variables" as *;
+
+.measureTools {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.measureButton {
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease;
+    color: rgba(217, 218, 245, 0.7);
+
+    &:hover {
+        background: rgba(136, 139, 224, 0.1);
+        color: rgba(217, 218, 245, 0.95);
+    }
+
+    &.active {
+        color: #888BE0;
+    }
+
+    svg {
+        color: inherit;
+        width: $icon-main-size-map;
+        height: $icon-main-size-map;
+    }
+}
+
+.measurePanel {
+    position: absolute;
+    right: 3rem;
+    top: 0;
+    background: rgba(9, 10, 36, 0.92);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 14px;
+    width: 250px;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.45),
+        inset 0 0 0 1px rgba(136, 139, 224, 0.06);
+    border: 1px solid rgba(136, 139, 224, 0.1);
+    overflow: hidden;
+    animation: slideIn 0.2s ease-out forwards;
+    opacity: 0;
+    transform: translateX(10px);
+}
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.measurePanelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid rgba(136, 139, 224, 0.08);
+    background: rgba(136, 139, 224, 0.04);
+
+    h3 {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(217, 218, 245, 0.9);
+        letter-spacing: 0.02em;
+    }
+}
+
+.measurePanelClose {
+    background: transparent;
+    border: none;
+    color: rgba(217, 218, 245, 0.35);
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: #ec4899;
+    }
+}
+
+.measureButtonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.85rem;
+    border-bottom: 1px solid rgba(136, 139, 224, 0.08);
+}
+
+.measuringOptionButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.85rem;
+    background: rgba(136, 139, 224, 0.04);
+    border: 1px solid rgba(136, 139, 224, 0.08);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: rgba(217, 218, 245, 0.65);
+
+    span {
+        font-size: 12.5px;
+        font-weight: 500;
+    }
+
+    &:hover {
+        background: rgba(136, 139, 224, 0.1);
+        border-color: rgba(136, 139, 224, 0.2);
+        color: rgba(217, 218, 245, 0.9);
+    }
+
+    &.active {
+        background: rgba(136, 139, 224, 0.12);
+        border-color: rgba(136, 139, 224, 0.3);
+        color: #888BE0;
+    }
+}
+
+.measureInstructions {
+    background: rgba(249, 115, 22, 0.06);
+    border-top: 1px solid rgba(249, 115, 22, 0.1);
+    border-bottom: 1px solid rgba(249, 115, 22, 0.1);
+    padding: 0.65rem 0.85rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    span {
+        font-size: 11.5px;
+        color: rgba(217, 218, 245, 0.5);
+        line-height: 1.4;
+    }
+}
+
+.measurementResults {
+    padding: 0.75rem 0.85rem;
+    max-height: 150px;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(136, 139, 224, 0.2);
+        border-radius: 2px;
+    }
+
+    h4 {
+        margin: 0 0 0.5rem;
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(217, 218, 245, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+}
+
+.measurementResult {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(136, 139, 224, 0.06);
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.measurementLabel {
+    font-size: 11.5px;
+    color: rgba(217, 218, 245, 0.4);
+}
+
+.measurementValue {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: rgba(217, 218, 245, 0.85);
+    font-family: 'IBM Plex Sans', monospace;
+}
+
+.measureActions {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0.7rem 0.85rem;
+    border-top: 1px solid rgba(136, 139, 224, 0.08);
+    background: rgba(136, 139, 224, 0.03);
+}
+
+.measureActionButton {
+    background: rgba(136, 139, 224, 0.06);
+    border: 1px solid rgba(136, 139, 224, 0.1);
+    border-radius: 8px;
+    padding: 0.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: rgba(217, 218, 245, 0.5);
+
+    &:hover:not(:disabled) {
+        background: rgba(136, 139, 224, 0.12);
+        border-color: rgba(136, 139, 224, 0.25);
+        color: #888BE0;
+    }
+
+    &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+}
+
+.tooltipMeasure {
+    position: relative;
+    background: rgba(9, 10, 36, 0.9);
+    backdrop-filter: blur(8px);
+    color: rgba(217, 218, 245, 0.9);
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(136, 139, 224, 0.1);
+
+    &.tooltipStatic {
+        background: rgba(136, 139, 224, 0.2);
+        border: 1px solid rgba(136, 139, 224, 0.3);
+        color: #fff;
+        font-weight: 600;
+    }
+}
+
+.tooltipHelp {
+    position: relative;
+    background: rgba(9, 10, 36, 0.88);
+    backdrop-filter: blur(8px);
+    color: rgba(217, 218, 245, 0.7);
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(136, 139, 224, 0.08);
+}
+
+.popup {
+    position: absolute;
+    background: rgba(9, 10, 36, 0.92);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    padding: 15px;
+    border-radius: 14px;
+    border: 1px solid rgba(136, 139, 224, 0.12);
+    bottom: 12px;
+    left: -50px;
+    min-width: 180px;
+    z-index: 1000;
+    color: rgba(217, 218, 245, 0.85);
+}
+
+.popup:after, .popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.popup:after {
+    border-top-color: rgba(9, 10, 36, 0.92);
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
+}
+
+.popup:before {
+    border-top-color: rgba(136, 139, 224, 0.12);
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
+}
+
+.popupCloser {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+    font-size: 16px;
+    color: rgba(217, 218, 245, 0.35);
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: rgba(217, 218, 245, 0.8);
+    }
+}
+
+.popupContent {
+    font-size: 13px;
+    min-width: 150px;
+    max-width: 250px;
+    color: rgba(217, 218, 245, 0.75);
+}

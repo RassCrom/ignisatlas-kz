@@ -1,0 +1,23 @@
+@use '../shared/variables' as *;
+
+.card {
+  @include glass;
+  border-radius: 16px;
+  padding: 24px 20px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  flex: 1 1 200px;
+  min-width: 160px;
+}
+
+.value {
+  font-size: 32px;
+  font-weight: 700;
+  font-family: $font-mono;
+}
+
+.label {
+  font-size: 13px;
+  color: $text-secondary;
+  margin-top: 6px;
+}

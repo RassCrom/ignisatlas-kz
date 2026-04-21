@@ -1,0 +1,48 @@
+@use '../../shared/variables' as *;
+
+.wrapper {
+  padding: $section-padding;
+  max-width: $container-max;
+  margin: 0 auto;
+}
+
+.title { @include section-title; }
+.subtitle { @include section-subtitle; }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  @include glass(rgba(20, 20, 50, 0.4));
+  border-radius: $radius-md;
+  padding: 18px 20px;
+}
+
+.cardZone {
+  font-size: 18px;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.cardMeta {
+  font-size: 12px;
+  color: $text-muted;
+  margin-top: 4px;
+}
+
+.bar {
+  margin-top: 10px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, $accent-orange, $accent-pink);
+}

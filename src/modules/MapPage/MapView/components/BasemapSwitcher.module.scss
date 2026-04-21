@@ -1,0 +1,213 @@
+@use "src/shared/styles/variables" as *;
+
+.basemapSwitcher {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.basemapButton {
+    width: 2.25rem;
+    height: 2.25rem;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease;
+    color: rgba(217, 218, 245, 0.7);
+
+    &:hover {
+        background: rgba(136, 139, 224, 0.1);
+        color: rgba(217, 218, 245, 0.95);
+    }
+
+    &.active {
+        color: #888BE0;
+    }
+
+    svg {
+        color: inherit;
+        width: $icon-main-size-map;
+        height: $icon-main-size-map;
+    }
+}
+
+.basemapOptions {
+    position: absolute;
+    right: 3rem;
+    top: 0;
+    background: rgba(9, 10, 36, 0.92);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 14px;
+    padding: 0.75rem;
+    min-width: 210px;
+    max-width: 300px;
+    max-height: 350px;
+    overflow-y: auto;
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.45),
+        inset 0 0 0 1px rgba(136, 139, 224, 0.06);
+    border: 1px solid rgba(136, 139, 224, 0.1);
+    transform: translateX(0) translateY(5px) scale(0.95);
+    opacity: 0;
+    animation: slideIn 0.2s ease-out forwards;
+
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(136, 139, 224, 0.2);
+        border-radius: 3px;
+
+        &:hover {
+            background: rgba(136, 139, 224, 0.35);
+        }
+    }
+}
+
+@keyframes slideIn {
+    to {
+        transform: translateX(0) translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.categoryTitle {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(217, 218, 245, 0.35);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 0.75rem 0 0.5rem 0;
+    padding: 0 0.5rem;
+
+    &:first-child {
+        margin-top: 0;
+    }
+}
+
+.basemapGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 0.5rem;
+}
+
+.basemapOption {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    font-size: 13px;
+    color: rgba(217, 218, 245, 0.65);
+    transition: all 0.2s ease;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        background: rgba(136, 139, 224, 0.08);
+        color: rgba(217, 218, 245, 0.95);
+
+        .basemapType {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+.basemapOption.active {
+    background: linear-gradient(135deg, rgba(136, 139, 224, 0.2), rgba(71, 135, 227, 0.15));
+    color: #fff;
+    font-weight: 600;
+    border: 1px solid rgba(136, 139, 224, 0.2);
+
+    .basemapType {
+        color: rgba(136, 139, 224, 0.8);
+        background: rgba(136, 139, 224, 0.1);
+    }
+
+    &:hover {
+        background: linear-gradient(135deg, rgba(136, 139, 224, 0.25), rgba(71, 135, 227, 0.2));
+    }
+}
+
+.basemapName {
+    font-weight: inherit;
+    flex-grow: 1;
+}
+
+.basemapType {
+    font-size: 0.65rem;
+    color: rgba(217, 218, 245, 0.3);
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    transform: translateX(8px);
+    background: rgba(136, 139, 224, 0.06);
+    padding: 0.15rem 0.4rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: rgba(217, 218, 245, 0.5);
+    font-size: 0.85rem;
+
+    &::after {
+        content: '';
+        width: 1rem;
+        height: 1rem;
+        margin-left: 0.5rem;
+        border: 2px solid rgba(136, 139, 224, 0.15);
+        border-top: 2px solid #888BE0;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .basemapOptions {
+        right: 0;
+        min-width: 180px;
+        max-height: 280px;
+        padding: 0.5rem;
+    }
+
+    .basemapOption {
+        padding: 0.55rem 0.65rem;
+        font-size: 12px;
+    }
+
+    .basemapType {
+        font-size: 0.6rem;
+    }
+}

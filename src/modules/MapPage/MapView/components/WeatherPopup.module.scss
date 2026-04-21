@@ -1,0 +1,259 @@
+/* ── Overlay ────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(3px);
+  pointer-events: auto;
+}
+
+/* ── Card ────────────────────────────────────────── */
+
+.card {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+  width: 390px;
+  background: rgba(8, 9, 28, 0.97);
+  border: 1px solid rgba(136, 139, 224, 0.2);
+  border-radius: 18px;
+  backdrop-filter: blur(28px);
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  padding: 22px 20px 18px;
+  color: rgba(217, 218, 245, 0.9);
+  font-size: 13px;
+  min-height: 80px;
+}
+
+/* ── Close button ────────────────────────────────── */
+
+.closeBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(136, 139, 224, 0.09);
+  border: 1px solid rgba(136, 139, 224, 0.14);
+  border-radius: 8px;
+  color: rgba(217, 218, 245, 0.5);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: rgba(136, 139, 224, 0.18);
+    color: rgba(217, 218, 245, 0.9);
+  }
+}
+
+/* ── Loading / Error ─────────────────────────────── */
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 0;
+  color: rgba(217, 218, 245, 0.45);
+  font-size: 12px;
+}
+
+.spinner {
+  width: 26px;
+  height: 26px;
+  border: 2px solid rgba(136, 139, 224, 0.14);
+  border-top-color: rgba(136, 139, 224, 0.7);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error {
+  padding: 24px 0;
+  text-align: center;
+  color: rgba(239, 68, 68, 0.8);
+  font-size: 13px;
+}
+
+/* ── Main row: icon + temp ───────────────────────── */
+
+.main {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding-right: 30px;
+}
+
+.weatherIcon {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  margin: -8px -6px -8px -12px;
+  filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.25));
+}
+
+.mainInfo {
+  flex: 1;
+}
+
+.temp {
+  font-size: 40px;
+  font-weight: 700;
+  color: rgba(217, 218, 245, 0.97);
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.desc {
+  font-size: 13px;
+  color: rgba(217, 218, 245, 0.55);
+  margin-top: 4px;
+  text-transform: capitalize;
+}
+
+.feelsLike {
+  font-size: 11px;
+  color: rgba(217, 218, 245, 0.38);
+  margin-top: 2px;
+}
+
+.minMax {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+
+  span {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(217, 218, 245, 0.5);
+  }
+}
+
+/* ── Location ────────────────────────────────────── */
+
+.locationRow {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 10px;
+  background: rgba(136, 139, 224, 0.06);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: rgba(217, 218, 245, 0.5);
+
+  svg {
+    flex-shrink: 0;
+    color: rgba(136, 139, 224, 0.55);
+  }
+}
+
+/* ── Divider ─────────────────────────────────────── */
+
+.divider {
+  height: 1px;
+  background: rgba(136, 139, 224, 0.08);
+  margin: 0 0 12px;
+}
+
+/* ── Stats grid ──────────────────────────────────── */
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 9px 6px 8px;
+  background: rgba(136, 139, 224, 0.05);
+  border: 1px solid rgba(136, 139, 224, 0.08);
+  border-radius: 10px;
+}
+
+.statIcon {
+  color: rgba(96, 165, 250, 0.65);
+}
+
+.statValue {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(217, 218, 245, 0.85);
+  text-align: center;
+}
+
+.statLabel {
+  font-size: 9px;
+  color: rgba(217, 218, 245, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  text-align: center;
+}
+
+/* ── Wind ────────────────────────────────────────── */
+
+.windRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 11px;
+  background: rgba(136, 139, 224, 0.05);
+  border-radius: 9px;
+  font-size: 12px;
+  color: rgba(217, 218, 245, 0.6);
+  margin-bottom: 8px;
+}
+
+.windIcon {
+  color: rgba(96, 165, 250, 0.6);
+  flex-shrink: 0;
+}
+
+/* ── Sunrise / Sunset ────────────────────────────── */
+
+.sunRow {
+  display: flex;
+  gap: 7px;
+}
+
+.sunItem {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(136, 139, 224, 0.05);
+  border-radius: 9px;
+  font-size: 11px;
+  color: rgba(217, 218, 245, 0.5);
+}
+
+.sunIcon {
+  color: rgba(251, 191, 36, 0.65);
+  flex-shrink: 0;
+}

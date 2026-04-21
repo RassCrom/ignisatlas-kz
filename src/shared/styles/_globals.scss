@@ -1,0 +1,66 @@
+@use './variables' as *;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+*,
+*::after,
+*::before,
+html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+html, body {
+    height: 100%;
+    
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: $main-size;
+    color: $font-color;
+    background-color: $bg-color;
+
+    scroll-behavior: smooth;
+}
+
+button {
+    background-color: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+li {
+    list-style: none;
+}
+
+.ol-attribution.ol-unselectable.ol-control.ol-uncollapsible > ul > li,
+.ol-attribution.ol-unselectable.ol-control.ol-uncollapsible > ul > li > a {
+    font-size: $caption-size !important;
+}
+
+.ol-zoom {
+    top: 3.5rem !important;
+    left: auto !important;
+    right: .5rem !important;
+    background-color: transparent !important;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ol-zoom .ol-zoom-in,
+.ol-zoom .ol-zoom-out {
+    border-radius: .4rem !important;
+}
+
+.ol-control button {
+    width: 2rem !important;
+    height: 2rem !important;
+    color: $icon-main-color-map !important;
+    font-size: $icon-main-size-map !important;
+    border-radius: .4rem !important;
+}

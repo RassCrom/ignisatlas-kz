@@ -1,0 +1,48 @@
+$main-color: #4999E8;
+$secondary-color: #212529;
+$accent-color: #F4D58D;
+$font-color: #001427;
+$bg-color: #f9f9f9;
+$danger-color: #8D0801;
+
+// Spacing
+$spacing-small: 8px;
+$spacing-medium: 16px;
+$spacing-large: 32px;
+
+// Font Size
+$main-size: clamp(.95rem, 1.5vw, 1rem);
+$subheading-size: clamp(1.5rem, 2vw, 2rem);
+$heading-size: clamp(2rem, 3vw, 2.5rem);
+$caption-size: clamp(.7rem, 1vw, .85rem);
+
+// Icons
+// $icon-main-color: #4999E8;
+$icon-main-color: #4b5563;
+$icon-main-color--active: #f9f9f9;
+$icon-main-size: 25px;
+$icon-main-color-map: #4b5563;
+// $icon-main-color-map: #4999E8;
+$icon-main-size-map: 21px;
+
+// Bg
+// $active-bg-color: #2F7D4F;
+$active-bg-color: #1e90ff;
+$active-bg-color-map: yellow;
+
+
+// Landing styles
+:root {
+  --color-bg-primary: #07081A;
+  --color-text-primary: #D9DAF5;
+  --color-accent-blue: #4787E3;
+  --color-accent-dark-blue: #090A24;
+  --color-accent-pink: #7A2045;
+  --color-accent-purple: #888BE0;
+  --color-dark: #07081A;
+  
+  --container-max-width: 1312px;
+  --container-padding: 1rem;
+  
+  --transition-smooth: 0.25s ease;
+}

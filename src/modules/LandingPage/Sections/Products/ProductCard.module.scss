@@ -1,0 +1,126 @@
+.card {
+    padding: 2rem;
+    border-radius: 20px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        border: 1px solid transparent;
+        transition: border-color 0.3s ease;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    &:hover {
+        transform: translateY(-6px);
+
+        &::before {
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .card__image img {
+            transform: scale(1.04);
+        }
+    }
+}
+
+.card--wide {
+    grid-column: span 2;
+
+    @media (max-width: 1024px) {
+        grid-column: span 1;
+    }
+}
+
+.card--regular {
+    grid-column: span 1;
+}
+
+.card--light {
+    background: linear-gradient(145deg, rgba(217, 218, 245, 0.95), rgba(200, 201, 230, 0.9));
+    color: var(--color-bg-primary);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+    }
+}
+
+.card--purple {
+    background: linear-gradient(145deg, rgba(136, 139, 224, 0.9), rgba(100, 103, 200, 0.85));
+    color: var(--color-bg-primary);
+    box-shadow: 0 8px 32px rgba(136, 139, 224, 0.15);
+
+    &:hover {
+        box-shadow: 0 16px 48px rgba(136, 139, 224, 0.25);
+    }
+}
+
+.card--pink {
+    background: linear-gradient(145deg, rgba(190, 24, 93, 0.85), rgba(122, 32, 69, 0.9));
+    color: var(--color-text-primary);
+    box-shadow: 0 8px 32px rgba(236, 72, 153, 0.12);
+
+    &:hover {
+        box-shadow: 0 16px 48px rgba(236, 72, 153, 0.2);
+    }
+}
+
+.card--coral {
+    background: linear-gradient(145deg, #D56F5D, #b85a4a);
+    color: var(--color-bg-primary);
+    box-shadow: 0 8px 32px rgba(213, 111, 93, 0.15);
+
+    &:hover {
+        box-shadow: 0 16px 48px rgba(213, 111, 93, 0.25);
+    }
+}
+
+.card__content {
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.card__title {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: clamp(1.4rem, 3vw, 1.8rem);
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    color: inherit;
+    line-height: 1.3;
+}
+
+.card__description {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0 0 1.5rem 0;
+    color: inherit;
+    opacity: 0.85;
+}
+
+.card__image {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 14px;
+    position: relative;
+    z-index: 1;
+
+    img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 1.5rem;
+    }
+}

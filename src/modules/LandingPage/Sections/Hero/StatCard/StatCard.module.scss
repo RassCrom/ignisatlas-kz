@@ -1,0 +1,60 @@
+.card {
+    flex: 1;
+    min-width: 150px;
+    max-width: 200px;
+    padding: 1.5rem 1.25rem;
+    background: rgba(9, 10, 36, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 1rem 1rem 0 0;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: none;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(136, 139, 224, 0.5), transparent);
+    }
+
+    @media (max-width: 768px) {
+        min-width: 120px;
+        max-width: 160px;
+        padding: 1rem 0.75rem;
+    }
+}
+
+.card__value {
+    background: linear-gradient(135deg, #888BE0, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 2vw, 1.7rem);
+    text-align: center;
+    line-height: 1;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.card__divider {
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(136, 139, 224, 0.4) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    margin: 0.75rem 0;
+}
+
+.card__label {
+    color: rgba(217, 218, 245, 0.6);
+    font-size: clamp(0.75rem, 1.5vw, 0.85rem);
+    text-align: center;
+    line-height: 1.4;
+    margin: 0;
+}

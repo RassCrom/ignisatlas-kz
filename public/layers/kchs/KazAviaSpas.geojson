@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+                                                                                
+"features": [
+{ "type": "Feature", "properties": { "USL": null, "NAME": "Казавиаспас", "ADDRESS": "010000, Республика Казахстан, г.Астана, Алматинский район ул. Б. Майлина 4\/1", "AVIAPARK": null, "Contacts": "Телефон приемной: 8(7172) 41-38-18, Факс: 8(7172) 36-20-87, Телефон производственно диспетчерской службы: 8(7172) 36-71-93, 8(7172)78-71-98,", "KATO": 710000000.000000, "UNIT_ID": 53 }, "geometry": { "type": "Point", "coordinates": [ 71.469619771030565, 51.03199225797016 ] } },
+{ "type": "Feature", "properties": { "USL": null, "NAME": "Казавиаспас", "ADDRESS": "Республика Казахстан, г.Атырау", "AVIAPARK": null, "Contacts": null, "KATO": 231010000.000000, "UNIT_ID": 0 }, "geometry": { "type": "Point", "coordinates": [ 51.82449341340854, 47.127065591512981 ] } },
+{ "type": "Feature", "properties": { "USL": null, "NAME": "Казавиаспас", "ADDRESS": "Республика Казахстан, г.Алматы", "AVIAPARK": null, "Contacts": null, "KATO": 750000000.000000, "UNIT_ID": 0 }, "geometry": { "type": "Point", "coordinates": [ 77.009126053404415, 43.350864431075308 ] } }
+]
+}

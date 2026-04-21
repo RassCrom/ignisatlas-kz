@@ -1,0 +1,60 @@
+@use '../../shared/variables' as *;
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(236, 72, 153, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(71, 135, 227, 0.1) 0%, transparent 50%);
+}
+
+.title {
+  font-family: $font-display;
+  font-weight: 800;
+  font-size: clamp(28px, 5vw, 56px);
+  line-height: 1.15;
+  max-width: 800px;
+  margin: 0 0 20px 0;
+  background: linear-gradient(135deg, $text-primary 0%, $accent-pink 50%, $accent-blue 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-family: $font-display;
+  font-size: clamp(14px, 2vw, 18px);
+  color: $text-secondary;
+  max-width: 600px;
+  line-height: 1.6;
+  margin: 0 0 40px 0;
+}
+
+.stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tags {
+  margin-top: 48px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tag {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.06);
+  color: $text-muted;
+  border: 1px solid $border-subtle;
+}

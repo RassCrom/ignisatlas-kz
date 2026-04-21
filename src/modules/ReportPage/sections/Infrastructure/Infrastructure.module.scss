@@ -1,0 +1,24 @@
+@use '../../shared/variables' as *;
+
+.wrapper {
+  padding: $section-padding;
+  max-width: $container-max;
+  margin: 0 auto;
+}
+
+.title { @include section-title; }
+.subtitle { @include section-subtitle; }
+
+.insight {
+  background: rgba(236, 72, 153, 0.08);
+  border-radius: $radius-md;
+  padding: 20px 24px;
+  border: 1px solid $border-glow;
+  color: rgba(217, 218, 245, 0.7);
+  font-size: 14px;
+  line-height: 1.7;
+
+  strong {
+    color: $accent-pink;
+  }
+}

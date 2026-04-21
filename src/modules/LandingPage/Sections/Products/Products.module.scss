@@ -1,0 +1,47 @@
+.products {
+    scroll-margin-top: 80px;
+    margin: 10rem 0 5rem;
+
+    @media (max-width: 768px) {
+        margin: 6rem 0 3rem;
+    }
+}
+
+.products__container {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+}
+
+.products__header {
+    margin-bottom: 4rem;
+}
+
+.products__title {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.products__subtitle {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 500;
+    color: transparent;
+    -webkit-text-stroke: 0.5px rgba(217, 218, 245, 0.2);
+    letter-spacing: 0.68rem;
+    margin: 0 0 -1.5rem 0.2rem;
+}
+
+.products__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+
+    @media (max-width: 1024px) {
+        grid-template-columns: 1fr;
+    }
+}

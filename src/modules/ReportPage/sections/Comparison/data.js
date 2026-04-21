@@ -1,0 +1,17 @@
+export const countryData = [
+  { country: "Бразилия", area: 8515767, points: 9537013, density: 1.12 },
+  { country: "Австралия", area: 7692024, points: 6114184, density: 0.795 },
+  { country: "Аргентина", area: 2780400, points: 1583776, density: 0.57 },
+  { country: "Индия", area: 3287590, points: 1664574, density: 0.506 },
+  { country: "Россия", area: 17098242, points: 7212550, density: 0.422 },
+  { country: "Казахстан", area: 2724900, points: 1122137, density: 0.412 },
+  { country: "США", area: 9372610, points: 2750623, density: 0.293 },
+  { country: "Китай", area: 9706961, points: 1796512, density: 0.185 },
+  { country: "Канада", area: 9984670, points: 1524651, density: 0.153 },
+  { country: "Узбекистан", area: 447400, points: 52059, density: 0.116 },
+  { country: "Туркменистан", area: 488100, points: 42674, density: 0.087 },
+  { country: "Кыргызстан", area: 199951, points: 12652, density: 0.063 },
+  { country: "Монголия", area: 1564110, points: 97454, density: 0.062 },
+  { country: "Алжир", area: 2381741, points: 80315, density: 0.034 },
+  { country: "Таджикистан", area: 143100, points: 3574, density: 0.025 },
+];

@@ -1,0 +1,62 @@
+.hero__btn {
+    display: inline-block;
+    padding: 0.9rem 2.2rem;
+    border-radius: 12px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: center;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    border: none;
+    position: relative;
+    overflow: hidden;
+
+    background: linear-gradient(135deg, #ec4899, #be185d);
+    color: #fff;
+    box-shadow:
+        0 4px 16px rgba(236, 72, 153, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+    transition:
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s ease,
+        filter 0.25s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow:
+            0 8px 28px rgba(236, 72, 153, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        filter: brightness(1.1);
+    }
+
+    &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(236, 72, 153, 0.2);
+    }
+
+    &--secondary {
+        background: rgba(136, 139, 224, 0.15);
+        color: #888BE0;
+        border: 1px solid rgba(136, 139, 224, 0.3);
+        box-shadow: none;
+
+        &:hover {
+            background: rgba(136, 139, 224, 0.25);
+            box-shadow: 0 8px 24px rgba(136, 139, 224, 0.15);
+            border-color: rgba(136, 139, 224, 0.5);
+            filter: none;
+        }
+
+        &:active {
+            box-shadow: none;
+        }
+    }
+
+    &--primary {
+        background: linear-gradient(135deg, #ec4899, #be185d);
+        color: #fff;
+    }
+}
