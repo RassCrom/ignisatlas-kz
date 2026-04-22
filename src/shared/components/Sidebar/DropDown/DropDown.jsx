@@ -23,11 +23,10 @@ import Sentinel2Controls from "./SentinelControls/Sentinel2Controls";
 import { useSatelliteData } from "./SentinelControls/useSatelliteData";
 
 // Controls — Sentinel imagery
-import SentinelControls from "./SentinelControls/SentinelControls";
-import SentinelControls3 from "./SentinelControls/SentinelControls3";
-import SentinelControls5 from "./SentinelControls/SentinelControls5";
-import SentinelControls1 from "./SentinelControls/SentinelControls1";
-import HLSControls from "./SentinelControls/HLSControls";
+import SentinelExplorer from "./SentinelControls/SentinelExplorer";
+import LandsatExplorer from "./SentinelControls/LandsatExplorer";
+import ModisExplorer from "./SentinelControls/ModisExplorer";
+import AtmosphereExplorer from "./SentinelControls/AtmosphereExplorer";
 
 // Controls — Fire
 import FireControls from "./Controls/FireControls/FireControls";
@@ -42,14 +41,13 @@ import styles from "./DropDown.module.scss";
 
 /* ── Self-subscribed controls (need no props from DropDown) ── */
 const SELF_SUBSCRIBED = {
-  sentinel2:         (opt) => <SentinelControls key={opt.id} productType="sentinel2" />,
-  sentinel3:         (opt) => <SentinelControls3 key={opt.id} />,
-  sentinel5:         (opt) => <SentinelControls5 key={opt.id} />,
-  sentinel1:         (opt) => <SentinelControls1 key={opt.id} />,
-  hls_landsat:       (opt) => <HLSControls key={opt.id} />,
-  fire_risk:         (opt) => <FireRisk key={opt.id} />,
-  fire_modelling:    (opt) => <FireModelling key={opt.id} />,
-  lulc:              (opt) => <LulcControls key={opt.id} />,
+  sentinel_explorer:     (opt) => <SentinelExplorer key={opt.id} />,
+  landsat_explorer:      (opt) => <LandsatExplorer key={opt.id} />,
+  modis_explorer:        (opt) => <ModisExplorer key={opt.id} />,
+  atmosphere_explorer:   (opt) => <AtmosphereExplorer key={opt.id} />,
+  fire_risk:             (opt) => <FireRisk key={opt.id} />,
+  fire_modelling:        (opt) => <FireModelling key={opt.id} />,
+  lulc:                  (opt) => <LulcControls key={opt.id} />,
   settlements_layer: (opt) => <SettlementsControls key={opt.id} />,
 };
 

@@ -52,79 +52,146 @@
 }
 
 .ol-geocoder.gcd-gl-container {
-    top: 16.5rem;
-    left: auto;
+    top: 16.6rem;
     right: 0.5rem;
-    max-width: 320px;
-    width: 100%;
+    left: auto;
+    z-index: 100;
     display: flex;
-    align-items: center;
     justify-content: flex-end;
-    gap: .5rem;
-    font-size: 1rem;
-
+    
     .gcd-gl-control.ol-control {
-        background-color: transparent;
-
-        .gcd-gl-input {
-            font-size: 0.9rem;
-            width: 12rem;
-            background: rgba(9, 10, 36, 0.88);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(136, 139, 224, 0.12);
-            border-radius: 10px;
-            color: rgba(217, 218, 245, 0.85);
-            padding: 0.5rem 0.75rem;
-
-            &::placeholder {
-                color: rgba(217, 218, 245, 0.25);
-            }
-
-            &:focus {
-                border-color: rgba(136, 139, 224, 0.35);
-                outline: none;
-                box-shadow: 0 0 0 2px rgba(136, 139, 224, 0.08);
-            }
-        }
-
+        background: rgba(9, 10, 36, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(136, 139, 224, 0.1);
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        padding: 2px;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease;
+        overflow: hidden;
+        width: 2.75rem;
+        height: 2.75rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-direction: row-reverse;
+        box-sizing: border-box;
+        
         .gcd-gl-btn {
-            left: .15rem;
-            background: rgba(9, 10, 36, 0.85);
-            border: 1px solid rgba(136, 139, 224, 0.1);
-            border-radius: 10px;
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 2.25rem;
+            height: 2.25rem;
+            border: none;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 8px;
             color: rgba(217, 218, 245, 0.7);
-            transition: all 0.25s ease;
+            transition: color 0.2s ease, background 0.2s ease;
+            z-index: 10;
+
+            &::after {
+                font-family: inherit;
+                font-size: 1.1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
 
             &:hover {
-                background: rgba(9, 10, 36, 0.95);
-                border-color: rgba(136, 139, 224, 0.25);
+                background: rgba(136, 139, 224, 0.1);
+                color: rgba(217, 218, 245, 0.95);
+            }
+        }
+        
+        .gcd-gl-input {
+            width: 0;
+            height: 2.25rem;
+            font-size: 0.9rem;
+            background: transparent;
+            border: none;
+            color: rgba(217, 218, 245, 0.85);
+            padding: 0;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            box-sizing: border-box;
+
+            &::placeholder {
+                color: rgba(217, 218, 245, 0.4);
+            }
+            &:focus {
+                outline: none;
             }
         }
 
         .gcd-gl-search {
-            position: absolute;
-            top: -.25rem;
-            right: 2.5rem;
+            display: none;
         }
     }
-}
-
-.gcd-gl-control.ol-control.gcd-gl-expanded {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-    gap: .5rem;
-    width: 100%;
-
-    input {
-        border-radius: 10px;
-        background: rgba(9, 10, 36, 0.88);
-        border: 1px solid rgba(136, 139, 224, 0.12);
-        color: rgba(217, 218, 245, 0.85);
+    
+    .gcd-gl-control.ol-control.gcd-gl-expanded {
+        width: 280px;
+        background: rgba(9, 10, 36, 0.92);
+        
+        .gcd-gl-input {
+            width: 100%;
+            padding: 0 2.8rem 0 0.8rem; 
+            opacity: 1;
+        }
+        
+        .gcd-gl-btn {
+            background: rgba(136, 139, 224, 0.1);
+            color: rgba(217, 218, 245, 0.95);
+        }
     }
 
-    button, input, a {
-        position: static;
+    /* Dropdown Styling */
+    ul.gcd-gl-result {
+        background: rgba(9, 10, 36, 0.95) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(136, 139, 224, 0.15) !important;
+        border-radius: 12px !important;
+        margin-top: 8px !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+        overflow-x: hidden;
+        right: 0 !important;
+        left: auto !important;
+        width: 100% !important;
+        
+        > li {
+            border-bottom: 1px solid rgba(136, 139, 224, 0.08) !important;
+            background-color: transparent !important;
+            
+            &:last-child {
+                border-bottom: none !important;
+            }
+
+            > a {
+                color: rgba(217, 218, 245, 0.85) !important;
+                padding: 10px 14px !important;
+                display: block;
+                transition: background 0.2s ease;
+
+                &:hover {
+                    background: rgba(136, 139, 224, 0.15) !important;
+                }
+
+                /* Sub-elements inside result anchor */
+                .gcd-address, .gcd-road {
+                    color: rgba(217, 218, 245, 0.95);
+                    font-size: 0.9rem;
+                }
+                .gcd-city, .gcd-country {
+                    color: rgba(217, 218, 245, 0.55);
+                    font-size: 0.8rem;
+                }
+            }
+        }
     }
 }
 

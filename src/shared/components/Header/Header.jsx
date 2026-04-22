@@ -59,7 +59,7 @@ const Header = memo(() => {
           <div className={styles['header-logo']}>
             <a href="/" aria-label="Homepage">
               <img
-                src="/logo.svg"
+                src="/temp_logo.png"
                 alt="Company Logo"
                 loading="lazy"
               />

@@ -20,7 +20,7 @@ export default function Nav({ activeSection }) {
     <nav className={styles.nav}>
       <div className={styles.logo}>          
         <a href="/" aria-label="Ionosphere Home">
-          <img src="/logo_nobg.png" alt="Ionosphere Logo" />
+          <img src="/temp_logo.png" alt="Ionosphere Logo" />
         </a>
       </div>
       <div className={styles.links}>

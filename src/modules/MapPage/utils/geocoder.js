@@ -4,13 +4,12 @@ export const createGeocoder = () => {
   // Create the geocoder control
   const geocoder = new Geocoder('nominatim', {
     provider: 'osm',
-    lang: 'kz',
-    placeholder: 'Поиск...',
+    lang: 'en-US',
+    placeholder: 'Search location...',
     targetType: 'glass-button',
-    limit: 3,
+    limit: 5,
     countrycodes: 'KZ',
-    keepOpen: true,
-    // preventDefault: true, // preventing zoom to the location
+    keepOpen: false,
   });
   
   return geocoder;

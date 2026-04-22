@@ -8,6 +8,7 @@ import { createContextMenu } from "../utils/contextMenu.js";
 import { handleFullScreenChange } from "../utils/fullScreen.js";
 import { createGeocoder } from "../utils/geocoder.js";
 import { DEFAULT_POSITION } from "../utils/mapConstants.js";
+import "ol-geocoder/dist/ol-geocoder.min.css";
 
 export const useMapInitialization = (mapRef, basemap, initialLayers = [], styles) => {
   const mapInstance = useRef(null);

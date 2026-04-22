@@ -1,0 +1,112 @@
+import { create } from 'zustand';
+
+const useSentinelExplorerStore = create((set, get) => ({
+  // ── Mission & Filter State ───────────────────────────────
+  selectedMission: 'sentinel-2',  // 'all' | 'sentinel-1' | 'sentinel-2' | 'sentinel-3' | 'sentinel-5p'
+  startDate: '',
+  endDate: '',
+  cloudCoverage: 30,
+  productType: '',           // e.g. 'L1C', 'L2A', '' = any
+  orbitDirection: '',        // 'ascending' | 'descending' | '' = any
+  selectedBands: 'true-color',
+
+  // ── Search Results ───────────────────────────────────────
+  searchResults: [],
+  isLoading: false,
+  error: null,
+  totalResults: 0,
+  sortBy: 'date',            // 'date' | 'cloudCover'
+  sortOrder: 'desc',         // 'asc' | 'desc'
+
+  // ── Pagination ───────────────────────────────────────────
+  page: 1,
+  pageSize: 20,
+
+  // ── Active Map Layers ────────────────────────────────────
+  activeLayers: [],
+  globalOpacity: 80,
+
+  // ── Hovered footprint ────────────────────────────────────
+  hoveredFootprint: null,    // GeoJSON geometry for map preview
+
+  // ── Active tab ───────────────────────────────────────────
+  activeTab: 'search',       // 'search' | 'results' | 'layers'
+
+  // ═══ Actions ═══════════════════════════════════════════════
+
+  // Mission & Filters
+  setSelectedMission: (mission) => set({ selectedMission: mission }),
+  setStartDate: (date) => set({ startDate: date }),
+  setEndDate: (date) => set({ endDate: date }),
+  setCloudCoverage: (value) => set({ cloudCoverage: value }),
+  setProductType: (type) => set({ productType: type }),
+  setOrbitDirection: (dir) => set({ orbitDirection: dir }),
+  setSelectedBands: (bands) => set({ selectedBands: bands }),
+
+  // Search
+  setSearchResults: (results, total) => set({
+    searchResults: results,
+    totalResults: total ?? results.length,
+  }),
+  setIsLoading: (loading) => set({ isLoading: loading }),
+  setError: (error) => set({ error }),
+  clearSearch: () => set({ searchResults: [], totalResults: 0, error: null, page: 1 }),
+
+  // Sort
+  setSortBy: (field) => {
+    const state = get();
+    if (state.sortBy === field) {
+      set({ sortOrder: state.sortOrder === 'asc' ? 'desc' : 'asc' });
+    } else {
+      set({ sortBy: field, sortOrder: field === 'date' ? 'desc' : 'asc' });
+    }
+  },
+
+  // Pagination
+  setPage: (page) => set({ page }),
+  nextPage: () => set((s) => ({ page: s.page + 1 })),
+  prevPage: () => set((s) => ({ page: Math.max(1, s.page - 1) })),
+
+  // Active Layers
+  addActiveLayer: (layer) => set((state) => {
+    const exists = state.activeLayers.some((l) => l.id === layer.id);
+    if (exists) return state;
+    return { activeLayers: [...state.activeLayers, layer] };
+  }),
+
+  removeActiveLayer: (layerId) => set((state) => ({
+    activeLayers: state.activeLayers.filter((l) => l.id !== layerId),
+  })),
+
+  toggleLayerVisibility: (layerId) => set((state) => ({
+    activeLayers: state.activeLayers.map((l) =>
+      l.id === layerId ? { ...l, visible: !l.visible } : l
+    ),
+  })),
+
+  updateLayerOpacity: (layerId, opacity) => set((state) => ({
+    activeLayers: state.activeLayers.map((l) =>
+      l.id === layerId ? { ...l, opacity } : l
+    ),
+  })),
+
+  reorderLayers: (fromIndex, toIndex) => set((state) => {
+    const layers = [...state.activeLayers];
+    const [moved] = layers.splice(fromIndex, 1);
+    layers.splice(toIndex, 0, moved);
+    return { activeLayers: layers };
+  }),
+
+  clearActiveLayers: () => set({ activeLayers: [] }),
+
+  setGlobalOpacity: (opacity) => set({ globalOpacity: opacity }),
+
+  // Footprint preview
+  setHoveredFootprint: (geometry) => set({ hoveredFootprint: geometry }),
+  clearHoveredFootprint: () => set({ hoveredFootprint: null }),
+
+  // Tab
+  setActiveTab: (tab) => set({ activeTab: tab, error: null }),
+}));
+
+export default useSentinelExplorerStore;

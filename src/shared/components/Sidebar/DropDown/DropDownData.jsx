@@ -170,36 +170,45 @@ export const newDD = [
         "isExpanded": true,
         "options": [
           {
-            "id": "sentinel2",
-            "label": "Sentinel-2",
-            "description": "Оптические спутниковые изображения высокого разрешения (10–20 м), используемые для мониторинга растительности, пожаров и землепользования."
-          },
-          {
-            "id": "sentinel3",
-            "label": "Sentinel-3",
-            "description": "Спутниковые данные среднего разрешения для мониторинга атмосферы, температуры поверхности и водных объектов."
-          },
-          {
-            "id": "sentinel5",
-            "label": "Sentinel-5",
-            "description": "Данные для наблюдения за качеством воздуха и атмосферными газами (озон, CO₂, NO₂)."
-          },
-          {
-            "id": "sentinel1",
-            "label": "Sentinel-1",
-            "description": "Радарные спутниковые данные (SAR), позволяющие наблюдать землю и объекты в любых погодных условиях, днём и ночью."
+            "id": "sentinel_explorer",
+            "label": "Sentinel Explorer",
+            "description": "Единая панель поиска и визуализации спутниковых данных Sentinel-1, -2, -3 и -5P. Поиск по области, дате и облачности."
           }
         ]
       },
       {
         "id": "landsat_archive",
-        "label_ru": "Landsat Archive (HLS L30)",
+        "label_ru": "Landsat Archive",
         "isExpanded": false,
         "options": [
           {
-            "id": "hls_landsat",
-            "label": "HLS L30 (Harmonized Landsat)",
-            "description": "Поиск архивных снимков Landsat 8/9 (30 м) через STAC API NASA LP DAAC и Planetary Computer. Ограничено территорией Казахстана."
+            "id": "landsat_explorer",
+            "label": "Landsat Explorer",
+            "description": "Unified search and visualization of Landsat 4, 5, 7, 8, 9 imagery via Microsoft Planetary Computer STAC API."
+          }
+        ]
+      },
+      {
+        "id": "modis_archive",
+        "label_ru": "MODIS Active Fire",
+        "isExpanded": false,
+        "options": [
+          {
+            "id": "modis_explorer",
+            "label": "MODIS Explorer",
+            "description": "Unified search and visualization of MODIS Daily Fire Anomalies and Surface Reflectance imagery via Microsoft Planetary Computer STAC API."
+          }
+        ]
+      },
+      {
+        "id": "atmosphere_archive",
+        "label_ru": "Atmosphere & Emissions",
+        "isExpanded": false,
+        "options": [
+          {
+            "id": "atmosphere_explorer",
+            "label": "Atmosphere Explorer",
+            "description": "Global search and analysis of atmospheric composition (CH₄, CO, NO₂, aerosols) via Sentinel-5P on Microsoft Planetary Computer."
           }
         ]
       }

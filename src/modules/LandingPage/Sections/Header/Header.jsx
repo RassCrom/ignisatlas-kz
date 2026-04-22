@@ -52,7 +52,7 @@ const Header = () => {
           transition={{ duration: 0.5 }}
         >
           <a href="/" aria-label="Ionosphere Home">
-            <img src="/logo_nobg.png" alt="Ionosphere Logo" />
+            <img src="/temp_logo.png" alt="Ionosphere Logo" />
           </a>
         </motion.div>
 

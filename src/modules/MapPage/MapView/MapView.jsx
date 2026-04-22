@@ -19,10 +19,7 @@ import { osmLayer } from "../utils/basemaps.js";
 
 import useFireStore from "src/app/store/fireStore";
 import useAdminBoundaryStore from "src/app/store/adminBoundaryStore.js";
-import useSentinelStore from "src/app/store/sentinelStore.js";
-import useSentinel3Store from "src/app/store/sentinel3Store.js";
-import useSentinel5Store from "src/app/store/sentinel5Store.js";
-import useSentinel1Store from "src/app/store/sentinel1Store.js";
+
 import useMethaneStore from "src/app/store/methaneStore";
 import useRiskMapStore from "src/app/store/riskMapStore.js";
 import useFireModellingStore from "src/app/store/fireModellingStore.js";
@@ -31,16 +28,17 @@ import useMapStore from "src/app/store/mapStore.js";
 
 import { useMapInitialization } from "../hooks/useMapInitialization";
 import { useFireLayer } from "../hooks/useFireLayer";
-import { useSentinelLayers } from "../hooks/useSentinelLayers";
+
 import { useMethaneLayers } from "../hooks/useMethaneLayers";
 import { useRiskLayers } from "../hooks/useRiskLayers";
 import { useLulcLayer } from "../hooks/useLulcLayer";
 import { useSettlementsLayer } from "../hooks/useSettlementsLayer";
 import { useFireModelling } from "../hooks/useFireModelling.js";
 import { useEmergencyPopup } from "../hooks/useEmergencyPopup.js";
+import { useAoiDraw } from "../hooks/useAoiDraw.js";
+import { useFootprintPreview } from "../hooks/useFootprintPreview.js";
 
 import "ol/ol.css";
-import "ol-geocoder/dist/ol-geocoder.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./MapView.module.scss";
 import "./mapStyles.scss";
@@ -56,10 +54,7 @@ const MapView = () => {
   const fireStore = useFireStore();
   const adminBoundaryStore = useAdminBoundaryStore();
   const methaneStore = useMethaneStore();
-  const sentinelStore = useSentinelStore();
-  const sentinel3Store = useSentinel3Store();
-  const sentinel5Store = useSentinel5Store();
-  const sentinel1Store = useSentinel1Store();
+
   const riskMapStore = useRiskMapStore();
   const { layers } = useLayersStore();
 
@@ -125,11 +120,11 @@ const MapView = () => {
     return () => window.removeEventListener('cm:weather', handler);
   }, []);
 
-  // Initialize sentinel layers
-  const sentinelLayers = useSentinelLayers("sentinel2", sentinelStore);
-  const sentinel3Layers = useSentinelLayers("sentinel3", sentinel3Store);
-  const sentinel5Layers = useSentinelLayers("sentinel5", sentinel5Store);
-  const sentinel1Layers = useSentinelLayers("sentinel1", sentinel1Store);
+
+
+  // Sentinel Explorer – AOI draw & footprint preview
+  useAoiDraw(mapInstance, isMapInitialized);
+  useFootprintPreview(mapInstance, isMapInitialized);
 
   // Initialize risk layers
   useRiskLayers(riskMapStore.riskDates, mapInstance, isMapInitialized);

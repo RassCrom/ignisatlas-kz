@@ -40,7 +40,7 @@ const Footer = () => {
         <div className={styles.footer__top}>
           <div className={styles.footer__brand}>
             <a href="/" className={styles.footer__logo} aria-label="Ionosphere Home">
-              <img src="/logo_nobg.png" alt="Ionosphere Logo" />
+              <img src="/temp_logo.png" alt="Ionosphere Logo" />
             </a>
             <p className={styles.footer__tagline}>
               Современная система мониторинга пожаров в Казахстане
