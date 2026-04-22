@@ -37,6 +37,9 @@ import FireModelling from "./Controls/FireControls/FireModelling";
 import LulcControls from "./Controls/LulcControls";
 import SettlementsControls from "./Controls/SettlementsControls";
 
+// Controls — Tools
+import SpatialBookmarksTool from "./ToolsControls/SpatialBookmarksTool";
+
 import styles from "./DropDown.module.scss";
 
 /* ── Self-subscribed controls (need no props from DropDown) ── */
@@ -49,6 +52,7 @@ const SELF_SUBSCRIBED = {
   fire_modelling:        (opt) => <FireModelling key={opt.id} />,
   lulc:                  (opt) => <LulcControls key={opt.id} />,
   settlements_layer: (opt) => <SettlementsControls key={opt.id} />,
+  spatial_bookmark_tool: (opt) => <SpatialBookmarksTool key={opt.id} />,
 };
 
 const DropDown = memo(({ openTabIndex }) => {

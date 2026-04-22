@@ -1,13 +1,14 @@
 import { useRef, memo } from "react";
-import { PencilRuler, Flame, Satellite } from "lucide-react";
+import { PencilRuler, Flame, Satellite, Wrench } from "lucide-react";
 import useMenuStore from "src/app/store/store";
 import DropDown from "./DropDown/DropDown.jsx";
 import styles from "./Sidebar.module.scss";
 
 const TABS = [
-  { id: 1, icon: PencilRuler, tooltip: "Инструменты" },
+  { id: 1, icon: PencilRuler, tooltip: "Слои" },
   { id: 2, icon: Flame,       tooltip: "Мониторинг пожаров" },
   { id: 3, icon: Satellite,   tooltip: "Космические снимки" },
+  { id: 4, icon: Wrench,      tooltip: "Инструменты" },
 ];
 
 const Sidebar = memo(() => {

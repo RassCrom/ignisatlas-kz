@@ -37,6 +37,7 @@ import { useFireModelling } from "../hooks/useFireModelling.js";
 import { useEmergencyPopup } from "../hooks/useEmergencyPopup.js";
 import { useAoiDraw } from "../hooks/useAoiDraw.js";
 import { useFootprintPreview } from "../hooks/useFootprintPreview.js";
+import { useBookmarksLayer } from "../hooks/useBookmarksLayer.js";
 
 import "ol/ol.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -145,6 +146,9 @@ const MapView = () => {
     fireModellingStore.addFireModellingLayer,
     fireModellingStore.setMapInstance
   );
+
+  // Initialize Spatial Bookmarks markers
+  useBookmarksLayer(mapInstance, isMapInitialized);
 
   // Emergency layers popup
   const {

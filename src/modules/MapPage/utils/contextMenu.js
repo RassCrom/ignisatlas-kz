@@ -3,6 +3,8 @@ import { transform } from 'ol/proj';
 
 import { showToast } from "src/shared/utils/showToast";
 import { flyHome } from "./flyHome";
+import useBookmarksStore from "src/app/store/bookmarksStore";
+import dayjs from "dayjs";
 
 function flyTo(view, location, zoom = null, done = () => {}) {
   if (!view || !location) { done(false); return; }
@@ -55,6 +57,7 @@ const ICONS = {
   maps:      svg('<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>', '#34d399'),
   weather:   svg('<path d="M12 2v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="M20 12h2"/><path d="m19.07 4.93-1.41 1.41"/><path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6Z"/>', '#60a5fa'),
   ruler:     svg('<path d="M21.3 8.7 8.7 21.3c-1 1-2.5 1-3.4 0l-2.6-2.6c-1-1-1-2.5 0-3.4L15.3 2.7c1-1 2.5-1 3.4 0l2.6 2.6c1 1 1 2.5 0 3.4Z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/><path d="m4.5 13.5 2 2"/>'),
+  bookmark:  svg('<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>', '#f59e0b'),
 };
 
 /* ── Context menu factory ──────────────────────────── */
@@ -107,6 +110,20 @@ export const createContextMenu = (_map, view, _DEFAULT_POSITION, styles) => {
         classname: cls,
         callback: (e) => {
           window.dispatchEvent(new CustomEvent('cm:weather', { detail: { coordinate: e.coordinate } }));
+        },
+      },
+      {
+        text: menuItem(ICONS.bookmark, 'Сохранить закладку'),
+        classname: cls,
+        callback: (e) => {
+          const center = view.getCenter();
+          const zoom = view.getZoom();
+          const extent = view.calculateExtent(_map.getSize());
+          const date = dayjs().format('YYYY-MM-DD');
+          const title = `Bookmark ${useBookmarksStore.getState().bookmarks.length + 1}`;
+          
+          useBookmarksStore.getState().addBookmark(title, date, center, zoom, extent);
+          showToast('Закладка для этой области успешно сохранена', 'success');
         },
       },
       {

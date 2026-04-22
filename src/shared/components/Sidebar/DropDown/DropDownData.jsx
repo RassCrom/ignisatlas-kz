@@ -214,7 +214,24 @@ export const newDD = [
       }
     ]
   },
-
+  {
+    "id": 4,
+    "key": "tools",
+    "items": [
+      {
+        "id": "bookmarks_manager",
+        "label_ru": "Пространственные закладки",
+        "isExpanded": true,
+        "options": [
+          {
+            "id": "spatial_bookmark_tool",
+            "label": "Менеджер закладок",
+            "description": "Сохранение и управление позициями на карте для быстрого возврата."
+          }
+        ]
+      }
+    ]
+  },
   {
     id: 5,
     key: 'feedback',

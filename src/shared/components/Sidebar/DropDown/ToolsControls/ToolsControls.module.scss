@@ -1,0 +1,199 @@
+.bookmarksContainer {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: rgba(217, 218, 245, 0.85);
+  font-size: 0.8rem;
+  padding: 0.5rem;
+}
+
+.creationPanel {
+  background: rgba(9, 10, 36, 0.4);
+  border: 1px solid rgba(136, 139, 224, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: rgba(217, 218, 245, 0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+.input {
+  padding: 0.45rem 0.5rem;
+  border: 1px solid rgba(136, 139, 224, 0.15);
+  border-radius: 0.4rem;
+  background: rgba(9, 10, 36, 0.6);
+  color: rgba(217, 218, 245, 0.9);
+  font-size: 0.75rem;
+  transiiton: all 0.2s;
+  color-scheme: dark;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(136, 139, 224, 0.4);
+  }
+}
+
+.saveBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  margin-top: 0.2rem;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  border-radius: 0.4rem;
+  color: rgba(52, 211, 153, 0.9);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(52, 211, 153, 0.18);
+    border-color: rgba(52, 211, 153, 0.5);
+  }
+}
+
+.listPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.listTitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(217, 218, 245, 0.5);
+  text-transform: uppercase;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .badge {
+    background: rgba(136, 139, 224, 0.15);
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.3rem;
+    color: rgba(136, 139, 224, 0.9);
+    font-size: 0.65rem;
+  }
+}
+
+.emptyMsg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  color: rgba(217, 218, 245, 0.25);
+  gap: 0.5rem;
+  font-size: 0.75rem;
+
+  svg { opacity: 0.5; }
+}
+
+.bookmarkList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 0.2rem;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: rgba(136, 139, 224, 0.04); }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(136, 139, 224, 0.15);
+    border-radius: 2px;
+  }
+}
+
+.bookmarkCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(9, 10, 36, 0.35);
+  border: 1px solid rgba(136, 139, 224, 0.08);
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.6rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(136, 139, 224, 0.05);
+    border-color: rgba(136, 139, 224, 0.2);
+  }
+}
+
+.bookmarkInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.bookmarkName {
+  font-weight: 600;
+  font-size: 0.75rem;
+  margin-bottom: 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: rgba(217, 218, 245, 0.9);
+}
+
+.bookmarkDate {
+  font-size: 0.65rem;
+  color: rgba(217, 218, 245, 0.4);
+}
+
+.bookmarkActions {
+  display: flex;
+  gap: 0.2rem;
+  margin-left: 0.5rem;
+}
+
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  padding: 0;
+  height: 1.6rem;
+  background: rgba(136, 139, 224, 0.05);
+  border: 1px solid rgba(136, 139, 224, 0.1);
+  border-radius: 0.3rem;
+  color: rgba(217, 218, 245, 0.45);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(136, 139, 224, 0.12);
+    color: rgba(217, 218, 245, 0.85);
+  }
+
+  &.active {
+    background: rgba(136, 139, 224, 0.18);
+    border-color: rgba(136, 139, 224, 0.3);
+    color: rgba(136, 139, 224, 0.95);
+  }
+
+  &.danger {
+    &:hover {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.25);
+      color: rgba(248, 113, 113, 0.9);
+    }
+  }
+}
