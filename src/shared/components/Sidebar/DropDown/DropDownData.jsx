@@ -59,9 +59,14 @@ export const newDD = [
         "label_ru": "Землепользование",
         "options": [
           {
-            "id": "lulc",
+            "id": "lulc_pc",
             "label": "ESRI Sentinel-2 Land Cover (10m)",
-            "description": "Глобальная карта использования и покрытия земель на основе данных Sentinel-2 с разрешением 10 м (ESRI / Impact Observatory). 9 классов покрытия."
+            "description": "Ежегодная карта LULC (2017–2023) с 9 классами на основе Sentinel-2, 10 м разрешение. Источник: Planetary Computer."
+          },
+          {
+            "id": "lulc",
+            "label": "ESRI Land Cover (устаревший)",
+            "description": "Глобальная карта от ArcGIS ImageServer. Нефильтрованный слой без выбора года."
           }
         ]
       },

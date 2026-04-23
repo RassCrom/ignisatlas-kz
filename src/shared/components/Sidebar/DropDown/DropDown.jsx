@@ -35,6 +35,7 @@ import FireModelling from "./Controls/FireControls/FireModelling";
 
 // Controls — Layers
 import LulcControls from "./Controls/LulcControls";
+import LulcPcControls from "./Controls/LulcPcControls";
 import SettlementsControls from "./Controls/SettlementsControls";
 
 // Controls — Tools
@@ -51,6 +52,7 @@ const SELF_SUBSCRIBED = {
   fire_risk:             (opt) => <FireRisk key={opt.id} />,
   fire_modelling:        (opt) => <FireModelling key={opt.id} />,
   lulc:                  (opt) => <LulcControls key={opt.id} />,
+  lulc_pc:               (opt) => <LulcPcControls key={opt.id} />,
   settlements_layer: (opt) => <SettlementsControls key={opt.id} />,
   spatial_bookmark_tool: (opt) => <SpatialBookmarksTool key={opt.id} />,
 };

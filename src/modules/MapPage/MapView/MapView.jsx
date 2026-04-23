@@ -32,6 +32,7 @@ import { useFireLayer } from "../hooks/useFireLayer";
 import { useMethaneLayers } from "../hooks/useMethaneLayers";
 import { useRiskLayers } from "../hooks/useRiskLayers";
 import { useLulcLayer } from "../hooks/useLulcLayer";
+import { useLulcPcLayer } from "../hooks/useLulcPcLayer";
 import { useSettlementsLayer } from "../hooks/useSettlementsLayer";
 import { useFireModelling } from "../hooks/useFireModelling.js";
 import { useEmergencyPopup } from "../hooks/useEmergencyPopup.js";
@@ -130,6 +131,7 @@ const MapView = () => {
   // Initialize risk layers
   useRiskLayers(riskMapStore.riskDates, mapInstance, isMapInitialized);
   useLulcLayer(mapInstance, isMapInitialized);
+  useLulcPcLayer(mapInstance, isMapInitialized);
   const {
     popupRef:     settlementsPopupRef,
     popupContent: settlementsPopupContent,

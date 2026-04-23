@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Eye, EyeOff, Sliders, Layers } from 'lucide-react';
+import { Eye, EyeOff, Sliders, Layers, Plus, Trash2, Info } from 'lucide-react';
 import useLulcStore from 'src/app/store/lulcStore';
 import './FireControls/fireControls.scss';
 
@@ -19,16 +19,46 @@ const LULC_CLASSES = [
 const LulcControls = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const visible      = useLulcStore((state) => state.visible);
-  const opacity      = useLulcStore((state) => state.opacity);
+  const visible       = useLulcStore((state) => state.visible);
+  const opacity       = useLulcStore((state) => state.opacity);
+  const isAdded       = useLulcStore((state) => state.isAdded);
   const toggleVisible = useLulcStore((state) => state.toggleVisible);
-  const setOpacity   = useLulcStore((state) => state.setOpacity);
+  const setOpacity    = useLulcStore((state) => state.setOpacity);
+  const addLayer      = useLulcStore((state) => state.addLayer);
+  const removeLayer   = useLulcStore((state) => state.removeLayer);
 
   const handleOpacityChange = useCallback(
     (e) => setOpacity(Number(e.target.value) / 100),
     [setOpacity]
   );
 
+  /* ── Not yet added → show "Add to map" button ─── */
+  if (!isAdded) {
+    return (
+      <div className="fire-controls">
+        <div className="fire-controls__header">
+          <div className="fire-controls__toggle" style={{ opacity: 0.6, cursor: 'default' }}>
+            <div className="fire-controls__toggle-icon">
+              <Layers size={16} className="fire-controls__icon-inactive" />
+            </div>
+            <span className="fire-controls__toggle-label" style={{ fontSize: '11px' }}>
+              ESRI Land Cover (устаревший)
+            </span>
+          </div>
+          <button
+            className="fire-controls__expand-btn"
+            onClick={addLayer}
+            title="Добавить на карту"
+            style={{ background: 'rgba(52,211,153,0.12)', borderColor: 'rgba(52,211,153,0.3)' }}
+          >
+            <Plus size={14} style={{ color: 'rgba(52,211,153,0.9)' }} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Added → full controls ─── */
   return (
     <div className="fire-controls">
       {/* Header row */}
@@ -40,8 +70,8 @@ const LulcControls = () => {
               : <EyeOff size={16} className="fire-controls__icon-inactive" />
             }
           </div>
-          <span className="fire-controls__toggle-label">
-            Использование земель (LULC)
+          <span className="fire-controls__toggle-label" style={{ fontSize: '11px' }}>
+            ESRI Land Cover (устаревший)
           </span>
           <Layers
             size={16}
@@ -49,17 +79,61 @@ const LulcControls = () => {
           />
         </div>
 
-        <button
-          className={`fire-controls__expand-btn ${isExpanded ? 'fire-controls__expand-btn--expanded' : ''}`}
-          onClick={() => setIsExpanded((v) => !v)}
-        >
-          <Sliders size={14} />
-        </button>
+        <div style={{ display: 'flex', gap: '2px' }}>
+          <button
+            className={`fire-controls__expand-btn ${isExpanded ? 'fire-controls__expand-btn--expanded' : ''}`}
+            onClick={() => setIsExpanded((v) => !v)}
+          >
+            <Sliders size={14} />
+          </button>
+          <button
+            className="fire-controls__expand-btn"
+            onClick={removeLayer}
+            title="Удалить с карты"
+            style={{ color: 'rgba(248,113,113,0.8)' }}
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
       </div>
 
       {/* Expanded panel */}
       {isExpanded && (
         <div className="fire-controls__content">
+
+          {/* Metadata */}
+          <div className="fire-controls__section">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                marginBottom: 8,
+                fontSize: '11px',
+                color: 'rgba(217,218,245,0.6)',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+              }}
+            >
+              <Info size={12} />
+              Информация о слое
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {[
+                ['Набор данных', 'ESRI Sentinel-2 Land Cover'],
+                ['Разрешение', '10 м'],
+                ['Источник', 'ArcGIS ImageServer'],
+                ['Классы', '9 классов LULC'],
+                ['Фильтрация', 'Нет (все годы)'],
+              ].map(([key, val]) => (
+                <div key={key} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px' }}>
+                  <span style={{ color: 'rgba(217,218,245,0.45)' }}>{key}</span>
+                  <span style={{ color: 'rgba(217,218,245,0.75)', fontWeight: 500, textAlign: 'right' }}>{val}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Opacity slider */}
           <div className="fire-controls__section">
@@ -124,7 +198,7 @@ const LulcControls = () => {
             </div>
 
             <div style={{ marginTop: 8, fontSize: '10px', color: 'rgba(217,218,245,0.35)' }}>
-              Источник: ESRI Sentinel-2 Land Cover (10 м)
+              Источник: ESRI Sentinel-2 Land Cover (10 м) — ArcGIS ImageServer
             </div>
           </div>
 
