@@ -1,34 +1,27 @@
 import axios from 'axios';
+import { KAZAKHSTAN_EXTENT_GEO } from '../modules/MapPage/utils/mapConstants';
 
 const PC_MOSAIC_REGISTER = 'https://planetarycomputer.microsoft.com/api/data/v1/mosaic/register';
 const COLLECTION = 'io-lulc-annual-v02';
-const COLORMAP = 'io-lulc-9-class';
 
-export async function fetchLulcTileUrl(year) {
-  const datetime = `${year}-01-01/${year + 1}-01-01`;
+const KZ_BBOX = KAZAKHSTAN_EXTENT_GEO;
 
-  // Step 1: register the mosaic search to get a searchid
+export async function fetchLulcTileUrl(yearInput) {
+  const year = Number(yearInput);
+  const datetime = `${year}-01-01T00:00:00Z/${year + 1}-01-01T00:00:00Z`;
+
   const { data: reg } = await axios.post(PC_MOSAIC_REGISTER, {
     collections: [COLLECTION],
     datetime,
+    bbox: KZ_BBOX,
   });
 
   const searchid = reg.searchid;
   if (!searchid) throw new Error(`Failed to register LULC mosaic for year ${year}`);
 
-  // Step 2: fetch tilejson using the searchid
-  const { data } = await axios.get(
-    `https://planetarycomputer.microsoft.com/api/data/v1/mosaic/${searchid}/tilejson.json`,
-    { params: { assets: 'data', colormap_name: COLORMAP, format: 'png' } }
-  );
-
-  if (!data?.tiles?.length) throw new Error(`No tile URL returned for LULC year ${year}`);
-  return data.tiles[0];
+  return `https://planetarycomputer.microsoft.com/api/data/v1/mosaic/${searchid}/tiles/WebMercatorQuad/{z}/{x}/{y}@1x.png?collection=${COLLECTION}&assets=data&exitwhenfull=False&skipcovered=False&colormap_name=io-lulc-9-class`;
 }
 
-/**
- * Available years for the io-lulc-annual-v02 collection.
- */
 export const LULC_YEARS = [2023, 2022, 2021, 2020, 2019, 2018, 2017];
 
 /**
