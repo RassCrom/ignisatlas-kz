@@ -40,7 +40,7 @@ export const useLulcLayer = (mapInstance, isMapInitialized) => {
       mapInstance.removeLayer(layerRef.current);
       layerRef.current = null;
     }
-  }, [mapInstance, isMapInitialized, isAdded]);
+  }, [mapInstance, isMapInitialized, isAdded, opacity, visible]);
 
   /* ── Sync visibility ───────────────────────────────────── */
   useEffect(() => {

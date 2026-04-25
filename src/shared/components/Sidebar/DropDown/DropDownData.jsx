@@ -250,6 +250,20 @@ export const newDD = [
     ]
   },
   {
+    id: 7,
+    key: 'layers_panel',
+    items: [
+      {
+        id: 'layers_panel_item',
+        label_ru: 'Управление слоями',
+        isExpanded: true,
+        options: [
+          { id: 'layers_panel', label: 'Layer Management' }
+        ]
+      }
+    ]
+  },
+  {
     id: 6,
     key: 'learning',
     header_ru: 'Обучение',

@@ -29,6 +29,7 @@ import FireModelling from "./Controls/FireControls/FireModelling";
 import LulcControls from "./Controls/LulcControls";
 import LulcPcControls from "./Controls/LulcPcControls";
 import SettlementsControls from "./Controls/SettlementsControls";
+import LayersPanel from "./Controls/LayersPanel";
 
 // Controls — Tools
 import SpatialBookmarksTool from "./ToolsControls/SpatialBookmarksTool";
@@ -48,6 +49,7 @@ const SELF_SUBSCRIBED = {
   lulc_pc:               (opt) => <LulcPcControls key={opt.id} />,
   settlements_layer: (opt) => <SettlementsControls key={opt.id} />,
   spatial_bookmark_tool: (opt) => <SpatialBookmarksTool key={opt.id} />,
+  layers_panel:          (opt) => <LayersPanel key={opt.id} />,
 };
 
 const DropDown = memo(({ openTabIndex }) => {

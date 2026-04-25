@@ -16,10 +16,11 @@ export const createBlanketLayer = () => {
       format: new GeoJSON(),
       // strategy: bboxStrategy, // BUG BBOX startegy causes readding the layer on the max zoom out
     }),
+    zIndex: 99999,
     overlaps: false,
     renderMode: 'vector',
     style: new Style({
-      fill: new Fill({ color: "rgba(13, 14, 14, 0.7)" }),
+      fill: new Fill({ color: "rgba(13, 14, 14, .95)" }),
     }),
   });
 };
