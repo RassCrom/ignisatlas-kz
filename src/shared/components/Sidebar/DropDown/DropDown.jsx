@@ -1,25 +1,16 @@
-import { memo, useEffect, useCallback } from "react";
+import { memo, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
-import dayjs from "dayjs";
 
-import tileList from "./emit_list.json";
 import Options from "../Options/Options";
 import { newDD } from "./DropDownData";
 
 // Store hooks
 import useFireStore from "src/app/store/fireStore";
-import useMethaneStore from "src/app/store/methaneStore";
 import useAdminBoundaryStore from "src/app/store/adminBoundaryStore";
 import { useLayersStore } from "../../../../app/store/layersStore";
 
-// Controls — Methane
-import MethaneControls from "./Controls/Methane/MethaneControls";
-import MethaneLegend from "./Controls/Methane/MethaneLegend";
-import EmitControls from "./Controls/Methane/EmitControls";
-
 // Controls — Satellite (Copernicus/OpenEO)
 import SatelliteInputForm from "./SentinelControls/SatelliteInputForm";
-import Sentinel2Controls from "./SentinelControls/Sentinel2Controls";
 import { useSatelliteData } from "./SentinelControls/useSatelliteData";
 
 // Controls — Sentinel imagery
@@ -27,6 +18,7 @@ import SentinelExplorer from "./SentinelControls/SentinelExplorer";
 import LandsatExplorer from "./SentinelControls/LandsatExplorer";
 import ModisExplorer from "./SentinelControls/ModisExplorer";
 import AtmosphereExplorer from "./SentinelControls/AtmosphereExplorer";
+import LSTExplorer from "./SentinelControls/LSTExplorer";
 
 // Controls — Fire
 import FireControls from "./Controls/FireControls/FireControls";
@@ -51,6 +43,7 @@ const SELF_SUBSCRIBED = {
   atmosphere_explorer:   (opt) => <AtmosphereExplorer key={opt.id} />,
   fire_risk:             (opt) => <FireRisk key={opt.id} />,
   fire_modelling:        (opt) => <FireModelling key={opt.id} />,
+  lst_explorer:          (opt) => <LSTExplorer key={opt.id} />,
   lulc:                  (opt) => <LulcControls key={opt.id} />,
   lulc_pc:               (opt) => <LulcPcControls key={opt.id} />,
   settlements_layer: (opt) => <SettlementsControls key={opt.id} />,
@@ -72,17 +65,6 @@ const DropDown = memo(({ openTabIndex }) => {
   } = useFireStore();
 
   const {
-    setMethaneYear, setMethaneLayerVisible, setMethaneOpacity,
-    methaneYear, methaneLayerVisible, methaneOpacity,
-    emmitLayerVisible, emmitLayerIds,
-    beginDateEmmit, endDateEmmit,
-    setEmmitLayerIds, setEmmitLayerVisible,
-    setBeginDateEmmit, setEndDateEmmit,
-    emitSn2LayerVisible, emitSn2Opacity,
-    setEmitSn2LayerVisible, setEmitSn2Opacity,
-  } = useMethaneStore();
-
-  const {
     layerVisibility, layerOpacity,
     changeFirst, changeSecond, changeThird, changeOpacity,
   } = useAdminBoundaryStore();
@@ -90,21 +72,6 @@ const DropDown = memo(({ openTabIndex }) => {
   const { layers, updateLayer, changeVisibility } = useLayersStore();
 
   const satelliteHookData = useSatelliteData();
-
-  /* ── EMIT tile filter by date range ─────────────────────── */
-  useEffect(() => {
-    if (!beginDateEmmit || !endDateEmmit) return;
-    const matchingIds = tileList
-      .filter(({ date }) => {
-        const d = dayjs(date);
-        return (
-          d.isAfter(dayjs(beginDateEmmit).subtract(1, "day")) &&
-          d.isBefore(dayjs(endDateEmmit).add(1, "day"))
-        );
-      })
-      .map(({ full_string }) => full_string);
-    setEmmitLayerIds(matchingIds);
-  }, [beginDateEmmit, endDateEmmit, setEmmitLayerIds]);
 
   /* ── Opacity helpers ─────────────────────────────────────── */
   const getOpacityValue = useCallback(
@@ -156,44 +123,6 @@ const DropDown = memo(({ openTabIndex }) => {
         case "copernicus_image":
           return <SatelliteInputForm key={option.id} {...satelliteHookData} />;
 
-        case "sp":
-          return (
-            <MethaneControls
-              key={option.id}
-              methaneLayerVisible={methaneLayerVisible}
-              setMethaneLayerVisible={setMethaneLayerVisible}
-              methaneYear={methaneYear}
-              setMethaneYear={setMethaneYear}
-              methaneOpacity={methaneOpacity}
-              setMethaneOpacity={setMethaneOpacity}
-            />
-          );
-
-        case "sp_sn2":
-          return (
-            <Sentinel2Controls
-              key={option.id}
-              emitSn2LayerVisible={emitSn2LayerVisible}
-              setEmitSn2LayerVisible={setEmitSn2LayerVisible}
-              emitSn2Opacity={emitSn2Opacity}
-              setEmitSn2Opacity={setEmitSn2Opacity}
-            />
-          );
-
-        case "sp_instances":
-          return (
-            <EmitControls
-              key={option.id}
-              emmitLayerVisible={emmitLayerVisible}
-              setEmmitLayerVisible={setEmmitLayerVisible}
-              beginDateEmmit={beginDateEmmit}
-              endDateEmmit={endDateEmmit}
-              setBeginDateEmmit={setBeginDateEmmit}
-              setEndDateEmmit={setEndDateEmmit}
-              emmitLayerIds={emmitLayerIds}
-            />
-          );
-
         case "fire_pinpoints":
           return (
             <FireControls
@@ -233,11 +162,6 @@ const DropDown = memo(({ openTabIndex }) => {
     },
     [
       satelliteHookData,
-      methaneLayerVisible, setMethaneLayerVisible, methaneYear, setMethaneYear,
-      methaneOpacity, setMethaneOpacity,
-      emitSn2LayerVisible, setEmitSn2LayerVisible, emitSn2Opacity, setEmitSn2Opacity,
-      emmitLayerVisible, setEmmitLayerVisible,
-      beginDateEmmit, endDateEmmit, setBeginDateEmmit, setEndDateEmmit, emmitLayerIds,
       fireLayerVisible, setFireLayerVisible, fireOpacity, setFireOpacity,
       fireIntensityFilter, setFireIntensityFilter,
       fireStartDate, fireEndDate, setFireStartDate, setFireEndDate,
@@ -255,11 +179,6 @@ const DropDown = memo(({ openTabIndex }) => {
 
   return (
     <div className={styles.dropdown}>
-      <MethaneLegend
-        methaneLayerVisible={methaneLayerVisible}
-        emitSn2LayerVisible={emitSn2LayerVisible}
-        emmitLayerVisible={emmitLayerVisible}
-      />
 
       {currentSection.items.map((item) => (
         <div key={item.id} className={styles.dropdown__item}>

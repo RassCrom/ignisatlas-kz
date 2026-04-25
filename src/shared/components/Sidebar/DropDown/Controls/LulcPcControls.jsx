@@ -41,7 +41,6 @@ const LulcPcControls = () => {
     [isAdded, switchYear, setYear]
   );
 
-  /* ── Not yet added → year selector + add button ─── */
   if (!isAdded) {
     return (
       <div className="fire-controls">
@@ -125,7 +124,6 @@ const LulcPcControls = () => {
     );
   }
 
-  /* ── Added → full management panel ─── */
   return (
     <div className="fire-controls">
       {/* Header */}

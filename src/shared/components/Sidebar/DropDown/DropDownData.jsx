@@ -1,35 +1,5 @@
 export const newDD = [
   {
-    id: 0,
-    key: 'methane',
-    items: [
-      {
-        id: 'methane_main',
-        label_ru: 'Area Flux Mappers',
-        options: [
-          {
-            id: 'sp',
-            label: 'Super Emitters 2019',
-          },
-        ]
-      },
-      {
-        id: 'methane_instances',
-        label_ru: 'Point source imagers',
-        options: [
-          {
-            id: 'sp_sn2',
-            label: 'Super Emitters 2019',
-          },
-          {
-            id: 'sp_instances',
-            label: 'Super Emitters 2019',
-          },
-        ]
-      }
-    ]
-  },
-  {
     "id": 1,
     "key": "add_layers",
     "items": [
@@ -160,6 +130,11 @@ export const newDD = [
             "id": "fire_modelling",
             "label": "Карта моделирования пожаров",
             "description": "Результаты математического моделирования распространения пожаров с учётом погодных условий и ландшафта."
+          },
+          {
+            "id": "lst_explorer",
+            "label": "Температура поверхности (LST)",
+            "description": "Температура поверхности земли (MODIS 11A1/11A2 и Landsat 8/9) через Planetary Computer. Дневные/ночные снимки в °C."
           }
         ]
       }
@@ -171,7 +146,7 @@ export const newDD = [
     "items": [
       {
         "id": "satellite",
-        "label_ru": "Satellite images",
+        "label_ru": "Sentinel mission",
         "isExpanded": true,
         "options": [
           {
@@ -183,7 +158,7 @@ export const newDD = [
       },
       {
         "id": "landsat_archive",
-        "label_ru": "Landsat Archive",
+        "label_ru": "Landsat mission",
         "isExpanded": false,
         "options": [
           {
@@ -195,7 +170,7 @@ export const newDD = [
       },
       {
         "id": "modis_archive",
-        "label_ru": "MODIS Active Fire",
+        "label_ru": "MODIS mission",
         "isExpanded": false,
         "options": [
           {

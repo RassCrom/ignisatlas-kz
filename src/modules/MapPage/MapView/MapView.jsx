@@ -20,7 +20,6 @@ import { osmLayer } from "../utils/basemaps.js";
 import useFireStore from "src/app/store/fireStore";
 import useAdminBoundaryStore from "src/app/store/adminBoundaryStore.js";
 
-import useMethaneStore from "src/app/store/methaneStore";
 import useRiskMapStore from "src/app/store/riskMapStore.js";
 import useFireModellingStore from "src/app/store/fireModellingStore.js";
 import { useLayersStore } from "src/app/store/layersStore.js";
@@ -29,7 +28,6 @@ import useMapStore from "src/app/store/mapStore.js";
 import { useMapInitialization } from "../hooks/useMapInitialization";
 import { useFireLayer } from "../hooks/useFireLayer";
 
-import { useMethaneLayers } from "../hooks/useMethaneLayers";
 import { useRiskLayers } from "../hooks/useRiskLayers";
 import { useLulcLayer } from "../hooks/useLulcLayer";
 import { useLulcPcLayer } from "../hooks/useLulcPcLayer";
@@ -55,14 +53,12 @@ const MapView = () => {
   // Store hooks
   const fireStore = useFireStore();
   const adminBoundaryStore = useAdminBoundaryStore();
-  const methaneStore = useMethaneStore();
 
   const riskMapStore = useRiskMapStore();
   const { layers } = useLayersStore();
 
   // Custom hooks
   const { fireLayer, loadFireData } = useFireLayer(fireStore);
-  const methaneLayers = useMethaneLayers(methaneStore);
   const mapStore = useMapStore();
   const fireModellingStore = useFireModellingStore();
 
@@ -92,10 +88,6 @@ const MapView = () => {
     adminBoundaries.country,
     adminBoundaries.region,
     adminBoundaries.district,
-    methaneLayers.tiffLayer,
-    methaneLayers.emitJsonLayer,
-    ...methaneLayers.emitLayers,
-    methaneLayers.sn2Layer,
     blanket,
     ...emergencyLayers,
   ];
@@ -246,22 +238,10 @@ const MapView = () => {
     mapInstance.showPopup = showPopup;
     mapInstance.closePopup = closePopup;
 
-    const handleClick = (event) => {
-      mapInstance.forEachFeatureAtPixel(event.pixel, (feature, layer) => {
-        if (layer === methaneLayers.emitJsonLayer) {
-          setSelectedFeature(feature.getProperties());
-          setIsModalVisible(true);
-          return true;
-        }
-      });
-    };
-
-    mapInstance.on("click", handleClick);
 
     return () => {
-      mapInstance.un("click", handleClick);
     };
-  }, [mapInstance, showPopup, closePopup, methaneLayers.emitJsonLayer]);
+  }, [mapInstance, showPopup, closePopup]);
 
   return (
     <div id="fullscreen" className={styles.fullscreen}>
