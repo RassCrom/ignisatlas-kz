@@ -15,6 +15,7 @@ import { useSatelliteData } from "./SentinelControls/useSatelliteData";
 
 // Controls — Sentinel imagery
 import SentinelExplorer from "./SentinelControls/SentinelExplorer";
+import SentinelExplorerOld from "./SentinelControls/SentinelExplorerOld";
 import LandsatExplorer from "./SentinelControls/LandsatExplorer";
 import ModisExplorer from "./SentinelControls/ModisExplorer";
 import AtmosphereExplorer from "./SentinelControls/AtmosphereExplorer";
@@ -39,6 +40,7 @@ import styles from "./DropDown.module.scss";
 /* ── Self-subscribed controls (need no props from DropDown) ── */
 const SELF_SUBSCRIBED = {
   sentinel_explorer:     (opt) => <SentinelExplorer key={opt.id} />,
+  sentinel_explorer_old: (opt) => <SentinelExplorerOld key={opt.id} />,
   landsat_explorer:      (opt) => <LandsatExplorer key={opt.id} />,
   modis_explorer:        (opt) => <ModisExplorer key={opt.id} />,
   atmosphere_explorer:   (opt) => <AtmosphereExplorer key={opt.id} />,

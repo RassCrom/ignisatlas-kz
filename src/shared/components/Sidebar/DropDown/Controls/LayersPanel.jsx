@@ -11,6 +11,7 @@ import useRiskMapStore from 'src/app/store/riskMapStore';
 import useFireModellingStore from 'src/app/store/fireModellingStore';
 import useLandsatExplorerStore from 'src/app/store/landsatExplorerStore';
 import useSentinelExplorerStore from 'src/app/store/sentinelExplorerStore';
+import useSentinelExplorerOldStore from 'src/app/store/sentinelExplorerOldStore';
 import useModisExplorerStore from 'src/app/store/modisExplorerStore';
 import useAtmosphereStore from 'src/app/store/atmosphereStore';
 import useLstStore from 'src/app/store/lstStore';
@@ -18,7 +19,6 @@ import useLstStore from 'src/app/store/lstStore';
 import './FireControls/fireControls.scss';
 import './LayersPanel.scss';
 
-// Find an OL layer by its id metadata and apply visibility / opacity changes.
 // Used only for explorer tile layers that have no reactive MapView hook.
 function syncOlLayer(id, visible, opacity01) {
   if (!window.mapInstance) return;
@@ -79,7 +79,7 @@ const LayersPanel = () => {
   const changeThird = useAdminBoundaryStore((s) => s.changeThird);
   const changeAdminOpacity = useAdminBoundaryStore((s) => s.changeOpacity);
 
-  // Emergency / KCHS vector layers (no opacity in store — synced directly to OL)
+  // Emergency / KCHS vector layers
   const kchsLayers = useLayersStore((s) => s.layers);
   const updateKchs = useLayersStore((s) => s.updateLayer);
   const changeKchsVis = useLayersStore((s) => s.changeVisibility);
@@ -130,6 +130,10 @@ const LayersPanel = () => {
   const toggleSentinel = useSentinelExplorerStore((s) => s.toggleLayerVisibility);
   const updateSentinelOpa = useSentinelExplorerStore((s) => s.updateLayerOpacity);
 
+  const sentinelOldLayers = useSentinelExplorerOldStore((s) => s.activeLayers);
+  const toggleSentinelOld = useSentinelExplorerOldStore((s) => s.toggleLayerVisibility);
+  const updateSentinelOldOpa = useSentinelExplorerOldStore((s) => s.updateLayerOpacity);
+
   const modisLayers = useModisExplorerStore((s) => s.activeLayers);
   const toggleModis = useModisExplorerStore((s) => s.toggleLayerVisibility);
   const updateModisOpa = useModisExplorerStore((s) => s.updateLayerOpacity);
@@ -165,18 +169,18 @@ const LayersPanel = () => {
     (lulcAdded && lulcVisible ? 1 : 0) +
     riskDates.filter((r) => r.isVisible).length +
     Object.values(fmLayers).filter((l) => l.visible ?? true).length +
-    [landsatLayers, sentinelLayers, modisLayers, atmosphereLayers, lstLayers]
+    [landsatLayers, sentinelLayers, sentinelOldLayers, modisLayers, atmosphereLayers, lstLayers]
       .reduce((sum, arr) => sum + arr.filter((l) => l.visible).length, 0);
 
   const hasDynamicLayers =
     lulcPcAdded || lulcAdded ||
     riskDates.length > 0 ||
     Object.keys(fmLayers).length > 0 ||
-    landsatLayers.length > 0 || sentinelLayers.length > 0 ||
+    landsatLayers.length > 0 || sentinelLayers.length > 0 || sentinelOldLayers.length > 0 ||
     modisLayers.length > 0 || atmosphereLayers.length > 0 || lstLayers.length > 0;
 
   const hasExplorerLayers =
-    landsatLayers.length > 0 || sentinelLayers.length > 0 ||
+    landsatLayers.length > 0 || sentinelLayers.length > 0 || sentinelOldLayers.length > 0 ||
     modisLayers.length > 0 || atmosphereLayers.length > 0 || lstLayers.length > 0;
 
   const fmt = (iso) => (iso ? iso.slice(0, 10) : '—');
@@ -364,6 +368,26 @@ const LayersPanel = () => {
                 />
               );
             })}
+
+            {sentinelOldLayers.map((layer) => (
+              <LayerRow
+                key={layer.id}
+                name={`Sentinel Legacy — ${fmt(layer.acquisitionDate)}`}
+                type="raster"
+                provider="Copernicus / Sentinel Hub"
+                visible={layer.visible}
+                opacity01={layer.opacity ?? 0.8}
+                onToggle={() => {
+                  const next = !layer.visible;
+                  toggleSentinelOld(layer.id);
+                  syncOlLayer(layer.id, next, undefined);
+                }}
+                onOpacity={(v01) => {
+                  updateSentinelOldOpa(layer.id, v01);
+                  syncOlLayer(layer.id, undefined, v01);
+                }}
+              />
+            ))}
 
             {modisLayers.map((layer) => {
               const { onToggle, onOpacity } = makeExplorerHandlers(layer, toggleModis, updateModisOpa);

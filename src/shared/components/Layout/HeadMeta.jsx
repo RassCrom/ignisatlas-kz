@@ -1,13 +1,13 @@
 import { Helmet } from "react-helmet-async";
 
 const HeadMeta = () => {
-  const baseUrl = "http://localhost:5174/"
+  const baseUrl = "https://ignisatlas-kz.netlify.app/"
   const logoExtens = "logo.webp";
   const logoUrl = `${baseUrl}${logoExtens}`;
 
   return (
     <Helmet>
-      <title>Real-Time Fire Monitoring in Kazakhstan | fires.kz</title>
+      <title>Fire Monitoring in Kazakhstan | ignisatlas</title>
       <link rel="canonical" href={baseUrl} />
       <meta name="description" content="Track, analyze and monitor wildfires in Kazakhstan in real-time using OpenLayers GIS technology. Stay updated with live fire data and explore archive data." />
       <meta name="keywords" content="Kazakhstan, wildfires, fire monitoring, GIS, real-time data, geoportal, OpenLayers, analysis, archive data" />
@@ -41,7 +41,7 @@ const HeadMeta = () => {
           "spatialCoverage": "Kazakhstan",
           "creator": {
             "@type": "Organization",
-            "name": "fires.kz",
+            "name": "https://ignisatlas-kz.netlify.app/",
             "url": {baseUrl}
           }
         })}

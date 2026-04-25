@@ -1,20 +1,13 @@
 import { create } from 'zustand';
 
-// Default band preset per mission (drives the band dropdown reset on mission change)
-const MISSION_DEFAULT_BAND = {
-  'sentinel-1':  'vv',
-  'sentinel-2':  'true-color',
-  'sentinel-3':  'OLCI-TRUE',
-  'sentinel-5p': 'no2',
-  'all':         'true-color',
-};
-
-const useSentinelExplorerStore = create((set, get) => ({
+const useSentinelExplorerOldStore = create((set, get) => ({
   // ── Mission & Filter State ───────────────────────────────
   selectedMission: 'sentinel-2',
   startDate: '',
   endDate: '',
   cloudCoverage: 30,
+  productType: '',
+  orbitDirection: '',
   selectedBands: 'true-color',
 
   // ── Search Results ───────────────────────────────────────
@@ -41,13 +34,12 @@ const useSentinelExplorerStore = create((set, get) => ({
 
   // ═══ Actions ═════════════════════════════════════════════
 
-  setSelectedMission: (mission) => set({
-    selectedMission: mission,
-    selectedBands: MISSION_DEFAULT_BAND[mission] || 'true-color',
-  }),
+  setSelectedMission: (mission) => set({ selectedMission: mission }),
   setStartDate: (date) => set({ startDate: date }),
   setEndDate: (date) => set({ endDate: date }),
   setCloudCoverage: (value) => set({ cloudCoverage: value }),
+  setProductType: (type) => set({ productType: type }),
+  setOrbitDirection: (dir) => set({ orbitDirection: dir }),
   setSelectedBands: (bands) => set({ selectedBands: bands }),
 
   setSearchResults: (results, total) => set({
@@ -103,4 +95,4 @@ const useSentinelExplorerStore = create((set, get) => ({
   setActiveTab: (tab) => set({ activeTab: tab, error: null }),
 }));
 
-export default useSentinelExplorerStore;
+export default useSentinelExplorerOldStore;

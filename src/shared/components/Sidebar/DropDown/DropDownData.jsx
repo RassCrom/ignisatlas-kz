@@ -153,6 +153,11 @@ export const newDD = [
             "id": "sentinel_explorer",
             "label": "Sentinel Explorer",
             "description": "Единая панель поиска и визуализации спутниковых данных Sentinel-1, -2, -3 и -5P. Поиск по области, дате и облачности."
+          },
+          {
+            "id": "sentinel_explorer_old",
+            "label": "Sentinel Explorer (Legacy CDSE)",
+            "description": "Устаревшая панель Sentinel на основе Copernicus Data Space (CDSE) и Sentinel Hub WMS."
           }
         ]
       },
