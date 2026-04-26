@@ -14,7 +14,7 @@ import {
   createAdminBoundary,
   createBlanketLayer,
   createEmergencyLayers,
-} from "../utils/layers.js";
+} from "../utils/layers.jsx";
 import { osmLayer } from "../utils/basemaps.js";
 
 import useFireStore from "src/app/store/fireStore";

@@ -322,7 +322,7 @@
 .fire-popup-header .fire-icon {
     font-size: 1rem;
     margin-right: 5px;
-    animation: fire-icon-floating 1.8s linear infinite;
+    // animation: fire-icon-floating 1.8s linear infinite;
 }
 
 .fire-popup-content {
@@ -480,7 +480,8 @@
     flex: 1;
     min-width: 0;
     display: flex;
-    flex-direction: column;
+    // flex-direction: column;
+    align-items: center;
     gap: 1px;
 }
 

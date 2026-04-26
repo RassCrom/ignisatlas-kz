@@ -40,15 +40,15 @@ const SettlementsPopup = ({ popupRef, content, onClose }) => (
             className="fire-popup-header"
             style={{ background: `linear-gradient(135deg, ${gradient})` }}
           >
-            <span className="fire-icon">{icon}</span>
+            
             <div className="fp-header-info">
-              <span className="fp-title">{typeLabel}</span>
+              <span className="fire-icon">{icon}</span>
+              <span style={{ marginTop: '2px'}}>{name || 'N/A'}</span>
             </div>
           </div>
 
           <div className="fp-date-chip">
-            <span>🏙</span>
-            <span>{name || 'N/A'}</span>
+              <span className="fp-title">{typeLabel}</span>
           </div>
 
           <div className="fire-popup-content">

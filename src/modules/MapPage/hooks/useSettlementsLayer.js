@@ -10,41 +10,70 @@ import Stroke from 'ol/style/Stroke';
 import Overlay from 'ol/Overlay';
 import useSettlementsStore from 'src/app/store/settlementsStore';
 
-const FCLASS_STYLE_CONFIG = {
-  national_capital: { color: '#FFD700', stroke: '#b8860b', radius: 12, star: true },
-  city:             { color: '#3b82f6', stroke: '#1d4ed8', radius: 9 },
-  town:             { color: '#8b5cf6', stroke: '#6d28d9', radius: 7 },
-  village:          { color: '#22c55e', stroke: '#15803d', radius: 5 },
-  suburb:           { color: '#94a3b8', stroke: '#64748b', radius: 3.5 },
-};
-
 const STYLE_CACHE = {};
 
-const getFeatureStyle = (fclass) => {
-  if (STYLE_CACHE[fclass]) return STYLE_CACHE[fclass];
-
-  const cfg = FCLASS_STYLE_CONFIG[fclass] || FCLASS_STYLE_CONFIG.suburb;
-  let image;
-
-  if (cfg.star) {
-    image = new RegularShape({
-      fill: new Fill({ color: cfg.color }),
-      stroke: new Stroke({ color: cfg.stroke, width: 1.5 }),
-      points: 5,
-      radius: cfg.radius,
-      radius2: cfg.radius * 0.4,
-      angle: 0,
-    });
-  } else {
-    image = new CircleStyle({
-      fill: new Fill({ color: cfg.color }),
-      stroke: new Stroke({ color: cfg.stroke, width: 1.5 }),
-      radius: cfg.radius,
-    });
+const getThemeByBasemap = (basemapStyle) => {
+  if (basemapStyle === 'google-satellite') {
+    return {
+      fill: '#f0f0f0',
+      stroke: '#ffffff',
+      capitalFill: '#ffffff',
+      capitalStroke: '#d4d4d4',
+      opacity: 0.9,
+    };
   }
 
-  STYLE_CACHE[fclass] = new Style({ image });
-  return STYLE_CACHE[fclass];
+  return {
+    fill: '#0a0a0a',
+    stroke: '#ffffff',
+    capitalFill: '#0a0a0a',
+    capitalStroke: '#ffffff',
+    opacity: 0.85,
+  };
+};
+
+const FCLASS_STYLE_CONFIG = {
+  national_capital: { radius: 8, star: true },
+  city:             { radius: 5.5 },
+  town:             { radius: 4.5 },
+  village:          { radius: 3.5 },
+  suburb:           { radius: 2.5 },
+};
+
+const getFeatureStyle = (fclass, basemapStyle = 'osm') => {
+  const cacheKey = `${fclass}-${basemapStyle}`;
+  if (STYLE_CACHE[cacheKey]) return STYLE_CACHE[cacheKey];
+
+  const cfg = FCLASS_STYLE_CONFIG[fclass] || FCLASS_STYLE_CONFIG.suburb;
+  const theme = getThemeByBasemap(basemapStyle);
+
+  const fillColor =
+    fclass === 'national_capital'
+      ? theme.capitalFill
+      : theme.fill;
+
+  const strokeColor =
+    fclass === 'national_capital'
+      ? theme.capitalStroke
+      : theme.stroke;
+
+  const image = cfg.star
+    ? new RegularShape({
+        fill: new Fill({ color: fillColor }),
+        stroke: new Stroke({ color: strokeColor, width: 1.4 }),
+        points: 5,
+        radius: cfg.radius,
+        radius2: cfg.radius * 0.45,
+        angle: 0,
+      })
+    : new CircleStyle({
+        fill: new Fill({ color: fillColor }),
+        stroke: new Stroke({ color: strokeColor, width: 1.2 }),
+        radius: cfg.radius,
+      });
+
+  STYLE_CACHE[cacheKey] = new Style({ image });
+  return STYLE_CACHE[cacheKey];
 };
 
 export const useSettlementsLayer = (mapInstance, isMapInitialized) => {
@@ -132,11 +161,14 @@ export const useSettlementsLayer = (mapInstance, isMapInitialized) => {
 
     const handlePointerMove = (evt) => {
       if (evt.dragging) return;
-      const pixel = mapInstance.getEventPixel(evt.originalEvent);
-      const hit   = mapInstance.hasFeatureAtPixel(pixel, { layerFilter: isSettlementsLayer });
-      if (hit) mapInstance.getTargetElement().style.cursor = 'pointer';
-    };
 
+      const pixel = mapInstance.getEventPixel(evt.originalEvent);
+      const hit = mapInstance.hasFeatureAtPixel(pixel, {
+        layerFilter: isSettlementsLayer,
+      });
+
+      mapInstance.getTargetElement().style.cursor = hit ? 'pointer' : '';
+    };
     mapInstance.on('click', handleClick);
     mapInstance.on('pointermove', handlePointerMove);
 

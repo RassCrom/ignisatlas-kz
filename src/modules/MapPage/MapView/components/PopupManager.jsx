@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from "react";
 import Overlay from "ol/Overlay";
-import * as turf from '@turf/turf';
+import { area } from '@turf/turf';
 import useMapStore from "../../../../app/store/mapStore";
 import useFireModellingStore from 'src/app/store/fireModellingStore';
 
@@ -76,7 +76,7 @@ const callFireModelAPI = async (fireImageId) => {
     return {
       ...data,
       features: data.features.map((feature) => {
-        const areaSqM = turf.area(feature);
+        const areaSqM = area(feature);
         return {
           ...feature,
           type: "Feature",
