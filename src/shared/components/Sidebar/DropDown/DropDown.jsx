@@ -33,7 +33,14 @@ import SettlementsControls from "./Controls/SettlementsControls";
 import LayersPanel from "./Controls/LayersPanel";
 
 // Controls — Tools
-import SpatialBookmarksTool from "./ToolsControls/SpatialBookmarksTool";
+import SpatialBookmarksTool  from "./ToolsControls/SpatialBookmarksTool";
+import HomeExtentTool        from "./ToolsControls/HomeExtentTool";
+import CoordinateSearchTool  from "./ToolsControls/CoordinateSearchTool";
+import GoToRegionTool        from "./ToolsControls/GoToRegionTool";
+import GeolocateUserTool     from "./ToolsControls/GeolocateUserTool";
+import ClimateZonesControls from "./Controls/ClimateZonesControls";
+import ProtectedAreasControls from "./Controls/ProtectedAreasControls";
+import PeatlandsControls from "./Controls/PeatlandsControls";
 
 import styles from "./DropDown.module.scss";
 
@@ -50,8 +57,15 @@ const SELF_SUBSCRIBED = {
   lulc:                  (opt) => <LulcControls key={opt.id} />,
   lulc_pc:               (opt) => <LulcPcControls key={opt.id} />,
   settlements_layer: (opt) => <SettlementsControls key={opt.id} />,
-  spatial_bookmark_tool: (opt) => <SpatialBookmarksTool key={opt.id} />,
-  layers_panel:          (opt) => <LayersPanel key={opt.id} />,
+  spatial_bookmark_tool:       (opt) => <SpatialBookmarksTool key={opt.id} />,
+  home_extent:                 (opt) => <HomeExtentTool key={opt.id} />,
+  coordinate_search:           (opt) => <CoordinateSearchTool key={opt.id} />,
+  go_to_region:                (opt) => <GoToRegionTool key={opt.id} />,
+  geolocate_user:              (opt) => <GeolocateUserTool key={opt.id} />,
+  layers_panel:                (opt) => <LayersPanel key={opt.id} />,
+  climate_zones:               (opt) => <ClimateZonesControls key={opt.id} />,
+  protected_area_boundaries:   (opt) => <ProtectedAreasControls key={opt.id} />,
+  peatlands:                   (opt) => <PeatlandsControls key={opt.id} option={opt} />,
 };
 
 const DropDown = memo(({ openTabIndex }) => {
@@ -124,8 +138,8 @@ const DropDown = memo(({ openTabIndex }) => {
 
       // Prop-dependent controls
       switch (option.id) {
-        case "copernicus_image":
-          return <SatelliteInputForm key={option.id} {...satelliteHookData} />;
+        // case "copernicus_image":
+        //   return <SatelliteInputForm key={option.id} {...satelliteHookData} />;
 
         case "fire_pinpoints":
           return (

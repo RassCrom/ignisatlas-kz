@@ -37,6 +37,12 @@ import { useEmergencyPopup } from "../hooks/useEmergencyPopup.js";
 import { useAoiDraw } from "../hooks/useAoiDraw.js";
 import { useFootprintPreview } from "../hooks/useFootprintPreview.js";
 import { useBookmarksLayer } from "../hooks/useBookmarksLayer.js";
+import { useClimateZonesLayer } from "../hooks/useClimateZonesLayer.js";
+import { useProtectedAreasLayer } from "../hooks/useProtectedAreasLayer.js";
+import { usePeatlandsLayer } from "../hooks/usePeatlandsLayer.js";
+import ClimateZonesPopup from "./components/ClimateZonesPopup.jsx";
+import ProtectedAreasPopup from "./components/ProtectedAreasPopup.jsx";
+import PeatlandsPopup from "./components/PeatlandsPopup.jsx";
 
 import "ol/ol.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -143,6 +149,27 @@ const MapView = () => {
 
   // Initialize Spatial Bookmarks markers
   useBookmarksLayer(mapInstance, isMapInitialized);
+
+  // Climate zones layer
+  const {
+    popupRef:     czPopupRef,
+    popupContent: czPopupContent,
+    closePopup:   closeCzPopup,
+  } = useClimateZonesLayer(mapInstance, isMapInitialized);
+
+  // Protected areas layer
+  const {
+    popupRef:     paPopupRef,
+    popupContent: paPopupContent,
+    closePopup:   closePaPopup,
+  } = useProtectedAreasLayer(mapInstance, isMapInitialized);
+
+  // Peatlands layer
+  const {
+    popupRef:     peatPopupRef,
+    popupContent: peatPopupContent,
+    closePopup:   closePeatPopup,
+  } = usePeatlandsLayer(mapInstance, isMapInitialized);
 
   // Emergency layers popup
   const {
@@ -346,6 +373,24 @@ const MapView = () => {
           popupRef={settlementsPopupRef}
           content={settlementsPopupContent}
           onClose={closeSettlementsPopup}
+        />
+
+        <ClimateZonesPopup
+          popupRef={czPopupRef}
+          content={czPopupContent}
+          onClose={closeCzPopup}
+        />
+
+        <ProtectedAreasPopup
+          popupRef={paPopupRef}
+          content={paPopupContent}
+          onClose={closePaPopup}
+        />
+
+        <PeatlandsPopup
+          popupRef={peatPopupRef}
+          content={peatPopupContent}
+          onClose={closePeatPopup}
         />
 
         {weatherCoordinate && (

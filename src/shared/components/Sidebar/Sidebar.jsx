@@ -6,10 +6,10 @@ import styles from "./Sidebar.module.scss";
 
 const TABS = [
   { id: 1, icon: PencilRuler, tooltip: "Слои" },
-  { id: 2, icon: Flame,       tooltip: "Мониторинг пожаров" },
+  { id: 2, icon: Flame,       tooltip: "Мониторинг природных явлений" },
   { id: 3, icon: Satellite,   tooltip: "Космические снимки" },
   { id: 4, icon: Wrench,      tooltip: "Инструменты" },
-  { id: 7, icon: Layers,      tooltip: "Layer Management" },
+  { id: 7, icon: Layers,      tooltip: "Управление слоями" },
 ];
 
 const Sidebar = memo(() => {

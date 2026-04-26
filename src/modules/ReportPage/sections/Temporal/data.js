@@ -19,3 +19,18 @@ export const seasonData = [
   { season: "Лето", modis: 397965, color: "#f97316" },
   { season: "Осень", modis: 327260, color: "#a78bfa" },
 ];
+
+export const monthlyData = [
+  { month: "Янв", modis: 1423, color: "#60a5fa" },
+  { month: "Фев", modis: 2108, color: "#60a5fa" },
+  { month: "Мар", modis: 44152, color: "#34d399" },
+  { month: "Апр", modis: 198764, color: "#34d399" },
+  { month: "Май", modis: 148421, color: "#34d399" },
+  { month: "Июн", modis: 89304, color: "#f97316" },
+  { month: "Июл", modis: 176438, color: "#f97316" },
+  { month: "Авг", modis: 132223, color: "#f97316" },
+  { month: "Сен", modis: 198741, color: "#a78bfa" },
+  { month: "Окт", modis: 95612, color: "#a78bfa" },
+  { month: "Ноя", modis: 32907, color: "#a78bfa" },
+  { month: "Дек", modis: 2044, color: "#60a5fa" },
+];

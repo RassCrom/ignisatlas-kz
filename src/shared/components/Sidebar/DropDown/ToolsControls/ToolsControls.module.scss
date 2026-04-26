@@ -260,3 +260,65 @@
     }
   }
 }
+
+.select {
+  padding: 0.45rem 0.5rem;
+  border: 1px solid rgba(136, 139, 224, 0.15);
+  border-radius: 0.4rem;
+  background: rgba(9, 10, 36, 0.6);
+  color: rgba(217, 218, 245, 0.9);
+  font-size: 0.75rem;
+  transition: all 0.2s;
+  color-scheme: dark;
+  width: 100%;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(136, 139, 224, 0.4);
+  }
+
+  option {
+    background: #0a0b24;
+    color: rgba(217, 218, 245, 0.9);
+  }
+}
+
+.statusMsg {
+  font-size: 0.7rem;
+  margin-top: 0.2rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.35rem;
+  line-height: 1.4;
+}
+
+.statusError {
+  color: rgba(248, 113, 113, 0.9);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.statusSuccess {
+  color: rgba(52, 211, 153, 0.9);
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+}
+
+.toolDesc {
+  font-size: 0.7rem;
+  color: rgba(217, 218, 245, 0.4);
+  line-height: 1.45;
+  margin: 0 0 0.25rem;
+}
+
+.zoomRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zoomSlider {
+  flex: 1;
+  accent-color: rgba(136, 139, 224, 0.8);
+  cursor: pointer;
+}
