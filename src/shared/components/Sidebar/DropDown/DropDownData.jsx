@@ -59,19 +59,19 @@ export const newDD = [
       },      
       {
         "id": "terrain",
-        "label_ru": "Рельеф (слои не готовы)",
+        "label_ru": "Рельеф",
         "options": [
           {
             "id": "dem_pc",
             "label": "Copernicus DEM GLO-30",
             "label_ru": "Copernicus DEM GLO-30 (30м)",
-            "description": "",
+            "description": "DSM-based digital elevation model at 30 m resolution derived from TanDEM-X radar data. Covers Kazakhstan with terrain-tint, earth-tones, or grayscale rendering via Microsoft Planetary Computer.",
             "layerType": "Raster",
-            "source": "ESRI / Microsoft Planetary Computer",
+            "source": "ESA / TanDEM-X — Microsoft Planetary Computer",
             "isTemporal": false,
             "isDownloadable": false,
             "tags": ["dem", "dsm", "TanDEM-X", "Copernicus"],
-            "status": "not active"
+            "status": "active"
           },
           {
             "id": "hillshade",

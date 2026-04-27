@@ -29,6 +29,7 @@ import FireModelling from "./Controls/FireControls/FireModelling";
 // Controls — Layers
 import LulcControls from "./Controls/LulcControls";
 import LulcPcControls from "./Controls/LulcPcControls";
+import DemControls from "./Controls/DemControls";
 import SettlementsControls from "./Controls/SettlementsControls";
 import LayersPanel from "./Controls/LayersPanel";
 
@@ -56,6 +57,7 @@ const SELF_SUBSCRIBED = {
   lst_explorer:          (opt) => <LSTExplorer key={opt.id} />,
   lulc:                  (opt) => <LulcControls key={opt.id} />,
   lulc_pc:               (opt) => <LulcPcControls key={opt.id} />,
+  dem_pc:                (opt) => <DemControls key={opt.id} />,
   settlements_layer: (opt) => <SettlementsControls key={opt.id} />,
   spatial_bookmark_tool:       (opt) => <SpatialBookmarksTool key={opt.id} />,
   home_extent:                 (opt) => <HomeExtentTool key={opt.id} />,
