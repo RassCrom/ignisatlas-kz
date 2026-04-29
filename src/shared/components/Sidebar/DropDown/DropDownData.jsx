@@ -169,18 +169,6 @@ export const newDD = [
         "id": "soils",
         "label_ru": "Почвы",
         "options": [
-          {
-            "id": "peatlands",
-            "label": "Peatlands",
-            "label_ru": "Торфяники",
-            "description": "Слой торфяных почв Казахстана: полигоны с преобладанием торфа (DN=1) и торф в мозаике почв (DN=2). 1 188 полигонов.",
-            "layerType": "Polygon",
-            "source": "IIASA / GlobCover",
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["soils", "peatlands", "carbon"],
-            "status": "active"
-          }
         ]
       },
       {
@@ -197,6 +185,19 @@ export const newDD = [
             "isTemporal": true,
             "isDownloadable": false,
             "tags": ["lulc", "land-cover", "sentinel-2"],
+            "status": "active"
+          },
+          
+          {
+            "id": "peatlands",
+            "label": "Peatlands",
+            "label_ru": "Торфяники",
+            "description": "Слой торфяных почв Казахстана: полигоны с преобладанием торфа (DN=1) и торф в мозаике почв (DN=2). 1 188 полигонов.",
+            "layerType": "Polygon",
+            "source": "IIASA / GlobCover",
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["soils", "peatlands", "carbon"],
             "status": "active"
           },
           {
@@ -734,6 +735,164 @@ export const newDD = [
             "isTemporal": false,
             "isDownloadable": false,
             "tags": ["tools", "bookmarks"],
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "id": "analysis_tools",
+        "label_ru": "Инструменты анализа",
+        "isExpanded": false,
+        "options": [
+          {
+            "id": "measure_distance",
+            "label": "Measure Distance",
+            "label_ru": "Измерение расстояния",
+            "description": "Draw a polyline on the map and measure its geodesic length in metres or kilometres.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["analysis", "measurement", "distance"],
+            "status": "active"
+          },
+          {
+            "id": "measure_area",
+            "label": "Measure Area",
+            "label_ru": "Измерение площади",
+            "description": "Draw a polygon and calculate its geodesic area in m² or km².",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["analysis", "measurement", "area"],
+            "status": "active"
+          },
+          {
+            "id": "draw_polygon",
+            "label": "Draw & Save Polygon",
+            "label_ru": "Рисование и сохранение полигона",
+            "description": "Draw a named polygon and persist it on the map for use in Buffer and Intersect tools.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["analysis", "drawing", "polygon"],
+            "status": "active"
+          },
+          {
+            "id": "buffer_tool",
+            "label": "Buffer",
+            "label_ru": "Буферная зона",
+            "description": "Generate a buffer zone around a polygon at a configurable distance. Uses saved or newly drawn polygons.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["analysis", "buffer", "turf"],
+            "status": "active"
+          },
+          {
+            "id": "intersect_tool",
+            "label": "Intersect",
+            "label_ru": "Пересечение полигонов",
+            "description": "Find the geometric intersection of two polygons and display the result area.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["analysis", "intersect", "turf"],
+            "status": "active"
+          },
+          {
+            "id": "profile_tool",
+            "label": "Elevation Profile",
+            "label_ru": "Профиль рельефа",
+            "description": "Draw a transect line to generate an elevation profile from Copernicus DEM GLO-30 via OpenTopoData.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["analysis", "elevation", "dem", "profile"],
+            "status": "active"
+          }
+        ]
+      },
+      {
+        "id": "data_tools",
+        "label_ru": "Работа с данными",
+        "isExpanded": false,
+        "options": [
+          {
+            "id": "identify_pixel",
+            "label": "Identify Pixel",
+            "label_ru": "Информация по пикселю",
+            "description": "Кликните на карту, чтобы получить координаты, высоту рельефа и атрибуты объектов в точке.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["data", "identify", "pixel", "elevation"],
+            "status": "active"
+          },
+          {
+            "id": "feature_info",
+            "label": "Feature Info",
+            "label_ru": "Атрибуты объекта",
+            "description": "Кликните на объект карты, чтобы просмотреть таблицу его атрибутов.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["data", "attributes", "feature", "info"],
+            "status": "active"
+          },
+          {
+            "id": "download_data",
+            "label": "Download Data",
+            "label_ru": "Скачать данные",
+            "description": "Ссылки на внешние источники для загрузки данных, используемых в геопортале.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["data", "download", "firms", "sentinel"],
+            "status": "active"
+          },
+          {
+            "id": "export_csv",
+            "label": "Export Table",
+            "label_ru": "Экспорт таблицы",
+            "description": "Экспорт атрибутов видимых векторных слоёв в CSV-файл.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["data", "export", "csv", "table"],
+            "status": "active"
+          },
+          {
+            "id": "export_geojson",
+            "label": "Export Geometry",
+            "label_ru": "Экспорт геометрии",
+            "description": "Экспорт нарисованных полигонов и векторных слоёв в формат GeoJSON.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["data", "export", "geojson", "geometry"],
+            "status": "active"
+          },
+          {
+            "id": "api_links",
+            "label": "API Links",
+            "label_ru": "Ссылки на сервисы/API",
+            "description": "Список внешних сервисов и API, используемых в геопортале.",
+            "layerType": null,
+            "source": null,
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["data", "api", "services", "links"],
             "status": "active"
           }
         ]

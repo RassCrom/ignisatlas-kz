@@ -31,6 +31,22 @@ import LulcControls from "./Controls/LulcControls";
 import LulcPcControls from "./Controls/LulcPcControls";
 import DemControls from "./Controls/DemControls";
 import SettlementsControls from "./Controls/SettlementsControls";
+
+// Controls — Analysis tools
+import MeasureDistanceTool from "./ToolsControls/MeasureDistanceTool";
+import MeasureAreaTool     from "./ToolsControls/MeasureAreaTool";
+import DrawPolygonTool     from "./ToolsControls/DrawPolygonTool";
+import BufferTool          from "./ToolsControls/BufferTool";
+import IntersectTool       from "./ToolsControls/IntersectTool";
+import ProfileTool         from "./ToolsControls/ProfileTool";
+
+// Controls — Data tools
+import IdentifyPixelTool  from "./ToolsControls/IdentifyPixelTool";
+import FeatureInfoTool    from "./ToolsControls/FeatureInfoTool";
+import DownloadDataTool   from "./ToolsControls/DownloadDataTool";
+import ExportCsvTool      from "./ToolsControls/ExportCsvTool";
+import ExportGeojsonTool  from "./ToolsControls/ExportGeojsonTool";
+import ApiLinksTool       from "./ToolsControls/ApiLinksTool";
 import LayersPanel from "./Controls/LayersPanel";
 
 // Controls — Tools
@@ -58,7 +74,13 @@ const SELF_SUBSCRIBED = {
   lulc:                  (opt) => <LulcControls key={opt.id} />,
   lulc_pc:               (opt) => <LulcPcControls key={opt.id} />,
   dem_pc:                (opt) => <DemControls key={opt.id} />,
-  settlements_layer: (opt) => <SettlementsControls key={opt.id} />,
+  settlements_layer:     (opt) => <SettlementsControls key={opt.id} />,
+  measure_distance:      (opt) => <MeasureDistanceTool key={opt.id} />,
+  measure_area:          (opt) => <MeasureAreaTool     key={opt.id} />,
+  draw_polygon:          (opt) => <DrawPolygonTool     key={opt.id} />,
+  buffer_tool:           (opt) => <BufferTool          key={opt.id} />,
+  intersect_tool:        (opt) => <IntersectTool       key={opt.id} />,
+  profile_tool:          (opt) => <ProfileTool         key={opt.id} />,
   spatial_bookmark_tool:       (opt) => <SpatialBookmarksTool key={opt.id} />,
   home_extent:                 (opt) => <HomeExtentTool key={opt.id} />,
   coordinate_search:           (opt) => <CoordinateSearchTool key={opt.id} />,
@@ -68,6 +90,12 @@ const SELF_SUBSCRIBED = {
   climate_zones:               (opt) => <ClimateZonesControls key={opt.id} />,
   protected_area_boundaries:   (opt) => <ProtectedAreasControls key={opt.id} />,
   peatlands:                   (opt) => <PeatlandsControls key={opt.id} option={opt} />,
+  identify_pixel:              (opt) => <IdentifyPixelTool  key={opt.id} />,
+  feature_info:                (opt) => <FeatureInfoTool    key={opt.id} />,
+  download_data:               (opt) => <DownloadDataTool   key={opt.id} />,
+  export_csv:                  (opt) => <ExportCsvTool      key={opt.id} />,
+  export_geojson:              (opt) => <ExportGeojsonTool  key={opt.id} />,
+  api_links:                   (opt) => <ApiLinksTool       key={opt.id} />,
 };
 
 const DropDown = memo(({ openTabIndex }) => {
