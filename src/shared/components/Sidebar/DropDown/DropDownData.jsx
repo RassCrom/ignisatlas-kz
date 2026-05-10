@@ -73,78 +73,78 @@ export const newDD = [
             "tags": ["dem", "dsm", "TanDEM-X", "Copernicus"],
             "status": "active"
           },
-          {
-            "id": "hillshade",
-            "label": "Hillshade",
-            "label_ru": "Теневая отмывка",
-            "description": "Визуализация рельефа методом теневой отмывки для наглядного отображения форм поверхности.",
-            "layerType": "Raster",
-            "source": "Copernicus DEM GLO-30",
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["terrain", "hillshade", "dem"],
-            "status": "not active"
-          },
-          {
-            "id": "slope",
-            "label": "Slope",
-            "label_ru": "Крутизна склонов",
-            "description": "Карта крутизны склонов в градусах, рассчитанная по цифровой модели рельефа.",
-            "layerType": "Raster",
-            "source": "Copernicus DEM GLO-30",
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["terrain", "slope", "dem"],
-            "status": "not active"
-          },
-          {
-            "id": "aspect",
-            "label": "Aspect",
-            "label_ru": "Экспозиция склонов",
-            "description": "Направление склона относительно сторон света — влияет на инсоляцию и риск возгорания.",
-            "layerType": "Raster",
-            "source": "Copernicus DEM GLO-30",
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["terrain", "aspect", "dem"],
-            "status": "not active"
-          },
-          {
-            "id": "elevation_contours",
-            "label": "Elevation Contours",
-            "label_ru": "Горизонтали",
-            "description": "Изолинии высот с заданным интервалом для отображения рельефа на топографических картах.",
-            "layerType": "Line",
-            "source": "Copernicus DEM GLO-30",
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["terrain", "contours", "elevation"],
-            "status": "not active"
-          },
-          {
-            "id": "terrain_roughness",
-            "label": "Terrain Roughness",
-            "label_ru": "Пересечённость рельефа",
-            "description": "Индекс пересечённости рельефа (TRI) — мера изменчивости высот в окрестности каждой точки.",
-            "layerType": "Raster",
-            "source": "Copernicus DEM GLO-30",
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["terrain", "roughness", "tri"],
-            "status": "not active"
-          },
-          {
-            "id": "topographic_position",
-            "label": "Topographic Position Index",
-            "label_ru": "Положение в рельефе",
-            "description": "Индекс топографического положения (TPI) — определяет, находится ли точка на вершине, склоне или в долине.",
-            "layerType": "Raster",
-            "source": "Copernicus DEM GLO-30",
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["terrain", "tpi", "topography"],
-            "status": "not active"
-          }
+          // {
+          //   "id": "hillshade",
+          //   "label": "Hillshade",
+          //   "label_ru": "Теневая отмывка",
+          //   "description": "Визуализация рельефа методом теневой отмывки для наглядного отображения форм поверхности.",
+          //   "layerType": "Raster",
+          //   "source": "Copernicus DEM GLO-30",
+          //   "isTemporal": false,
+          //   "isDownloadable": false,
+          //   "tags": ["terrain", "hillshade", "dem"],
+          //   "status": "not active"
+          // },
+          // {
+          //   "id": "slope",
+          //   "label": "Slope",
+          //   "label_ru": "Крутизна склонов",
+          //   "description": "Карта крутизны склонов в градусах, рассчитанная по цифровой модели рельефа.",
+          //   "layerType": "Raster",
+          //   "source": "Copernicus DEM GLO-30",
+          //   "isTemporal": false,
+          //   "isDownloadable": false,
+          //   "tags": ["terrain", "slope", "dem"],
+          //   "status": "not active"
+          // },
+          // {
+          //   "id": "aspect",
+          //   "label": "Aspect",
+          //   "label_ru": "Экспозиция склонов",
+          //   "description": "Направление склона относительно сторон света — влияет на инсоляцию и риск возгорания.",
+          //   "layerType": "Raster",
+          //   "source": "Copernicus DEM GLO-30",
+          //   "isTemporal": false,
+          //   "isDownloadable": false,
+          //   "tags": ["terrain", "aspect", "dem"],
+          //   "status": "not active"
+          // },
+          // {
+          //   "id": "elevation_contours",
+          //   "label": "Elevation Contours",
+          //   "label_ru": "Горизонтали",
+          //   "description": "Изолинии высот с заданным интервалом для отображения рельефа на топографических картах.",
+          //   "layerType": "Line",
+          //   "source": "Copernicus DEM GLO-30",
+          //   "isTemporal": false,
+          //   "isDownloadable": false,
+          //   "tags": ["terrain", "contours", "elevation"],
+          //   "status": "not active"
+          // },
+          // {
+          //   "id": "terrain_roughness",
+          //   "label": "Terrain Roughness",
+          //   "label_ru": "Пересечённость рельефа",
+          //   "description": "Индекс пересечённости рельефа (TRI) — мера изменчивости высот в окрестности каждой точки.",
+          //   "layerType": "Raster",
+          //   "source": "Copernicus DEM GLO-30",
+          //   "isTemporal": false,
+          //   "isDownloadable": false,
+          //   "tags": ["terrain", "roughness", "tri"],
+          //   "status": "not active"
+          // },
+          // {
+          //   "id": "topographic_position",
+          //   "label": "Topographic Position Index",
+          //   "label_ru": "Положение в рельефе",
+          //   "description": "Индекс топографического положения (TPI) — определяет, находится ли точка на вершине, склоне или в долине.",
+          //   "layerType": "Raster",
+          //   "source": "Copernicus DEM GLO-30",
+          //   "isTemporal": false,
+          //   "isDownloadable": false,
+          //   "tags": ["terrain", "tpi", "topography"],
+          //   "status": "not active"
+          // }
         ]
       },
       {
@@ -163,12 +163,6 @@ export const newDD = [
             "tags": ["climate", "koppen", "zones"],
             "status": "active"
           }
-        ]
-      },
-      {
-        "id": "soils",
-        "label_ru": "Почвы",
-        "options": [
         ]
       },
       {
@@ -414,212 +408,212 @@ export const newDD = [
           },
         ]
       },
-      {
-        "id": "vegetation_health",
-        "label_ru": "Состояние растительности",
-        "isExpanded": false,
-        "options": [
-          {
-            "id": "ndvi_current",
-            "label": "NDVI Current State",
-            "label_ru": "NDVI текущее состояние",
-            "description": "Индекс нормализованной разности растительности (NDVI) по актуальным спутниковым данным.",
-            "layerType": "Raster",
-            "source": "Sentinel-2 / MODIS / Planetary Computer",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["ndvi", "vegetation", "drought"],
-            "status": "not active"
-          },
-          {
-            "id": "ndvi_anomaly",
-            "label": "NDVI Anomaly",
-            "label_ru": "Аномалия NDVI",
-            "description": "Отклонение текущего NDVI от многолетней нормы — индикатор стресса растительности.",
-            "layerType": "Raster",
-            "source": "MODIS / Planetary Computer",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["ndvi", "anomaly", "vegetation"],
-            "status": "not active"
-          },
-          {
-            "id": "evi",
-            "label": "Enhanced Vegetation Index",
-            "label_ru": "Enhanced Vegetation Index",
-            "description": "Улучшенный индекс растительности (EVI), менее подверженный насыщению в густых лесах.",
-            "layerType": "Raster",
-            "source": "MODIS / Planetary Computer",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["evi", "vegetation", "modis"],
-            "status": "not active"
-          },
-          {
-            "id": "vci",
-            "label": "Vegetation Condition Index",
-            "label_ru": "Vegetation Condition Index",
-            "description": "Индекс состояния растительности (VCI) — нормализованное отклонение NDVI от исторического минимума и максимума.",
-            "layerType": "Raster",
-            "source": "MODIS / Planetary Computer",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["vci", "vegetation", "drought"],
-            "status": "not active"
-          },
-          {
-            "id": "tci",
-            "label": "Temperature Condition Index",
-            "label_ru": "Temperature Condition Index",
-            "description": "Индекс температурного состояния (TCI) на основе теплового излучения поверхности.",
-            "layerType": "Raster",
-            "source": "MODIS LST / Planetary Computer",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["tci", "temperature", "drought"],
-            "status": "not active"
-          },
-          {
-            "id": "vhi",
-            "label": "Vegetation Health Index",
-            "label_ru": "Vegetation Health Index",
-            "description": "Индекс здоровья растительности (VHI) — комбинация VCI и TCI для оценки засухи.",
-            "layerType": "Raster",
-            "source": "MODIS / Planetary Computer",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["vhi", "vegetation", "drought"],
-            "status": "not active"
-          },
-          {
-            "id": "fapar",
-            "label": "Fraction of Absorbed PAR",
-            "label_ru": "Fraction of Absorbed PAR",
-            "description": "Доля поглощённой фотосинтетически активной радиации (FAPAR) — показатель продуктивности растительности.",
-            "layerType": "Raster",
-            "source": "Sentinel-2 / MODIS / Planetary Computer",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["fapar", "vegetation", "par"],
-            "status": "not active"
-          },
-          {
-            "id": "biomass_proxy",
-            "label": "Biomass Proxy",
-            "label_ru": "Прокси биомассы",
-            "description": "Прокси-оценка надземной биомассы на основе спутниковых индексов растительности.",
-            "layerType": "Raster",
-            "source": "Sentinel-1 / Sentinel-2 / Planetary Computer",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["biomass", "vegetation", "proxy"],
-            "status": "not active"
-          }
-        ]
-      },
-      {
-        "id": "water_stress",
-        "label_ru": "Дефицит воды и гидрологический стресс",
-        "isExpanded": false,
-        "options": [
-          {
-            "id": "soil_moisture_surface",
-            "label": "Surface Soil Moisture",
-            "label_ru": "Поверхностная влажность почвы",
-            "description": "Влажность верхнего слоя почвы (~5 см) по данным спутниковой микроволновой съёмки.",
-            "layerType": "Raster",
-            "source": "Sentinel-1 / ESA CCI / Planetary Computer",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["soil-moisture", "water", "drought"],
-            "status": "not active"
-          },
-          {
-            "id": "soil_moisture_rootzone",
-            "label": "Root Zone Soil Moisture",
-            "label_ru": "Влажность корнеобитаемого слоя",
-            "description": "Влажность почвы в зоне корней (0–100 см) — ключевой показатель агрономической засухи.",
-            "layerType": "Raster",
-            "source": "ERA5-Land / Copernicus CDS",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["soil-moisture", "rootzone", "drought"],
-            "status": "not active"
-          },
-          {
-            "id": "soil_moisture_anomaly",
-            "label": "Soil Moisture Anomaly",
-            "label_ru": "Аномалия влажности почвы",
-            "description": "Отклонение влажности почвы от многолетней нормы — индикатор начала или окончания засухи.",
-            "layerType": "Raster",
-            "source": "ESA CCI Soil Moisture / Copernicus",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["soil-moisture", "anomaly", "drought"],
-            "status": "not active"
-          },
-          {
-            "id": "reservoir_extent",
-            "label": "Reservoir Extent",
-            "label_ru": "Площадь водохранилищ",
-            "description": "Текущая площадь поверхности водохранилищ по спутниковым данным.",
-            "layerType": "Polygon",
-            "source": "Sentinel-2 / JRC Global Surface Water",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["reservoir", "water", "surface-water"],
-            "status": "not active"
-          },
-          {
-            "id": "lake_area_change",
-            "label": "Lake Area Change",
-            "label_ru": "Изменение площади озёр",
-            "description": "Динамика изменения площади озёр относительно базового периода.",
-            "layerType": "Raster",
-            "source": "Sentinel-2 / JRC Global Surface Water",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["lake", "water", "change-detection"],
-            "status": "not active"
-          },
-          {
-            "id": "river_discharge_anomaly",
-            "label": "River Discharge Anomaly",
-            "label_ru": "Аномалия стока рек",
-            "description": "Отклонение речного стока от нормы — индикатор гидрологической засухи.",
-            "layerType": "Raster",
-            "source": "GloFAS / Copernicus EMS",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["river", "discharge", "drought"],
-            "status": "not active"
-          },
-          {
-            "id": "streamflow_deficit",
-            "label": "Streamflow Deficit",
-            "label_ru": "Дефицит речного стока",
-            "description": "Абсолютный дефицит стока относительно среднемноголетних значений.",
-            "layerType": "Raster",
-            "source": "GloFAS / Copernicus EMS",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["streamflow", "deficit", "hydrology"],
-            "status": "not active"
-          },
-          {
-            "id": "groundwater_proxy",
-            "label": "Groundwater Proxy",
-            "label_ru": "Прокси подземных вод",
-            "description": "Прокси-оценка изменений запасов подземных вод на основе данных GRACE.",
-            "layerType": "Raster",
-            "source": "NASA GRACE / GRACE-FO",
-            "isTemporal": true,
-            "isDownloadable": false,
-            "tags": ["groundwater", "grace", "water"],
-            "status": "not active"
-          }
-        ]
-      }
+      // {
+      //   "id": "vegetation_health",
+      //   "label_ru": "Состояние растительности",
+      //   "isExpanded": false,
+      //   "options": [
+      //     {
+      //       "id": "ndvi_current",
+      //       "label": "NDVI Current State",
+      //       "label_ru": "NDVI текущее состояние",
+      //       "description": "Индекс нормализованной разности растительности (NDVI) по актуальным спутниковым данным.",
+      //       "layerType": "Raster",
+      //       "source": "Sentinel-2 / MODIS / Planetary Computer",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["ndvi", "vegetation", "drought"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "ndvi_anomaly",
+      //       "label": "NDVI Anomaly",
+      //       "label_ru": "Аномалия NDVI",
+      //       "description": "Отклонение текущего NDVI от многолетней нормы — индикатор стресса растительности.",
+      //       "layerType": "Raster",
+      //       "source": "MODIS / Planetary Computer",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["ndvi", "anomaly", "vegetation"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "evi",
+      //       "label": "Enhanced Vegetation Index",
+      //       "label_ru": "Enhanced Vegetation Index",
+      //       "description": "Улучшенный индекс растительности (EVI), менее подверженный насыщению в густых лесах.",
+      //       "layerType": "Raster",
+      //       "source": "MODIS / Planetary Computer",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["evi", "vegetation", "modis"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "vci",
+      //       "label": "Vegetation Condition Index",
+      //       "label_ru": "Vegetation Condition Index",
+      //       "description": "Индекс состояния растительности (VCI) — нормализованное отклонение NDVI от исторического минимума и максимума.",
+      //       "layerType": "Raster",
+      //       "source": "MODIS / Planetary Computer",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["vci", "vegetation", "drought"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "tci",
+      //       "label": "Temperature Condition Index",
+      //       "label_ru": "Temperature Condition Index",
+      //       "description": "Индекс температурного состояния (TCI) на основе теплового излучения поверхности.",
+      //       "layerType": "Raster",
+      //       "source": "MODIS LST / Planetary Computer",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["tci", "temperature", "drought"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "vhi",
+      //       "label": "Vegetation Health Index",
+      //       "label_ru": "Vegetation Health Index",
+      //       "description": "Индекс здоровья растительности (VHI) — комбинация VCI и TCI для оценки засухи.",
+      //       "layerType": "Raster",
+      //       "source": "MODIS / Planetary Computer",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["vhi", "vegetation", "drought"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "fapar",
+      //       "label": "Fraction of Absorbed PAR",
+      //       "label_ru": "Fraction of Absorbed PAR",
+      //       "description": "Доля поглощённой фотосинтетически активной радиации (FAPAR) — показатель продуктивности растительности.",
+      //       "layerType": "Raster",
+      //       "source": "Sentinel-2 / MODIS / Planetary Computer",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["fapar", "vegetation", "par"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "biomass_proxy",
+      //       "label": "Biomass Proxy",
+      //       "label_ru": "Прокси биомассы",
+      //       "description": "Прокси-оценка надземной биомассы на основе спутниковых индексов растительности.",
+      //       "layerType": "Raster",
+      //       "source": "Sentinel-1 / Sentinel-2 / Planetary Computer",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["biomass", "vegetation", "proxy"],
+      //       "status": "not active"
+      //     }
+      //   ]
+      // },
+      // {
+      //   "id": "water_stress",
+      //   "label_ru": "Дефицит воды и гидрологический стресс",
+      //   "isExpanded": false,
+      //   "options": [
+      //     {
+      //       "id": "soil_moisture_surface",
+      //       "label": "Surface Soil Moisture",
+      //       "label_ru": "Поверхностная влажность почвы",
+      //       "description": "Влажность верхнего слоя почвы (~5 см) по данным спутниковой микроволновой съёмки.",
+      //       "layerType": "Raster",
+      //       "source": "Sentinel-1 / ESA CCI / Planetary Computer",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["soil-moisture", "water", "drought"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "soil_moisture_rootzone",
+      //       "label": "Root Zone Soil Moisture",
+      //       "label_ru": "Влажность корнеобитаемого слоя",
+      //       "description": "Влажность почвы в зоне корней (0–100 см) — ключевой показатель агрономической засухи.",
+      //       "layerType": "Raster",
+      //       "source": "ERA5-Land / Copernicus CDS",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["soil-moisture", "rootzone", "drought"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "soil_moisture_anomaly",
+      //       "label": "Soil Moisture Anomaly",
+      //       "label_ru": "Аномалия влажности почвы",
+      //       "description": "Отклонение влажности почвы от многолетней нормы — индикатор начала или окончания засухи.",
+      //       "layerType": "Raster",
+      //       "source": "ESA CCI Soil Moisture / Copernicus",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["soil-moisture", "anomaly", "drought"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "reservoir_extent",
+      //       "label": "Reservoir Extent",
+      //       "label_ru": "Площадь водохранилищ",
+      //       "description": "Текущая площадь поверхности водохранилищ по спутниковым данным.",
+      //       "layerType": "Polygon",
+      //       "source": "Sentinel-2 / JRC Global Surface Water",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["reservoir", "water", "surface-water"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "lake_area_change",
+      //       "label": "Lake Area Change",
+      //       "label_ru": "Изменение площади озёр",
+      //       "description": "Динамика изменения площади озёр относительно базового периода.",
+      //       "layerType": "Raster",
+      //       "source": "Sentinel-2 / JRC Global Surface Water",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["lake", "water", "change-detection"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "river_discharge_anomaly",
+      //       "label": "River Discharge Anomaly",
+      //       "label_ru": "Аномалия стока рек",
+      //       "description": "Отклонение речного стока от нормы — индикатор гидрологической засухи.",
+      //       "layerType": "Raster",
+      //       "source": "GloFAS / Copernicus EMS",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["river", "discharge", "drought"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "streamflow_deficit",
+      //       "label": "Streamflow Deficit",
+      //       "label_ru": "Дефицит речного стока",
+      //       "description": "Абсолютный дефицит стока относительно среднемноголетних значений.",
+      //       "layerType": "Raster",
+      //       "source": "GloFAS / Copernicus EMS",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["streamflow", "deficit", "hydrology"],
+      //       "status": "not active"
+      //     },
+      //     {
+      //       "id": "groundwater_proxy",
+      //       "label": "Groundwater Proxy",
+      //       "label_ru": "Прокси подземных вод",
+      //       "description": "Прокси-оценка изменений запасов подземных вод на основе данных GRACE.",
+      //       "layerType": "Raster",
+      //       "source": "NASA GRACE / GRACE-FO",
+      //       "isTemporal": true,
+      //       "isDownloadable": false,
+      //       "tags": ["groundwater", "grace", "water"],
+      //       "status": "not active"
+      //     }
+      //   ]
+      // }
     ]
   },
   {
@@ -804,18 +798,18 @@ export const newDD = [
             "tags": ["analysis", "intersect", "turf"],
             "status": "active"
           },
-          {
-            "id": "profile_tool",
-            "label": "Elevation Profile",
-            "label_ru": "Профиль рельефа",
-            "description": "Draw a transect line to generate an elevation profile from Copernicus DEM GLO-30 via OpenTopoData.",
-            "layerType": null,
-            "source": null,
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["analysis", "elevation", "dem", "profile"],
-            "status": "active"
-          }
+          // {
+          //   "id": "profile_tool",
+          //   "label": "Elevation Profile",
+          //   "label_ru": "Профиль рельефа",
+          //   "description": "Draw a transect line to generate an elevation profile from Copernicus DEM GLO-30 via OpenTopoData.",
+          //   "layerType": null,
+          //   "source": null,
+          //   "isTemporal": false,
+          //   "isDownloadable": false,
+          //   "tags": ["analysis", "elevation", "dem", "profile"],
+          //   "status": "active"
+          // }
         ]
       },
       {
@@ -859,42 +853,42 @@ export const newDD = [
             "tags": ["data", "download", "firms", "sentinel"],
             "status": "active"
           },
-          {
-            "id": "export_csv",
-            "label": "Export Table",
-            "label_ru": "Экспорт таблицы",
-            "description": "Экспорт атрибутов видимых векторных слоёв в CSV-файл.",
-            "layerType": null,
-            "source": null,
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["data", "export", "csv", "table"],
-            "status": "active"
-          },
-          {
-            "id": "export_geojson",
-            "label": "Export Geometry",
-            "label_ru": "Экспорт геометрии",
-            "description": "Экспорт нарисованных полигонов и векторных слоёв в формат GeoJSON.",
-            "layerType": null,
-            "source": null,
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["data", "export", "geojson", "geometry"],
-            "status": "active"
-          },
-          {
-            "id": "api_links",
-            "label": "API Links",
-            "label_ru": "Ссылки на сервисы/API",
-            "description": "Список внешних сервисов и API, используемых в геопортале.",
-            "layerType": null,
-            "source": null,
-            "isTemporal": false,
-            "isDownloadable": false,
-            "tags": ["data", "api", "services", "links"],
-            "status": "active"
-          }
+          // {
+          //   "id": "export_csv",
+          //   "label": "Export Table",
+          //   "label_ru": "Экспорт таблицы",
+          //   "description": "Экспорт атрибутов видимых векторных слоёв в CSV-файл.",
+          //   "layerType": null,
+          //   "source": null,
+          //   "isTemporal": false,
+          //   "isDownloadable": false,
+          //   "tags": ["data", "export", "csv", "table"],
+          //   "status": "active"
+          // },
+          // {
+          //   "id": "export_geojson",
+          //   "label": "Export Geometry",
+          //   "label_ru": "Экспорт геометрии",
+          //   "description": "Экспорт нарисованных полигонов и векторных слоёв в формат GeoJSON.",
+          //   "layerType": null,
+          //   "source": null,
+          //   "isTemporal": false,
+          //   "isDownloadable": false,
+          //   "tags": ["data", "export", "geojson", "geometry"],
+          //   "status": "active"
+          // },
+          // {
+          //   "id": "api_links",
+          //   "label": "API Links",
+          //   "label_ru": "Ссылки на сервисы/API",
+          //   "description": "Список внешних сервисов и API, используемых в геопортале.",
+          //   "layerType": null,
+          //   "source": null,
+          //   "isTemporal": false,
+          //   "isDownloadable": false,
+          //   "tags": ["data", "api", "services", "links"],
+          //   "status": "active"
+          // }
         ]
       },
       {

@@ -237,14 +237,31 @@ const IdentifyPixelTool = () => {
   }, [setActiveTool]);
 
   useEffect(() => {
+    const handleContextIdentify = async (ev) => {
+      const coord = ev.detail.coordinate;
+      const map = window.mapInstance;
+      if (!map) return;
+      
+      const pixel = map.getPixelFromCoordinate(coord);
+      
+      if (!isActive) {
+        activate();
+      }
+      
+      // Manually trigger the identify logic
+      await handleClick({ coordinate: coord, pixel });
+    };
+
+    window.addEventListener('cm:identify_pixel', handleContextIdentify);
     return () => {
+      window.removeEventListener('cm:identify_pixel', handleContextIdentify);
       const map = window.mapInstance;
       if (map && listenerRef.current) {
         map.un('singleclick', listenerRef.current);
         map.getTargetElement().style.cursor = '';
       }
     };
-  }, []);
+  }, [handleClick, activate, isActive]);
 
   return (
     <div className={styles.toolWrap}>

@@ -10,7 +10,7 @@ import useAdminBoundaryStore from "src/app/store/adminBoundaryStore";
 import { useLayersStore } from "../../../../app/store/layersStore";
 
 // Controls — Satellite (Copernicus/OpenEO)
-import SatelliteInputForm from "./SentinelControls/SatelliteInputForm";
+// import SatelliteInputForm from "./SentinelControls/SatelliteInputForm";
 import { useSatelliteData } from "./SentinelControls/useSatelliteData";
 
 // Controls — Sentinel imagery
