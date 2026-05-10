@@ -4,6 +4,8 @@ import { transform } from 'ol/proj';
 import { showToast } from "src/shared/utils/showToast";
 import { flyHome } from "./flyHome";
 import useBookmarksStore from "src/app/store/bookmarksStore";
+import useMenuStore from "src/app/store/store";
+import useFireStore from "src/app/store/fireStore";
 import dayjs from "dayjs";
 
 function flyTo(view, location, zoom = null, done = () => {}) {
@@ -83,6 +85,26 @@ export const createContextMenu = (_map, view, _DEFAULT_POSITION, styles) => {
         text: menuItem(ICONS.home, 'Вернуться на главную позицию'),
         classname: cls,
         callback: () => { flyHome(view); showToast('Возвращение к главной позиции', 'success'); },
+      },
+      {
+        text: menuItem(ICONS.scanEye, 'Определить пиксель'),
+        classname: cls,
+        callback: (e) => {
+          const menuStore = useMenuStore.getState();
+          if (menuStore.openTabIndex !== 4 || !menuStore.isMenuOpen) {
+            menuStore.setTabIndex(4);
+            if (!menuStore.isMenuOpen) menuStore.toggleMenu();
+          }
+
+          const fireStore = useFireStore.getState();
+          if (!fireStore.expandedItems['data_tools']) {
+            fireStore.toggleExpandedItem('data_tools');
+          }
+
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('cm:identify_pixel', { detail: { coordinate: e.coordinate } }));
+          }, 150);
+        },
       },
 
       '-',

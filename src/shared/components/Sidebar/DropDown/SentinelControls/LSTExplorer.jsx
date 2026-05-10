@@ -196,7 +196,7 @@ const LSTExplorer = () => {
               : <EyeOff size={16} className="fire-controls__icon-inactive" />
             }
           </div>
-          <span className="fire-controls__toggle-label">LST Explorer</span>
+          <span className="fire-controls__toggle-label">Температура поверхности (LST)</span>
         </div>
         <button
           className={`fire-controls__expand-btn ${isExpanded ? 'fire-controls__expand-btn--expanded' : ''}`}
