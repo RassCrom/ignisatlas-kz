@@ -1,0 +1,88 @@
+.tech {
+    padding: 7rem 0 10rem;
+}
+
+.tech__container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+}
+
+.tech__header {
+    max-width: 580px;
+    margin-bottom: 3rem;
+}
+
+.tech__subtitle {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.68rem;
+    text-transform: uppercase;
+    color: transparent;
+    -webkit-text-stroke: 0.5px rgba(232, 64, 37, 0.35);
+    margin: 0 0 0.75rem;
+    user-select: none;
+}
+
+.tech__title {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 3.5vw, 2.75rem);
+    line-height: 1.15;
+    color: var(--color-text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+}
+
+.tech__lead {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.tech__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: var(--color-pill-bg);
+    border: 1px solid var(--color-pill-border);
+    border-radius: 100px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-pill-text);
+    cursor: default;
+    will-change: transform;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        background: var(--color-fire-ember-dim);
+        box-shadow: 0 4px 16px rgba(232, 64, 37, 0.15);
+    }
+}
+
+.pill__icon {
+    opacity: 0.75;
+    flex-shrink: 0;
+}
+
+.tech__note {
+    font-size: 0.8rem;
+    color: var(--color-text-dim);
+    letter-spacing: 0.01em;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .tech {
+        padding: 5rem 0 7rem;
+    }
+}

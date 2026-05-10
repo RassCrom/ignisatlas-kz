@@ -1,14 +1,8 @@
 $main-color: #4999E8;
-$secondary-color: #212529;
 $accent-color: #F4D58D;
 $font-color: #001427;
 $bg-color: #f9f9f9;
-$danger-color: #8D0801;
 
-// Spacing
-$spacing-small: 8px;
-$spacing-medium: 16px;
-$spacing-large: 32px;
 
 // Font Size
 $main-size: clamp(.95rem, 1.5vw, 1rem);
@@ -17,18 +11,11 @@ $heading-size: clamp(2rem, 3vw, 2.5rem);
 $caption-size: clamp(.7rem, 1vw, .85rem);
 
 // Icons
-// $icon-main-color: #4999E8;
 $icon-main-color: #4b5563;
 $icon-main-color--active: #f9f9f9;
 $icon-main-size: 25px;
 $icon-main-color-map: #4b5563;
-// $icon-main-color-map: #4999E8;
 $icon-main-size-map: 21px;
-
-// Bg
-// $active-bg-color: #2F7D4F;
-$active-bg-color: #1e90ff;
-$active-bg-color-map: yellow;
 
 
 // Landing styles
@@ -40,9 +27,24 @@ $active-bg-color-map: yellow;
   --color-accent-pink: #7A2045;
   --color-accent-purple: #888BE0;
   --color-dark: #07081A;
-  
+
   --container-max-width: 1312px;
   --container-padding: 1rem;
-  
+
   --transition-smooth: 0.25s ease;
+
+  // IgnisAtlas fire palette
+  --color-fire-ember:      #E84025;
+  --color-fire-amber:      #FF8C42;
+  --color-fire-ember-dim:  rgba(232, 64, 37, 0.15);
+  --color-fire-amber-dim:  rgba(255, 140, 66, 0.12);
+  --gradient-fire:         linear-gradient(135deg, #E84025 0%, #FF8C42 100%);
+  --color-surface-card:    rgba(12, 13, 30, 0.85);
+  --color-border-subtle:   rgba(232, 64, 37, 0.12);
+  --color-text-muted:      rgba(217, 218, 245, 0.5);
+  --color-text-dim:        rgba(217, 218, 245, 0.35);
+  --color-pill-bg:         rgba(232, 64, 37, 0.08);
+  --color-pill-border:     rgba(232, 64, 37, 0.22);
+  --color-pill-text:       rgba(255, 140, 66, 0.9);
+  --transition-spring:     0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }

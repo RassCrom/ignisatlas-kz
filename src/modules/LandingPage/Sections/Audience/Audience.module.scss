@@ -1,0 +1,136 @@
+.audience {
+    padding: 7rem 0;
+}
+
+.audience__container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+}
+
+.audience__header {
+    max-width: 580px;
+    margin-bottom: 3.5rem;
+}
+
+.audience__subtitle {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.68rem;
+    text-transform: uppercase;
+    color: transparent;
+    -webkit-text-stroke: 0.5px rgba(232, 64, 37, 0.35);
+    margin: 0 0 0.75rem;
+    user-select: none;
+}
+
+.audience__title {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 3.5vw, 2.75rem);
+    line-height: 1.15;
+    color: var(--color-text-primary);
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+}
+
+.audience__lead {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.audience__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 860px;
+}
+
+.card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.75rem;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 16px;
+    padding: 2rem 2.25rem;
+    will-change: transform;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+        border-color: var(--color-fire-ember-dim);
+        box-shadow: 0 8px 32px rgba(232, 64, 37, 0.08);
+    }
+}
+
+.card__icon {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: var(--color-fire-ember-dim);
+    border: 1px solid var(--color-border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-fire-amber);
+}
+
+.card__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.card__top {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.625rem;
+}
+
+.card__title {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.card__badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-pill-text);
+    background: var(--color-pill-bg);
+    border: 1px solid var(--color-pill-border);
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+}
+
+.card__desc {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .audience {
+        padding: 5rem 0;
+    }
+
+    .card {
+        flex-direction: column;
+        gap: 1.25rem;
+        padding: 1.5rem;
+    }
+
+    .audience__cards {
+        max-width: 100%;
+    }
+}

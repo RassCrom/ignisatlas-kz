@@ -1,0 +1,176 @@
+@use '../styles/particles' as p;
+
+.page {
+    position: fixed;
+    inset: 0;
+    background-color: var(--color-bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 1rem;
+}
+
+// ─── Background particles (slower, fewer, dimmer than LoadingPage) ──────────
+
+.particles {
+    @include p.container;
+}
+
+.particle {
+    // duration ×1.5 = 3.6s base, opacity peaks at 0.4 via initial opacity
+    @include p.particle(#4787E3, #ec4899, 3.6s);
+    opacity: 0;
+
+    // 5 particles centered loosely
+    @for $i from 1 through 5 {
+        &:nth-child(#{$i}) {
+            left:            (25 + ($i - 1) * 12) * 1%;
+            width:           (3  + ($i % 2) * 2)  * 1px;
+            height:          (3  + ($i % 2) * 2)  * 1px;
+            bottom:          (8  + ($i % 3) * 6)  * 1%;
+            animation-delay: (($i - 1) * 0.35)    * 1s;
+            // cap brightness so particles are atmospheric, not focal
+            filter: opacity(0.4);
+        }
+    }
+}
+
+// ─── Glassmorphism card ──────────────────────────────────────────────────────
+
+.card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 3.5rem 3rem;
+    max-width: 480px;
+    width: 100%;
+    background: rgba(12, 13, 30, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    box-shadow:
+        0 0 0 1px rgba(136, 139, 224, 0.04),
+        0 32px 64px rgba(0, 0, 0, 0.4);
+}
+
+// ─── 404 code ────────────────────────────────────────────────────────────────
+
+.code {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 800;
+    font-size: clamp(5rem, 15vw, 10rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    margin: 0 0 1.25rem;
+    background: linear-gradient(135deg, #ec4899 0%, #888BE0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    // glow via filter since text-shadow doesn't apply to clipped text
+    filter:
+        drop-shadow(0 0 20px rgba(236, 72, 153, 0.4))
+        drop-shadow(0 0 60px rgba(136, 139, 224, 0.2));
+}
+
+// ─── Text content ────────────────────────────────────────────────────────────
+
+.title {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 0.75rem;
+    letter-spacing: -0.01em;
+}
+
+.desc {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: rgba(217, 218, 245, 0.5);
+    max-width: 340px;
+    margin: 0 0 2.25rem;
+}
+
+// ─── CTA buttons ─────────────────────────────────────────────────────────────
+
+.actions {
+    display: flex;
+    gap: 0.875rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+%btn-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.75rem;
+    border-radius: 10px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.btn__primary {
+    @extend %btn-base;
+    background: linear-gradient(135deg, #ec4899, #be185d);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(236, 72, 153, 0.3);
+
+    &:hover {
+        box-shadow: 0 8px 28px rgba(236, 72, 153, 0.5);
+        filter: brightness(1.08);
+    }
+}
+
+.btn__secondary {
+    @extend %btn-base;
+    background: transparent;
+    color: #888BE0;
+    border: 1px solid rgba(136, 139, 224, 0.35);
+    box-shadow: none;
+
+    &:hover {
+        background: rgba(136, 139, 224, 0.1);
+        border-color: rgba(136, 139, 224, 0.6);
+        box-shadow: 0 0 20px rgba(136, 139, 224, 0.2);
+    }
+}
+
+// ─── Responsive ──────────────────────────────────────────────────────────────
+
+@media (max-width: 480px) {
+    .card {
+        padding: 2.5rem 1.5rem;
+    }
+
+    .actions {
+        flex-direction: column;
+        width: 100%;
+
+        .btn__primary,
+        .btn__secondary {
+            width: 100%;
+        }
+    }
+}

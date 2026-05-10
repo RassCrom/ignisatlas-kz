@@ -1,127 +1,163 @@
-import { motion } from 'framer-motion';
-import Button from '../shared/Button/Button';
-import StatCard from './StatCard/StatCard';
-import styles from './Hero.module.scss';
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import Button from "../shared/Button/Button";
+import styles from "./Hero.module.scss";
+
+const TAGLINE = "Спутниковый мониторинг лесных пожаров в Казахстане";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.6 },
+  },
+};
+
+const wordVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+const subtitleVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut", delay: 0.2 },
+  },
+};
+
+const actionsVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut", delay: 0.4 },
+  },
+};
+
+const PARTICLES = Array.from({ length: 14 }, (_, i) => ({
+  id: i,
+  delay: (i * 0.37).toFixed(2),
+  left: `${6 + ((i * 6.5) % 88)}%`,
+  size: 3 + (i % 3),
+  duration: 3.5 + (i % 3) * 1.2,
+}));
 
 const Hero = () => {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3
-      }
-    }
-  };
+  const heroRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const titleVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.8,
-        ease: "easeOut"
-      }
-    }
-  };
-
-  const statsData = [
-    {
-      id: 1,
-      value: '30 000',
-      label: 'очага зарегистрировано за последние 12 месяцев'
-    },
-    {
-      id: 2,
-      value: '3 900',
-      label: 'очага зарегистрировано за последние 3 месяца'
-    },
-    {
-      id: 3,
-      value: '134',
-      label: 'очага зарегистрировано за последние 24 часа'
-    }
-  ];
+  const words = TAGLINE.split(" ");
 
   return (
-    <section className={styles.hero}>
-      <div className={styles.hero__overlay} />
-      
-      <div className={styles.hero__container}>
-        <motion.div 
-          className={styles.hero__content}
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          <motion.h1 
-            className={styles.hero__title}
-            variants={titleVariants}
-          >
-            <motion.span 
-              className={styles.hero__highlight}
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-            >
-              Fires KZ
-            </motion.span>
-            {' '}— современная карта мониторинга пожаров в Казахстане
-          </motion.h1>
+    <section className={styles.hero} ref={heroRef}>
+      <motion.div
+        className={styles.hero__bg}
+        style={{ y: bgY }}
+        aria-hidden="true"
+      />
+      <div className={styles.hero__overlay} aria-hidden="true" />
 
-          <motion.div 
-            className={styles.hero__actions}
-            variants={itemVariants}
+      <div className={styles.particles} aria-hidden="true">
+        {PARTICLES.map((p) => (
+          <span
+            key={p.id}
+            className={styles.particle}
+            style={{
+              "--delay": `${p.delay}s`,
+              "--duration": `${p.duration}s`,
+              left: p.left,
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              bottom: `${10 + ((p.id * 5) % 30)}%`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className={styles.hero__container}>
+        <div className={styles.hero__content}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85, filter: "blur(8px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Button 
+            <h1 className={styles.hero__title}>
+              <span className={styles.hero__brand}>IgnisAtlas</span>
+            </h1>
+          </motion.div>
+
+          <motion.p
+            className={styles.hero__tagline}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            {words.map((word, i) => (
+              <motion.span
+                key={i}
+                className={styles.hero__word}
+                variants={wordVariants}
+              >
+                {word}
+              </motion.span>
+            ))}
+          </motion.p>
+
+          <motion.p
+            className={styles.hero__subtitle}
+            variants={subtitleVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            Открытые данные NASA FIRMS · MODIS · VIIRS · 2001–2024
+          </motion.p>
+
+          <motion.div
+            className={styles.hero__actions}
+            variants={actionsVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <Button
               href="/map"
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
-              Открыть карту
+              Открыть геопортал
             </Button>
-            
-            <Button 
-              href="#about"
+
+            <Button
+              href="#features"
               variant="secondary"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
-              О продукте
+              Возможности
             </Button>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
-      
-      <motion.div 
-        className={styles.hero__stats}
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        transition={{ delay: 1, duration: 0.8 }}
+
+      <motion.div
+        className={styles.hero__scroll}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.8, duration: 0.6 }}
+        aria-hidden="true"
       >
-        {statsData.map((stat) => (
-          <StatCard 
-            key={stat.id}
-            value={stat.value}
-            label={stat.label}
-            variants={itemVariants}
-          />
-        ))}
+        <span className={styles.scroll__line} />
       </motion.div>
     </section>
   );

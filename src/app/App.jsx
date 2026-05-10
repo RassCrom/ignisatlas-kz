@@ -8,13 +8,14 @@ const NotFoundPage = lazy(() => import("src/shared/errors/NotFoundPage"));
 
 import MainLayout from "src/shared/components/Layout/Layout";
 import LandingPage from "src/modules/LandingPage/LandingPage";
+import LoadingPage from "src/shared/components/LoadingPage/LoadingPage";
 import ReportPage from "../modules/ReportPage/ReportPage";
 
 function App() {
   return (
     <HelmetProvider>
       <Router>
-        <Suspense fallback={<div className="loader">Loading...</div>}>
+        <Suspense fallback={<LoadingPage />}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/report" element={<ReportPage />} />
