@@ -34,7 +34,9 @@
       width: 100%;
       padding: 2px;
       cursor: pointer;
+      border: 0;
       border-radius: 10px;
+      background: transparent;
       transition: background 0.2s ease;
 
       &:hover {
@@ -51,6 +53,16 @@
 
         svg {
           color: rgba(136, 139, 224, 0.95) !important;
+        }
+      }
+
+      &:focus-visible {
+        outline: 2px solid rgba(52, 211, 153, 0.95);
+        outline-offset: 2px;
+        background: rgba(52, 211, 153, 0.1);
+
+        svg {
+          color: rgba(217, 218, 245, 0.95) !important;
         }
       }
 
@@ -73,6 +85,17 @@
         display: flex;
         justify-content: center;
         align-items: center;
+      }
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar {
+    .menu {
+      .tab,
+      .tab svg {
+        transition: none;
       }
     }
   }

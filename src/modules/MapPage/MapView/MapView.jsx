@@ -1,6 +1,5 @@
 import { useRef, useState, useMemo, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
-import { Popover } from "antd";
 
 import MapToolbar from "./components/MapToolbar.jsx";
 import FirePopup from "./components/FirePopup.jsx";
@@ -19,6 +18,10 @@ import { osmLayer } from "../utils/basemaps.js";
 
 import useFireStore from "src/app/store/fireStore";
 import useAdminBoundaryStore from "src/app/store/adminBoundaryStore.js";
+import {
+  clearMapInstance,
+  setMapInstance,
+} from "src/modules/MapPage/services/mapService.js";
 
 import useRiskMapStore from "src/app/store/riskMapStore.js";
 import useFireModellingStore from "src/app/store/fireModellingStore.js";
@@ -54,8 +57,6 @@ import "./mapStyles.scss";
 const MapView = () => {
   const mapRef = useRef(null);
   const [basemap, setBasemap] = useState(osmLayer);
-  const [selectedFeature, setSelectedFeature] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [weatherCoordinate, setWeatherCoordinate] = useState(null);
 
   // Store hooks
@@ -74,31 +75,25 @@ const MapView = () => {
   const blanket = useMemo(() => createBlanketLayer(), []);
   const adminBoundaries = useMemo(
     () => ({
-      country: createAdminBoundary(
-        "1",
-        adminBoundaryStore.layerVisibility.country_boundaries
-      ),
-      region: createAdminBoundary(
-        "2",
-        adminBoundaryStore.layerVisibility.region_boundaries
-      ),
-      district: createAdminBoundary(
-        "3",
-        adminBoundaryStore.layerVisibility.district_boundaries
-      ),
+      country: createAdminBoundary("1"),
+      region: createAdminBoundary("2"),
+      district: createAdminBoundary("3"),
     }),
     []
   );
   const emergencyLayers = useMemo(() => createEmergencyLayers(), []);
 
   // initial layers for map
-  const initialLayers = [
-    adminBoundaries.country,
-    adminBoundaries.region,
-    adminBoundaries.district,
-    blanket,
-    ...emergencyLayers,
-  ];
+  const initialLayers = useMemo(
+    () => [
+      adminBoundaries.country,
+      adminBoundaries.region,
+      adminBoundaries.district,
+      blanket,
+      ...emergencyLayers,
+    ],
+    [adminBoundaries, blanket, emergencyLayers]
+  );
 
   // Initialize map
   const { mapInstance, isMapInitialized } = useMapInitialization(
@@ -108,11 +103,12 @@ const MapView = () => {
     styles
   );
 
-  // global reference for other hooks
+  // Shared reference for sidebar tools that are rendered outside MapView.
   useEffect(() => {
-    if (mapInstance) {
-      window.mapInstance = mapInstance;
-    }
+    if (!mapInstance) return;
+
+    setMapInstance(mapInstance);
+    return () => clearMapInstance(mapInstance);
   }, [mapInstance]);
 
   // Weather popup via context menu event
@@ -203,8 +199,8 @@ const MapView = () => {
     return cleanup;
   }, [
     isMapInitialized,
+    mapInstance,
     setupPopupInteractions,
-    fireLayer?.getVisible(),
     isOverlayReady,
     fireLayer,
   ]);
@@ -253,14 +249,14 @@ const MapView = () => {
     } else if (fireLayer.getVisible()) {
       fireLayer.setVisible(false);
     }
-  }, [fireStore.fireLayerVisible, isMapInitialized, fireLayer, loadFireData]);
+  }, [fireStore.fireLayerVisible, isMapInitialized, mapInstance, fireLayer, loadFireData]);
 
   // Update fire layer when date changes
   useEffect(() => {
     if (fireStore.fireLayerVisible && fireLayer && mapInstance) {
       loadFireData(mapInstance);
     }
-  }, [fireStore.dateHasChanged]);
+  }, [fireStore.dateHasChanged, fireStore.fireLayerVisible, fireLayer, loadFireData, mapInstance]);
 
   // Add map interactions
   useEffect(() => {
@@ -295,62 +291,6 @@ const MapView = () => {
             currentBasemap={basemap}
             onBasemapChange={setBasemap}
           />
-        )}
-
-        {isModalVisible && selectedFeature && (
-          <Popover
-            open={true}
-            onOpenChange={(visible) => setIsModalVisible(visible)}
-            content={
-              <div>
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <strong>Информация</strong>
-                  <button
-                    onClick={() => setIsModalVisible(false)}
-                    style={{
-                      background: "none",
-                      border: "none",
-                      fontSize: "16px",
-                      cursor: "pointer",
-                      lineHeight: "1",
-                      fontWeight: 700,
-                    }}
-                  >
-                    ✕
-                  </button>
-                </div>
-                <hr style={{ margin: "8px 0" }} />
-                {Object.entries(selectedFeature)
-                  .filter(
-                    ([key]) =>
-                      ![
-                        "layer",
-                        "path",
-                        "DAAC Scene Names",
-                        "geometry",
-                      ].includes(key)
-                  )
-                  .map(([key, value]) => (
-                    <p key={key}>
-                      <strong>{key}:</strong> {String(value)}
-                    </p>
-                  ))}
-              </div>
-            }
-            placement="top"
-            arrow={false}
-          >
-            <div
-              style={{
-                position: "absolute",
-                right: 250,
-                bottom: 25,
-                cursor: "pointer",
-              }}
-            />
-          </Popover>
         )}
 
         <FirePopup

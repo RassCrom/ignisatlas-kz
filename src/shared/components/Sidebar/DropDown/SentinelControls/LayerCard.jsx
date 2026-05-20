@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import styles from './SentinelControls.module.scss';
+import styles from './SentinelExplorer.module.scss';
 import {
     Eye, EyeOff, Trash2, Cloud, ChevronUp, ChevronDown
 } from "lucide-react";
 import { formatDate, getCloudCoverLabel, getCloudCoverColor } from "src/utils/sentinelUtils";
 
 const LayerCard = ({ 
-    layer, index, bandOptions,
+    layer, bandOptions,
     removeActiveLayer, toggleLayerVisibility
  }) => {
     const [expandedLayers, setExpandedLayers] = useState(new Set());

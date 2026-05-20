@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { BookmarkPlus, MapPin, Eye, EyeOff, Trash2, Navigation } from 'lucide-react';
 import useBookmarksStore from 'src/app/store/bookmarksStore';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import styles from './ToolsControls.module.scss';
 import dayjs from 'dayjs';
 
@@ -8,11 +9,12 @@ const MAX_DESC = 400;
 
 const captureMapScreenshot = () =>
   new Promise((resolve) => {
-    if (!window.mapInstance) return resolve(null);
-    window.mapInstance.once('rendercomplete', () => {
+    const map = getMapInstance();
+    if (!map) return resolve(null);
+    map.once('rendercomplete', () => {
       try {
-        const mapEl = window.mapInstance.getTargetElement();
-        const [w, h] = window.mapInstance.getSize();
+        const mapEl = map.getTargetElement();
+        const [w, h] = map.getSize();
         const out = document.createElement('canvas');
         out.width  = Math.round(w * 0.3);
         out.height = Math.round(h * 0.3);
@@ -33,7 +35,7 @@ const captureMapScreenshot = () =>
         resolve(null);
       }
     });
-    window.mapInstance.renderSync();
+    map.renderSync();
   });
 
 const SpatialBookmarksTool = () => {
@@ -45,15 +47,16 @@ const SpatialBookmarksTool = () => {
   const [saving, setSaving] = useState(false);
 
   const handleSaveView = useCallback(async () => {
-    if (!window.mapInstance) return;
+    const map = getMapInstance();
+    if (!map) return;
 
     setSaving(true);
     const screenshot = await captureMapScreenshot();
 
-    const view = window.mapInstance.getView();
+    const view = map.getView();
     const center = view.getCenter();
     const zoom = view.getZoom();
-    const extent = view.calculateExtent(window.mapInstance.getSize());
+    const extent = view.calculateExtent(map.getSize());
 
     const bookmarkTitle = title.trim() || `Bookmark ${store.bookmarks.length + 1}`;
 
@@ -65,8 +68,9 @@ const SpatialBookmarksTool = () => {
   }, [store, title, date, description]);
 
   const handleNavigate = useCallback((bookmark) => {
-    if (!window.mapInstance) return;
-    window.mapInstance.getView().animate({
+    const map = getMapInstance();
+    if (!map) return;
+    map.getView().animate({
       center: bookmark.center,
       zoom: bookmark.zoom,
       duration: 1000

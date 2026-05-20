@@ -17,8 +17,6 @@ const PLATFORM_MAP = {
   'landsat-9': 'landsat-9',
 };
 
-const ALL_PLATFORMS = Object.values(PLATFORM_MAP);
-
 // ── Band combinations → asset lists for tile rendering ───────────────────
 
 const BAND_CONFIGS = {

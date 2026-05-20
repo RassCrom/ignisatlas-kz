@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import {
-  Search, Database, Layers, Calendar, Cloud, MapPin,
+  Search, Database, Layers, Calendar, MapPin,
   AlertCircle, Trash2, Eye, EyeOff, Info, ChevronUp,
   Square, Pentagon, X, Navigation, ArrowUp, ArrowDown,
   Wind, Sliders, Ban
@@ -40,7 +40,7 @@ const AtmosphereExplorer = () => {
     store.setActiveTab('results');
 
     try {
-      const { features, totalResults, errors } = await searchAtmosphere({
+      const { features, totalResults } = await searchAtmosphere({
         product: store.selectedProduct,
         startDate: store.startDate,
         endDate: store.endDate,

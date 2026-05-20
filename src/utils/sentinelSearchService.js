@@ -75,7 +75,6 @@ async function searchCollection(mission, {
   bbox,
   cloudCoverage,
   limit = 20,
-  page = 1,
 }) {
   const collections = COLLECTION_MAP[mission];
   if (!collections) throw new Error(`Unknown mission: ${mission}`);
@@ -135,7 +134,6 @@ export async function searchSentinel({
   bbox,
   cloudCoverage = 30,
   maxRecords = 20,
-  page = 1,
 }) {
   if (!startDate || !endDate) {
     throw new Error('Выберите начальную и конечную даты');
@@ -157,7 +155,7 @@ export async function searchSentinel({
 
   const results = await Promise.allSettled(
     missions.map((m) =>
-      searchCollection(m, { startDate, endDate, bbox, cloudCoverage, limit: perMission, page })
+      searchCollection(m, { startDate, endDate, bbox, cloudCoverage, limit: perMission })
     )
   );
 

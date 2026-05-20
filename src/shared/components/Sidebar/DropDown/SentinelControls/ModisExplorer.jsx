@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import {
   Search, Database, Layers, Calendar, Cloud, MapPin,
   AlertCircle, Trash2, Eye, EyeOff, Info, ChevronUp,
-  ChevronDown, Square, Pentagon, X, Navigation, ArrowUp, ArrowDown,
+  Square, Pentagon, X, Navigation, ArrowUp, ArrowDown,
   Satellite, Sliders, Flame
 } from 'lucide-react';
 
@@ -12,8 +12,11 @@ import XYZ from 'ol/source/XYZ';
 import useModisExplorerStore from 'src/app/store/modisExplorerStore';
 import useAoiStore from 'src/app/store/aoiStore';
 import {
+  findLayerById,
+  getMapInstance,
+} from 'src/modules/MapPage/services/mapService';
+import {
   MODIS_PRODUCTS,
-  BAND_CONFIGS,
   searchModis,
   buildModisTileUrl,
   sortModisResults,
@@ -114,47 +117,37 @@ const ModisExplorer = () => {
     });
     olLayer.set('id', layerId);
 
-    if (window.mapInstance) {
-      window.mapInstance.addLayer(olLayer);
-    }
+    getMapInstance()?.addLayer(olLayer);
 
     store.addActiveLayer(layerConfig);
     store.setActiveTab('layers');
   }, [store]);
 
   const handleRemoveLayer = useCallback((layerId) => {
-    if (window.mapInstance) {
-      const layers = window.mapInstance.getLayers().getArray();
-      const olLayer = layers.find((l) => l.get('id') === layerId);
-      if (olLayer) window.mapInstance.removeLayer(olLayer);
-    }
+    const map = getMapInstance();
+    const olLayer = findLayerById(layerId);
+    if (map && olLayer) map.removeLayer(olLayer);
     store.removeActiveLayer(layerId);
   }, [store]);
 
   const handleToggleVisibility = useCallback((layerId) => {
-    if (window.mapInstance) {
-      const layers = window.mapInstance.getLayers().getArray();
-      const olLayer = layers.find((l) => l.get('id') === layerId);
-      if (olLayer) olLayer.setVisible(!olLayer.getVisible());
-    }
+    const olLayer = findLayerById(layerId);
+    if (olLayer) olLayer.setVisible(!olLayer.getVisible());
     store.toggleLayerVisibility(layerId);
   }, [store]);
 
   const handleOpacityChange = useCallback((layerId, opacity) => {
-    if (window.mapInstance) {
-      const layers = window.mapInstance.getLayers().getArray();
-      const olLayer = layers.find((l) => l.get('id') === layerId);
-      if (olLayer) olLayer.setOpacity(opacity / 100);
-    }
+    const olLayer = findLayerById(layerId);
+    if (olLayer) olLayer.setOpacity(opacity / 100);
     store.updateLayerOpacity(layerId, opacity);
   }, [store]);
 
   const handleClearAll = useCallback(() => {
-    if (window.mapInstance) {
+    const map = getMapInstance();
+    if (map) {
       store.activeLayers.forEach((layer) => {
-        const layers = window.mapInstance.getLayers().getArray();
-        const olLayer = layers.find((l) => l.get('id') === layer.id);
-        if (olLayer) window.mapInstance.removeLayer(olLayer);
+        const olLayer = findLayerById(layer.id);
+        if (olLayer) map.removeLayer(olLayer);
       });
     }
     store.clearActiveLayers();

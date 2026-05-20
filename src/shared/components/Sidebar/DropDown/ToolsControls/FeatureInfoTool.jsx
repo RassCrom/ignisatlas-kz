@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Info, X, ChevronDown, ChevronUp } from 'lucide-react';
 import useAnalysisStore from 'src/app/store/analysisStore';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
@@ -66,7 +67,7 @@ const FeatureInfoTool = () => {
   const blocked = activeToolId !== null && activeToolId !== TOOL_ID;
 
   const handleClick = useCallback((e) => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map) return;
 
     const found = [];
@@ -84,7 +85,7 @@ const FeatureInfoTool = () => {
   }, []);
 
   const activate = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map || blocked) return;
 
     setActiveTool(TOOL_ID);
@@ -97,7 +98,7 @@ const FeatureInfoTool = () => {
   }, [blocked, setActiveTool, handleClick]);
 
   const deactivate = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (map && listenerKeyRef.current) {
       map.un('singleclick', listenerKeyRef.current);
       listenerKeyRef.current = null;
@@ -109,7 +110,7 @@ const FeatureInfoTool = () => {
 
   useEffect(() => {
     return () => {
-      const map = window.mapInstance;
+      const map = getMapInstance();
       if (map && listenerKeyRef.current) {
         map.un('singleclick', listenerKeyRef.current);
         map.getTargetElement().style.cursor = '';

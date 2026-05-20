@@ -43,8 +43,8 @@ export const usePeatlandsLayer = (mapInstance, isMapInitialized) => {
         format: new GeoJSON(),
       }),
       style: (feature) => PEAT_STYLES[feature.get('DN')] || PEAT_DEFAULT,
-      visible,
-      opacity,
+      visible: false,
+      opacity: 1,
       zIndex: 4,
     });
 

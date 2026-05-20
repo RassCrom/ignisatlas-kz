@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import Button from "../shared/Button/Button";
 import styles from "./Hero.module.scss";
 
@@ -50,6 +50,7 @@ const PARTICLES = Array.from({ length: 14 }, (_, i) => ({
 
 const Hero = () => {
   const heroRef = useRef(null);
+  const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -62,27 +63,29 @@ const Hero = () => {
     <section className={styles.hero} ref={heroRef}>
       <motion.div
         className={styles.hero__bg}
-        style={{ y: bgY }}
+        style={shouldReduceMotion ? undefined : { y: bgY }}
         aria-hidden="true"
       />
       <div className={styles.hero__overlay} aria-hidden="true" />
 
-      <div className={styles.particles} aria-hidden="true">
-        {PARTICLES.map((p) => (
-          <span
-            key={p.id}
-            className={styles.particle}
-            style={{
-              "--delay": `${p.delay}s`,
-              "--duration": `${p.duration}s`,
-              left: p.left,
-              width: `${p.size}px`,
-              height: `${p.size}px`,
-              bottom: `${10 + ((p.id * 5) % 30)}%`,
-            }}
-          />
-        ))}
-      </div>
+      {!shouldReduceMotion && (
+        <div className={styles.particles} aria-hidden="true">
+          {PARTICLES.map((p) => (
+            <span
+              key={p.id}
+              className={styles.particle}
+              style={{
+                "--delay": `${p.delay}s`,
+                "--duration": `${p.duration}s`,
+                left: p.left,
+                width: `${p.size}px`,
+                height: `${p.size}px`,
+                bottom: `${10 + ((p.id * 5) % 30)}%`,
+              }}
+            />
+          ))}
+        </div>
+      )}
 
       <div className={styles.hero__container}>
         <div className={styles.hero__content}>
@@ -153,7 +156,7 @@ const Hero = () => {
       <motion.div
         className={styles.hero__scroll}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={{ opacity: shouldReduceMotion ? 0 : 1 }}
         transition={{ delay: 1.8, duration: 0.6 }}
         aria-hidden="true"
       >

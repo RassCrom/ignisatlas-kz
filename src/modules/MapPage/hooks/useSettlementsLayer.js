@@ -95,8 +95,8 @@ export const useSettlementsLayer = (mapInstance, isMapInitialized) => {
         format: new GeoJSON(),
       }),
       style: (feature) => getFeatureStyle(feature.get('fclass')),
-      visible,
-      opacity,
+      visible: false,
+      opacity: 1,
     });
 
     layer.set('layerType', 'settlements');

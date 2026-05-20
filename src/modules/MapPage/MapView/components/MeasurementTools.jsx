@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { Ruler, SquareIcon, XCircle, Trash2, Download, Copy } from 'lucide-react';
 
 import { unByKey } from 'ol/Observable.js';
@@ -17,6 +17,25 @@ import Style from 'ol/style/Style.js';
 
 import styles from './MeasurementTools.module.scss';
 
+const formatLength = (line) => {
+  const length = getLength(line);
+  if (length > 100) {
+    return `${Math.round((length / 1000) * 100) / 100} km`;
+  }
+  return `${Math.round(length * 100) / 100} m`;
+};
+
+const formatArea = (polygon) => {
+  const area = getArea(polygon);
+  if (area > 10000) {
+    return `${Math.round((area / 1000000) * 100) / 100} km<sup>2</sup>`;
+  }
+  return `${Math.round(area * 100) / 100} m<sup>2</sup>`;
+};
+
+const getMeasurementLabel = (measurementType) =>
+  measurementType === 'LineString' ? 'Distance' : 'Area';
+
 const MeasurementTools = ({ map }) => {
   const [showToolOptions, setShowToolOptions] = useState(false);
   const [type, setType] = useState('');
@@ -33,23 +52,7 @@ const MeasurementTools = ({ map }) => {
   const measureTooltipElementRef = useRef(null);
   const listenerRef = useRef(null);
 
-  const formatLength = (line) => {
-    const length = getLength(line);
-    if (length > 100) {
-      return `${Math.round((length / 1000) * 100) / 100} km`;
-    }
-    return `${Math.round(length * 100) / 100} m`;
-  };
-
-  const formatArea = (polygon) => {
-    const area = getArea(polygon);
-    if (area > 10000) {
-      return `${Math.round((area / 1000000) * 100) / 100} km<sup>2</sup>`;
-    }
-    return `${Math.round(area * 100) / 100} m<sup>2</sup>`;
-  };
-
-  const createMeasureTooltip = () => {
+  const createMeasureTooltip = useCallback(() => {
     if (measureTooltipElementRef.current) {
       measureTooltipElementRef.current.remove();
     }
@@ -63,9 +66,9 @@ const MeasurementTools = ({ map }) => {
       insertFirst: false,
     });
     map.addOverlay(measureTooltipRef.current);
-  };
+  }, [map]);
 
-  const createHelpTooltip = () => {
+  const createHelpTooltip = useCallback(() => {
     if (helpTooltipElementRef.current) {
       helpTooltipElementRef.current.remove();
     }
@@ -77,9 +80,9 @@ const MeasurementTools = ({ map }) => {
       positioning: 'center-left',
     });
     map.addOverlay(helpTooltipRef.current);
-  };
+  }, [map]);
 
-  const addDrawInteraction = () => {
+  const addDrawInteraction = useCallback(() => {
     if (!map || !type) return;
     
     const style = new Style({
@@ -171,7 +174,7 @@ const MeasurementTools = ({ map }) => {
         listenerRef.current = null;
       }
     });
-  };
+  }, [createHelpTooltip, createMeasureTooltip, map, type]);
 
   const handlePointerMove = (evt) => {
     if (evt.dragging || !helpTooltipElementRef.current) return;
@@ -285,7 +288,7 @@ const MeasurementTools = ({ map }) => {
         listenerRef.current = null;
       }
     };
-  }, [map, type]);
+  }, [addDrawInteraction, map, type]);
 
   const clearAllMeasurements = () => {
     if (sourceRef.current) {
@@ -309,7 +312,7 @@ const MeasurementTools = ({ map }) => {
     if (measurementResults.length === 0) return;
     
     const textToCopy = measurementResults
-      .map((result, index) => `${result.type === 'line' ? 'Distance' : 'Area'} ${index + 1}: ${result.value}`)
+      .map((result, index) => `${getMeasurementLabel(result.type)} ${index + 1}: ${result.value}`)
       .join('\n');
     
     navigator.clipboard.writeText(textToCopy);

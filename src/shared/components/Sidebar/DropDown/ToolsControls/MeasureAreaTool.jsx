@@ -7,6 +7,7 @@ import Overlay from 'ol/Overlay';
 import { unByKey } from 'ol/Observable';
 import { formatArea, createMeasureStyle } from 'src/modules/MapPage/utils/measurement';
 import useAnalysisStore from 'src/app/store/analysisStore';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
@@ -27,7 +28,7 @@ const MeasureAreaTool = () => {
   const setActiveTool = useAnalysisStore((s) => s.setActiveTool);
 
   useEffect(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map) return;
 
     const source = new VectorSource();
@@ -55,7 +56,7 @@ const MeasureAreaTool = () => {
   }, []);
 
   const startDrawing = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map || (activeToolId !== null && activeToolId !== TOOL_ID)) return;
 
     setActiveTool(TOOL_ID);
@@ -107,7 +108,7 @@ const MeasureAreaTool = () => {
   }, [activeToolId, setActiveTool, addTooltip]);
 
   const cancelDrawing = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (drawRef.current && map) {
       map.removeInteraction(drawRef.current);
       drawRef.current = null;
@@ -118,7 +119,7 @@ const MeasureAreaTool = () => {
   }, [setActiveTool]);
 
   const clearAll = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (sourceRef.current) sourceRef.current.clear();
     tooltipsRef.current.forEach((t) => { if (map) map.removeOverlay(t); });
     tooltipsRef.current = [];

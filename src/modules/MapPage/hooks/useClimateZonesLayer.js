@@ -45,8 +45,8 @@ export const useClimateZonesLayer = (mapInstance, isMapInitialized) => {
         format: new GeoJSON(),
       }),
       style: (feature) => getZoneStyle(feature.get('color') || '#888888'),
-      visible,
-      opacity,
+      visible: false,
+      opacity: 1,
       zIndex: 2,
     });
 

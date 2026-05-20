@@ -30,11 +30,6 @@ const audiences = [
   },
 ];
 
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.15 } },
-};
-
 const AudienceCard = ({ card, index, inView }) => {
   const xFrom = index % 2 === 0 ? -60 : 60;
 

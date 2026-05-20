@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import Nav, { navItems } from "./components/Nav";
+import Nav from "./components/Nav";
+import { navItems } from "./components/navItems";
 import Hero from "./sections/Hero/Hero";
 import Abstract from "./sections/Abstract/Abstract";
 import Regions from "./sections/Regions/Regions";

@@ -2,7 +2,7 @@ import Style from 'ol/style/Style';
 import Stroke from 'ol/style/Stroke';
 import Fill from "ol/style/Fill";
 
-export function styleFireModelFunction(feature, resolution) {
+export function styleFireModelFunction(feature) {
     let style;
     let dn = feature.get('dn');
     const opacity = 0.3;  // Константа для прозрачности

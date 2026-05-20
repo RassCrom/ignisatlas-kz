@@ -1,4 +1,4 @@
-export const createMenuSlice = (set, get) => ({
+export const createMenuSlice = (set) => ({
   // default values
   isMenuOpen: false,
   openTabIndex: null,

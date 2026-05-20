@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-const useAnalysisStore = create((set, get) => ({
+const useAnalysisStore = create((set) => ({
   drawnPolygons: [],  // { id, name, geojson (EPSG:4326), visible }
   activeToolId: null, // prevents concurrent draw interactions
 

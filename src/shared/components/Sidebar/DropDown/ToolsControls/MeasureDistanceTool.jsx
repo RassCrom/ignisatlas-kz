@@ -7,6 +7,7 @@ import Overlay from 'ol/Overlay';
 import { unByKey } from 'ol/Observable';
 import { formatLength, createMeasureStyle } from 'src/modules/MapPage/utils/measurement';
 import useAnalysisStore from 'src/app/store/analysisStore';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
@@ -28,7 +29,7 @@ const MeasureDistanceTool = () => {
 
   // Add/remove vector layer for drawn lines
   useEffect(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map) return;
 
     const source = new VectorSource();
@@ -57,7 +58,7 @@ const MeasureDistanceTool = () => {
   }, []);
 
   const startDrawing = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map || (activeToolId !== null && activeToolId !== TOOL_ID)) return;
 
     setActiveTool(TOOL_ID);
@@ -67,7 +68,6 @@ const MeasureDistanceTool = () => {
     drawRef.current = draw;
 
     // Live tooltip
-    let tooltipEl = null;
     let tooltipOverlay = null;
 
     const tooltipElLive = document.createElement('div');
@@ -114,7 +114,7 @@ const MeasureDistanceTool = () => {
   }, [activeToolId, setActiveTool, addTooltip]);
 
   const cancelDrawing = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (drawRef.current && map) {
       map.removeInteraction(drawRef.current);
       drawRef.current = null;
@@ -125,7 +125,7 @@ const MeasureDistanceTool = () => {
   }, [setActiveTool]);
 
   const clearAll = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (sourceRef.current) sourceRef.current.clear();
     tooltipsRef.current.forEach((t) => { if (map) map.removeOverlay(t); });
     tooltipsRef.current = [];

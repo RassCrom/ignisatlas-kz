@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-import { OpenEO } from "@openeo/js-client";
 import { DEFAULT_SATELLITE_INPUTS } from "../DropDownConstants";
 
 export const useSatelliteData = () => {
@@ -14,6 +13,7 @@ export const useSatelliteData = () => {
 
   const fetchSatelliteData = useCallback(async (params) => {
     try {
+      const { OpenEO } = await import("@openeo/js-client");
       const con = await OpenEO.connect("https://earthengine.openeo.org");
       await con.authenticateBasic("group1", "test123");
 

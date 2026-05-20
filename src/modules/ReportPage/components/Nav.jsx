@@ -1,19 +1,5 @@
-import { useState } from "react";
 import styles from "./Nav.module.scss";
-
-const navItems = [
-  { id: "hero", label: "Главная" },
-  { id: "abstract", label: "Абстракт" },
-  { id: "regions", label: "Регионы" },
-  { id: "temporal", label: "Динамика" },
-  { id: "elevation", label: "Высоты" },
-  { id: "landcover", label: "Покров" },
-  { id: "infra", label: "Инфраструктура" },
-  { id: "compare", label: "Сравнение" },
-  { id: "conclusions", label: "Выводы" },
-];
-
-export { navItems };
+import { navItems } from "./navItems";
 
 export default function Nav({ activeSection }) {
   return (

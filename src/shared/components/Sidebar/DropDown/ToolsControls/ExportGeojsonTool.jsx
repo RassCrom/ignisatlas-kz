@@ -4,13 +4,14 @@ import GeoJSONFormat from 'ol/format/GeoJSON';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import useAnalysisStore from 'src/app/store/analysisStore';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
 const geojsonFormat = new GeoJSONFormat();
 
 const getVectorLayers = () => {
-  const map = window.mapInstance;
+  const map = getMapInstance();
   if (!map) return [];
   const result = [];
 

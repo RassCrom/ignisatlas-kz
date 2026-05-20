@@ -1,3 +1,4 @@
+import { MotionConfig } from "framer-motion";
 import styles from "./LandingPage.module.scss";
 import Header from "./Sections/Header/Header";
 import Hero from "./Sections/Hero/Hero";
@@ -9,6 +10,7 @@ import Research from "./Sections/Research/Research";
 import Footer from "./Sections/Footer/Footer";
 
 const LandingPage = () => (
+  <MotionConfig reducedMotion="user">
     <div className={styles.landing}>
         <Header />
         <Hero />
@@ -21,6 +23,7 @@ const LandingPage = () => (
         </main>
         <Footer />
     </div>
+  </MotionConfig>
 );
 
 export default LandingPage;

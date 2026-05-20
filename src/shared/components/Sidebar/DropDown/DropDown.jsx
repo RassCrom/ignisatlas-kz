@@ -1,4 +1,4 @@
-import { memo, useCallback } from "react";
+import { lazy, memo, Suspense, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
 
 import Options from "../Options/Options";
@@ -9,93 +9,92 @@ import useFireStore from "src/app/store/fireStore";
 import useAdminBoundaryStore from "src/app/store/adminBoundaryStore";
 import { useLayersStore } from "../../../../app/store/layersStore";
 
-// Controls — Satellite (Copernicus/OpenEO)
-// import SatelliteInputForm from "./SentinelControls/SatelliteInputForm";
-import { useSatelliteData } from "./SentinelControls/useSatelliteData";
-
-// Controls — Sentinel imagery
-import SentinelExplorer from "./SentinelControls/SentinelExplorer";
-import SentinelExplorerOld from "./SentinelControls/SentinelExplorerOld";
-import LandsatExplorer from "./SentinelControls/LandsatExplorer";
-import ModisExplorer from "./SentinelControls/ModisExplorer";
-import AtmosphereExplorer from "./SentinelControls/AtmosphereExplorer";
-import LSTExplorer from "./SentinelControls/LSTExplorer";
-
-// Controls — Fire
-import FireControls from "./Controls/FireControls/FireControls";
-import FireRisk from "./Controls/FireControls/FireRisk";
-import FireModelling from "./Controls/FireControls/FireModelling";
-
-// Controls — Layers
-import LulcControls from "./Controls/LulcControls";
-import LulcPcControls from "./Controls/LulcPcControls";
-import DemControls from "./Controls/DemControls";
-import SettlementsControls from "./Controls/SettlementsControls";
-
-// Controls — Analysis tools
-import MeasureDistanceTool from "./ToolsControls/MeasureDistanceTool";
-import MeasureAreaTool     from "./ToolsControls/MeasureAreaTool";
-import DrawPolygonTool     from "./ToolsControls/DrawPolygonTool";
-import BufferTool          from "./ToolsControls/BufferTool";
-import IntersectTool       from "./ToolsControls/IntersectTool";
-import ProfileTool         from "./ToolsControls/ProfileTool";
-
-// Controls — Data tools
-import IdentifyPixelTool  from "./ToolsControls/IdentifyPixelTool";
-import FeatureInfoTool    from "./ToolsControls/FeatureInfoTool";
-import DownloadDataTool   from "./ToolsControls/DownloadDataTool";
-import ExportCsvTool      from "./ToolsControls/ExportCsvTool";
-import ExportGeojsonTool  from "./ToolsControls/ExportGeojsonTool";
-import ApiLinksTool       from "./ToolsControls/ApiLinksTool";
-import LayersPanel from "./Controls/LayersPanel";
-
-// Controls — Tools
-import SpatialBookmarksTool  from "./ToolsControls/SpatialBookmarksTool";
-import HomeExtentTool        from "./ToolsControls/HomeExtentTool";
-import CoordinateSearchTool  from "./ToolsControls/CoordinateSearchTool";
-import GoToRegionTool        from "./ToolsControls/GoToRegionTool";
-import GeolocateUserTool     from "./ToolsControls/GeolocateUserTool";
-import ClimateZonesControls from "./Controls/ClimateZonesControls";
-import ProtectedAreasControls from "./Controls/ProtectedAreasControls";
-import PeatlandsControls from "./Controls/PeatlandsControls";
-
 import styles from "./DropDown.module.scss";
+
+// Keep heavy controls out of the initial map sidebar chunk. They load when a
+// user expands the matching option group.
+const FireControls = lazy(() => import("./Controls/FireControls/FireControls"));
+const SentinelExplorer = lazy(() => import("./SentinelControls/SentinelExplorer"));
+const SentinelExplorerOld = lazy(() => import("./SentinelControls/SentinelExplorerOld"));
+const LandsatExplorer = lazy(() => import("./SentinelControls/LandsatExplorer"));
+const ModisExplorer = lazy(() => import("./SentinelControls/ModisExplorer"));
+const AtmosphereExplorer = lazy(() => import("./SentinelControls/AtmosphereExplorer"));
+const LSTExplorer = lazy(() => import("./SentinelControls/LSTExplorer"));
+
+const FireRisk = lazy(() => import("./Controls/FireControls/FireRisk"));
+const FireModelling = lazy(() => import("./Controls/FireControls/FireModelling"));
+
+const LulcControls = lazy(() => import("./Controls/LulcControls"));
+const LulcPcControls = lazy(() => import("./Controls/LulcPcControls"));
+const DemControls = lazy(() => import("./Controls/DemControls"));
+const SettlementsControls = lazy(() => import("./Controls/SettlementsControls"));
+const ClimateZonesControls = lazy(() => import("./Controls/ClimateZonesControls"));
+const ProtectedAreasControls = lazy(() => import("./Controls/ProtectedAreasControls"));
+const PeatlandsControls = lazy(() => import("./Controls/PeatlandsControls"));
+const LayersPanel = lazy(() => import("./Controls/LayersPanel"));
+
+const MeasureDistanceTool = lazy(() => import("./ToolsControls/MeasureDistanceTool"));
+const MeasureAreaTool = lazy(() => import("./ToolsControls/MeasureAreaTool"));
+const DrawPolygonTool = lazy(() => import("./ToolsControls/DrawPolygonTool"));
+const BufferTool = lazy(() => import("./ToolsControls/BufferTool"));
+const IntersectTool = lazy(() => import("./ToolsControls/IntersectTool"));
+const ProfileTool = lazy(() => import("./ToolsControls/ProfileTool"));
+
+const IdentifyPixelTool = lazy(() => import("./ToolsControls/IdentifyPixelTool"));
+const FeatureInfoTool = lazy(() => import("./ToolsControls/FeatureInfoTool"));
+const DownloadDataTool = lazy(() => import("./ToolsControls/DownloadDataTool"));
+const ExportCsvTool = lazy(() => import("./ToolsControls/ExportCsvTool"));
+const ExportGeojsonTool = lazy(() => import("./ToolsControls/ExportGeojsonTool"));
+const ApiLinksTool = lazy(() => import("./ToolsControls/ApiLinksTool"));
+
+const SpatialBookmarksTool = lazy(() => import("./ToolsControls/SpatialBookmarksTool"));
+const HomeExtentTool = lazy(() => import("./ToolsControls/HomeExtentTool"));
+const CoordinateSearchTool = lazy(() => import("./ToolsControls/CoordinateSearchTool"));
+const GoToRegionTool = lazy(() => import("./ToolsControls/GoToRegionTool"));
+const GeolocateUserTool = lazy(() => import("./ToolsControls/GeolocateUserTool"));
+
+const LazyControl = ({ component: Component, option }) => (
+  <Suspense fallback={<div className={styles.dropdown__empty}>Loading...</div>}>
+    <Component option={option} />
+  </Suspense>
+);
 
 /* ── Self-subscribed controls (need no props from DropDown) ── */
 const SELF_SUBSCRIBED = {
-  sentinel_explorer:     (opt) => <SentinelExplorer key={opt.id} />,
-  sentinel_explorer_old: (opt) => <SentinelExplorerOld key={opt.id} />,
-  landsat_explorer:      (opt) => <LandsatExplorer key={opt.id} />,
-  modis_explorer:        (opt) => <ModisExplorer key={opt.id} />,
-  atmosphere_explorer:   (opt) => <AtmosphereExplorer key={opt.id} />,
-  fire_risk:             (opt) => <FireRisk key={opt.id} />,
-  fire_modelling:        (opt) => <FireModelling key={opt.id} />,
-  lst_explorer:          (opt) => <LSTExplorer key={opt.id} />,
-  lulc:                  (opt) => <LulcControls key={opt.id} />,
-  lulc_pc:               (opt) => <LulcPcControls key={opt.id} />,
-  dem_pc:                (opt) => <DemControls key={opt.id} />,
-  settlements_layer:     (opt) => <SettlementsControls key={opt.id} />,
-  measure_distance:      (opt) => <MeasureDistanceTool key={opt.id} />,
-  measure_area:          (opt) => <MeasureAreaTool     key={opt.id} />,
-  draw_polygon:          (opt) => <DrawPolygonTool     key={opt.id} />,
-  buffer_tool:           (opt) => <BufferTool          key={opt.id} />,
-  intersect_tool:        (opt) => <IntersectTool       key={opt.id} />,
-  profile_tool:          (opt) => <ProfileTool         key={opt.id} />,
-  spatial_bookmark_tool:       (opt) => <SpatialBookmarksTool key={opt.id} />,
-  home_extent:                 (opt) => <HomeExtentTool key={opt.id} />,
-  coordinate_search:           (opt) => <CoordinateSearchTool key={opt.id} />,
-  go_to_region:                (opt) => <GoToRegionTool key={opt.id} />,
-  geolocate_user:              (opt) => <GeolocateUserTool key={opt.id} />,
-  layers_panel:                (opt) => <LayersPanel key={opt.id} />,
-  climate_zones:               (opt) => <ClimateZonesControls key={opt.id} />,
-  protected_area_boundaries:   (opt) => <ProtectedAreasControls key={opt.id} />,
-  peatlands:                   (opt) => <PeatlandsControls key={opt.id} option={opt} />,
-  identify_pixel:              (opt) => <IdentifyPixelTool  key={opt.id} />,
-  feature_info:                (opt) => <FeatureInfoTool    key={opt.id} />,
-  download_data:               (opt) => <DownloadDataTool   key={opt.id} />,
-  export_csv:                  (opt) => <ExportCsvTool      key={opt.id} />,
-  export_geojson:              (opt) => <ExportGeojsonTool  key={opt.id} />,
-  api_links:                   (opt) => <ApiLinksTool       key={opt.id} />,
+  sentinel_explorer: SentinelExplorer,
+  sentinel_explorer_old: SentinelExplorerOld,
+  landsat_explorer: LandsatExplorer,
+  modis_explorer: ModisExplorer,
+  atmosphere_explorer: AtmosphereExplorer,
+  fire_pinpoints: FireControls,
+  fire_risk: FireRisk,
+  fire_modelling: FireModelling,
+  lst_explorer: LSTExplorer,
+  lulc: LulcControls,
+  lulc_pc: LulcPcControls,
+  dem_pc: DemControls,
+  settlements_layer: SettlementsControls,
+  measure_distance: MeasureDistanceTool,
+  measure_area: MeasureAreaTool,
+  draw_polygon: DrawPolygonTool,
+  buffer_tool: BufferTool,
+  intersect_tool: IntersectTool,
+  profile_tool: ProfileTool,
+  spatial_bookmark_tool: SpatialBookmarksTool,
+  home_extent: HomeExtentTool,
+  coordinate_search: CoordinateSearchTool,
+  go_to_region: GoToRegionTool,
+  geolocate_user: GeolocateUserTool,
+  layers_panel: LayersPanel,
+  climate_zones: ClimateZonesControls,
+  protected_area_boundaries: ProtectedAreasControls,
+  peatlands: PeatlandsControls,
+  identify_pixel: IdentifyPixelTool,
+  feature_info: FeatureInfoTool,
+  download_data: DownloadDataTool,
+  export_csv: ExportCsvTool,
+  export_geojson: ExportGeojsonTool,
+  api_links: ApiLinksTool,
 };
 
 const DropDown = memo(({ openTabIndex }) => {
@@ -103,23 +102,14 @@ const DropDown = memo(({ openTabIndex }) => {
   const {
     toggleStates, toggleOption,
     expandedItems, toggleExpandedItem,
-    setFireLayerVisible, fireLayerVisible,
-    fireOpacity, setFireOpacity,
-    fireIntensityFilter, setFireIntensityFilter,
-    fireStartDate, fireEndDate, setFireStartDate, setFireEndDate,
-    fireHeatmapMode, setFireHeatmapMode,
-    autoRefresh, setAutoRefresh,
-    fireLength, setDateHasChanged,
   } = useFireStore();
 
   const {
-    layerVisibility, layerOpacity,
+    layerOpacity,
     changeFirst, changeSecond, changeThird, changeOpacity,
   } = useAdminBoundaryStore();
 
   const { layers, updateLayer, changeVisibility } = useLayersStore();
-
-  const satelliteHookData = useSatelliteData();
 
   /* ── Opacity helpers ─────────────────────────────────────── */
   const getOpacityValue = useCallback(
@@ -164,57 +154,23 @@ const DropDown = memo(({ openTabIndex }) => {
     (option) => {
       // Self-subscribed controls need no props
       const selfSubscribed = SELF_SUBSCRIBED[option.id];
-      if (selfSubscribed) return selfSubscribed(option);
-
-      // Prop-dependent controls
-      switch (option.id) {
-        // case "copernicus_image":
-        //   return <SatelliteInputForm key={option.id} {...satelliteHookData} />;
-
-        case "fire_pinpoints":
-          return (
-            <FireControls
-              key={option.id}
-              fireLayerVisible={fireLayerVisible}
-              setFireLayerVisible={setFireLayerVisible}
-              fireOpacity={fireOpacity}
-              setFireOpacity={setFireOpacity}
-              fireIntensityFilter={fireIntensityFilter}
-              setFireIntensityFilter={setFireIntensityFilter}
-              fireStartDate={fireStartDate}
-              fireEndDate={fireEndDate}
-              setFireStartDate={setFireStartDate}
-              setFireEndDate={setFireEndDate}
-              fireHeatmapMode={fireHeatmapMode}
-              setFireHeatmapMode={setFireHeatmapMode}
-              autoRefresh={autoRefresh}
-              setAutoRefresh={setAutoRefresh}
-              fireLength={fireLength}
-              setDateHasChanged={setDateHasChanged}
-            />
-          );
-
-        default:
-          return (
-            <Options
-              key={option.id}
-              isOpacityOn={option.layerType}
-              option={option}
-              getToggleState={getToggleState}
-              handleToggleChange={handleToggleChange}
-              getOpacityValue={getOpacityValue}
-              setOpacityValue={handleOpacityValue}
-            />
-          );
+      if (selfSubscribed) {
+        return <LazyControl key={option.id} component={selfSubscribed} option={option} />;
       }
+
+      return (
+        <Options
+          key={option.id}
+          isOpacityOn={option.layerType}
+          option={option}
+          getToggleState={getToggleState}
+          handleToggleChange={handleToggleChange}
+          getOpacityValue={getOpacityValue}
+          setOpacityValue={handleOpacityValue}
+        />
+      );
     },
     [
-      satelliteHookData,
-      fireLayerVisible, setFireLayerVisible, fireOpacity, setFireOpacity,
-      fireIntensityFilter, setFireIntensityFilter,
-      fireStartDate, fireEndDate, setFireStartDate, setFireEndDate,
-      fireHeatmapMode, setFireHeatmapMode, autoRefresh, setAutoRefresh,
-      fireLength, setDateHasChanged,
       getToggleState, handleToggleChange, getOpacityValue, handleOpacityValue,
     ]
   );

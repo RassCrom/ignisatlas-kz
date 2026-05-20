@@ -16,6 +16,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import useAnalysisStore from 'src/app/store/analysisStore';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
@@ -49,7 +50,7 @@ const ProfileTool = () => {
   const { activeToolId, setActiveTool } = useAnalysisStore();
 
   useEffect(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map) return;
 
     const source = new VectorSource();
@@ -118,7 +119,7 @@ const ProfileTool = () => {
   }, []);
 
   const startDrawing = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map || (activeToolId !== null && activeToolId !== TOOL_ID)) return;
 
     setActiveTool(TOOL_ID);
@@ -152,7 +153,7 @@ const ProfileTool = () => {
   }, [activeToolId, setActiveTool, fetchProfile]);
 
   const cancelDrawing = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (drawRef.current && map) {
       map.removeInteraction(drawRef.current);
       drawRef.current = null;

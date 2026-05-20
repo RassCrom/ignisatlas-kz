@@ -18,8 +18,8 @@ export const useDemLayer = (mapInstance, isMapInitialized) => {
     if (isAdded && tileUrl && !layerRef.current) {
       const layer = new TileLayer({
         source: new XYZ({ url: tileUrl, crossOrigin: 'anonymous', maxZoom: 14 }),
-        visible,
-        opacity,
+        visible: false,
+        opacity: 1,
       });
       layer.set('layerType', 'dem_pc');
       mapInstance.addLayer(layer);

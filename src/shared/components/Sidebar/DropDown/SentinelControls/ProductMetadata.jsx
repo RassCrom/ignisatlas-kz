@@ -1,4 +1,4 @@
-import styles from './SentinelControls.module.scss';
+import styles from './SentinelExplorer.module.scss';
 import {
   Satellite, Calendar as CalendarIcon, Database,
   Settings, Image,

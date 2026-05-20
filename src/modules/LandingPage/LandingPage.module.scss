@@ -14,3 +14,16 @@
 .main {
     position: relative;
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .landing,
+    .landing *,
+    .landing *::before,
+    .landing *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        transition-delay: 0s !important;
+    }
+}

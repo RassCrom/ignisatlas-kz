@@ -1,4 +1,4 @@
-export const createAdminBoundarySlice = (set, get) => ({
+export const createAdminBoundarySlice = (set) => ({
     layerVisibility: {
         country_boundaries: false,
         region_boundaries: false,

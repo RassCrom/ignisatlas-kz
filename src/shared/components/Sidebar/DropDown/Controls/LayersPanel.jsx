@@ -15,14 +15,14 @@ import useSentinelExplorerOldStore from 'src/app/store/sentinelExplorerOldStore'
 import useModisExplorerStore from 'src/app/store/modisExplorerStore';
 import useAtmosphereStore from 'src/app/store/atmosphereStore';
 import useLstStore from 'src/app/store/lstStore';
+import { findLayerById } from 'src/modules/MapPage/services/mapService';
 
 import './FireControls/fireControls.scss';
 import './LayersPanel.scss';
 
 // Used only for explorer tile layers that have no reactive MapView hook.
 function syncOlLayer(id, visible, opacity01) {
-  if (!window.mapInstance) return;
-  const ol = window.mapInstance.getLayers().getArray().find((l) => l.get('id') === id);
+  const ol = findLayerById(id);
   if (!ol) return;
   if (visible !== undefined) ol.setVisible(visible);
   if (opacity01 !== undefined) ol.setOpacity(opacity01);

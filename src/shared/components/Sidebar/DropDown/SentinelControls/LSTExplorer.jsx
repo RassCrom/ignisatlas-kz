@@ -13,6 +13,10 @@ import { KAZAKHSTAN_EXTENT_GEO } from '../../../../../modules/MapPage/utils/mapC
 import useLstStore from 'src/app/store/lstStore';
 import useAoiStore from 'src/app/store/aoiStore';
 import {
+  findLayerById,
+  getMapInstance,
+} from 'src/modules/MapPage/services/mapService';
+import {
   LST_PRODUCTS,
   LST_RANGE_C,
   buildLstTileUrl,
@@ -122,47 +126,37 @@ const LSTExplorer = () => {
     });
     olLayer.set('id', layerId);
 
-    if (window.mapInstance) {
-      window.mapInstance.addLayer(olLayer);
-    }
+    getMapInstance()?.addLayer(olLayer);
 
     store.addActiveLayer(layerConfig);
     store.setActiveTab('layers');
   }, [store]);
 
   const handleRemoveLayer = useCallback((layerId) => {
-    if (window.mapInstance) {
-      const layers = window.mapInstance.getLayers().getArray();
-      const olLayer = layers.find((l) => l.get('id') === layerId);
-      if (olLayer) window.mapInstance.removeLayer(olLayer);
-    }
+    const map = getMapInstance();
+    const olLayer = findLayerById(layerId);
+    if (map && olLayer) map.removeLayer(olLayer);
     store.removeActiveLayer(layerId);
   }, [store]);
 
   const handleToggleVisibility = useCallback((layerId) => {
-    if (window.mapInstance) {
-      const layers = window.mapInstance.getLayers().getArray();
-      const olLayer = layers.find((l) => l.get('id') === layerId);
-      if (olLayer) olLayer.setVisible(!olLayer.getVisible());
-    }
+    const olLayer = findLayerById(layerId);
+    if (olLayer) olLayer.setVisible(!olLayer.getVisible());
     store.toggleLayerVisibility(layerId);
   }, [store]);
 
   const handleOpacityChange = useCallback((layerId, opacity) => {
-    if (window.mapInstance) {
-      const layers = window.mapInstance.getLayers().getArray();
-      const olLayer = layers.find((l) => l.get('id') === layerId);
-      if (olLayer) olLayer.setOpacity(opacity / 100);
-    }
+    const olLayer = findLayerById(layerId);
+    if (olLayer) olLayer.setOpacity(opacity / 100);
     store.updateLayerOpacity(layerId, opacity);
   }, [store]);
 
   const handleClearAll = useCallback(() => {
-    if (window.mapInstance) {
+    const map = getMapInstance();
+    if (map) {
       store.activeLayers.forEach((layer) => {
-        const layers = window.mapInstance.getLayers().getArray();
-        const olLayer = layers.find((l) => l.get('id') === layer.id);
-        if (olLayer) window.mapInstance.removeLayer(olLayer);
+        const olLayer = findLayerById(layer.id);
+        if (olLayer) map.removeLayer(olLayer);
       });
     }
     store.clearActiveLayers();
@@ -174,9 +168,9 @@ const LSTExplorer = () => {
 
   const handleToggleAll = useCallback(() => {
     const next = !(store.activeLayers.length > 0 && store.activeLayers.every((l) => l.visible));
-    if (window.mapInstance) {
+    if (getMapInstance()) {
       store.activeLayers.forEach((layer) => {
-        const ol = window.mapInstance.getLayers().getArray().find((l) => l.get('id') === layer.id);
+        const ol = findLayerById(layer.id);
         if (ol) ol.setVisible(next);
       });
     }

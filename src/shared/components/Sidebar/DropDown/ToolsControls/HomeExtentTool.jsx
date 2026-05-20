@@ -1,11 +1,13 @@
 import { Home } from 'lucide-react';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import { flyHome } from 'src/modules/MapPage/utils/flyHome';
 import styles from './ToolsControls.module.scss';
 
 const HomeExtentTool = () => {
   const handleClick = () => {
-    if (!window.mapInstance) return;
-    flyHome(window.mapInstance.getView());
+    const map = getMapInstance();
+    if (!map) return;
+    flyHome(map.getView());
   };
 
   return (

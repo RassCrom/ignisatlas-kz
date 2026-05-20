@@ -1,4 +1,4 @@
-export const createMapFilterSlices = (set, get) => ({
+export const createMapFilterSlices = (set) => ({
   // default values
   states: {
     layers: {

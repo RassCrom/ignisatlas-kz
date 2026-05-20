@@ -10,8 +10,12 @@ import { createGeocoder } from "../utils/geocoder.js";
 import { DEFAULT_POSITION } from "../utils/mapConstants.js";
 import "ol-geocoder/dist/ol-geocoder.min.css";
 
-export const useMapInitialization = (mapRef, basemap, initialLayers = [], styles) => {
+const EMPTY_INITIAL_LAYERS = [];
+
+export const useMapInitialization = (mapRef, basemap, initialLayers = EMPTY_INITIAL_LAYERS, styles) => {
   const mapInstance = useRef(null);
+  const initialBasemapRef = useRef(basemap);
+  const initialLayersRef = useRef(initialLayers);
   const [isMapInitialized, setIsMapInitialized] = useState(false);
 
   useEffect(() => {
@@ -32,7 +36,7 @@ export const useMapInitialization = (mapRef, basemap, initialLayers = [], styles
       loadTilesWhileAnimating: true,
       moveTolerance: 5,
       target: mapRef.current,
-      layers: [basemap, ...initialLayers],
+      layers: [initialBasemapRef.current, ...initialLayersRef.current],
       view,
       controls: defaultControls().extend([new FullScreen(), geocoder]),
     });

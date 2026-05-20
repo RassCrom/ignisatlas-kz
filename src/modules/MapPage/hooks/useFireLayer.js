@@ -7,18 +7,16 @@ export const useFireLayer = (fireStore) => {
     setFireLength,
     fireStartDate,
     fireEndDate,
-    dateHasChanged,
     updateFireStatistics,
     showTechnogenicOnly,
     showNaturalOnly,
     selectedModel,
     selectedRegions,
-    confidenceFilter
   } = fireStore;
 
   const fireLayer = useMemo(() => 
-    createFireLayer(setFireLength, fireStartDate, fireEndDate, updateFireStatistics), 
-    [setFireLength]
+    createFireLayer(setFireLength, updateFireStatistics), 
+    [setFireLength, updateFireStatistics]
   );
 
   const loadFireData = useCallback(async (mapInstance) => {

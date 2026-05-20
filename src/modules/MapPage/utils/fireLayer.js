@@ -8,8 +8,7 @@ import { Heatmap as HeatmapLayer } from 'ol/layer';
 import Cluster from 'ol/source/Cluster';
 import { toast } from "react-toastify";
 
-export const createFireLayer = (setFireLength, fireStartDate, fireEndDate, updateFireStatistics) => {
-  // console.log(fireStartDate, fireEndDate)
+export const createFireLayer = (setFireLength, updateFireStatistics) => {
   // Main vector source to hold all fire point features
   const source = new VectorSource();
 

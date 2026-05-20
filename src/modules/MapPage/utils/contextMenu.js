@@ -1,4 +1,4 @@
-import ContextMenu from "ol-contextmenu";
+import ContextMenu from "ol-contextmenu/dist/ol-contextmenu.js";
 import { transform } from 'ol/proj';
 
 import { showToast } from "src/shared/utils/showToast";
@@ -137,14 +137,14 @@ export const createContextMenu = (_map, view, _DEFAULT_POSITION, styles) => {
       {
         text: menuItem(ICONS.bookmark, 'Сохранить закладку'),
         classname: cls,
-        callback: (e) => {
+        callback: () => {
           const center = view.getCenter();
           const zoom = view.getZoom();
           const extent = view.calculateExtent(_map.getSize());
           const date = dayjs().format('YYYY-MM-DD');
           const title = `Bookmark ${useBookmarksStore.getState().bookmarks.length + 1}`;
           
-          useBookmarksStore.getState().addBookmark(title, date, center, zoom, extent);
+          useBookmarksStore.getState().addBookmark(title, date, '', center, zoom, extent);
           showToast('Закладка для этой области успешно сохранена', 'success');
         },
       },

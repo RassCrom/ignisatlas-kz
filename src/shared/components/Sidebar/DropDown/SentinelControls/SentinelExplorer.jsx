@@ -11,6 +11,10 @@ import XYZ from 'ol/source/XYZ';
 
 import useSentinelExplorerStore from 'src/app/store/sentinelExplorerStore';
 import useAoiStore from 'src/app/store/aoiStore';
+import {
+  findLayerById,
+  getMapInstance,
+} from 'src/modules/MapPage/services/mapService';
 import { createSentinelLayer } from 'src/utils/sentinelUtils';
 import {
   searchSentinelPc,
@@ -189,13 +193,13 @@ const SentinelExplorer = () => {
     if (mission === 'sentinel-2') {
       const tileUrl = buildS2TileUrl(result.id, preset);
       const olLayer = createXyzLayer(layerId, tileUrl, store.globalOpacity / 100);
-      if (window.mapInstance) window.mapInstance.addLayer(olLayer);
+      getMapInstance()?.addLayer(olLayer);
       store.addActiveLayer({ ...baseConfig, tileUrl, canRender: true });
 
     } else if (mission === 'sentinel-1') {
       const tileUrl = buildS1TileUrl(result.id, preset);
       const olLayer = createXyzLayer(layerId, tileUrl, store.globalOpacity / 100);
-      if (window.mapInstance) window.mapInstance.addLayer(olLayer);
+      getMapInstance()?.addLayer(olLayer);
       store.addActiveLayer({ ...baseConfig, tileUrl, canRender: true });
 
     } else if (mission === 'sentinel-3') {
@@ -205,7 +209,7 @@ const SentinelExplorer = () => {
         store.startDate, store.endDate,
         store.globalOpacity / 100, result.id
       );
-      if (olLayer && window.mapInstance) window.mapInstance.addLayer(olLayer);
+      if (olLayer) getMapInstance()?.addLayer(olLayer);
       store.addActiveLayer({ ...baseConfig, tileUrl: null, canRender: true });
 
     } else {
@@ -217,9 +221,10 @@ const SentinelExplorer = () => {
   }, [store]);
 
   const handleRemoveLayer = useCallback((layer) => {
-    if (layer.canRender !== false && window.mapInstance) {
-      const olLayer = window.mapInstance.getLayers().getArray().find((l) => l.get('id') === layer.id);
-      if (olLayer) window.mapInstance.removeLayer(olLayer);
+    const map = getMapInstance();
+    if (layer.canRender !== false && map) {
+      const olLayer = findLayerById(layer.id);
+      if (olLayer) map.removeLayer(olLayer);
     }
     store.removeActiveLayer(layer.id);
   }, [store]);
@@ -227,26 +232,27 @@ const SentinelExplorer = () => {
   const handleToggleVisibility = useCallback((layer) => {
     const next = !layer.visible;
     store.toggleLayerVisibility(layer.id);
-    if (layer.canRender !== false && window.mapInstance) {
-      const olLayer = window.mapInstance.getLayers().getArray().find((l) => l.get('id') === layer.id);
+    if (layer.canRender !== false) {
+      const olLayer = findLayerById(layer.id);
       if (olLayer) olLayer.setVisible(next);
     }
   }, [store]);
 
   const handleOpacityChange = useCallback((layer, opacity) => {
     store.updateLayerOpacity(layer.id, opacity); // stores 0–100
-    if (layer.canRender !== false && window.mapInstance) {
-      const olLayer = window.mapInstance.getLayers().getArray().find((l) => l.get('id') === layer.id);
+    if (layer.canRender !== false) {
+      const olLayer = findLayerById(layer.id);
       if (olLayer) olLayer.setOpacity(opacity / 100);
     }
   }, [store]);
 
   const handleClearAll = useCallback(() => {
-    if (window.mapInstance) {
+    const map = getMapInstance();
+    if (map) {
       store.activeLayers.forEach((layer) => {
         if (layer.canRender !== false) {
-          const olLayer = window.mapInstance.getLayers().getArray().find((l) => l.get('id') === layer.id);
-          if (olLayer) window.mapInstance.removeLayer(olLayer);
+          const olLayer = findLayerById(layer.id);
+          if (olLayer) map.removeLayer(olLayer);
         }
       });
     }

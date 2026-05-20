@@ -1,4 +1,4 @@
-export const createFireSlice = (set, get) => ({
+export const createFireSlice = (set) => ({
     fireLayerVisible: false,
   
     setFireLayerVisible: () =>

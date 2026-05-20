@@ -2,11 +2,12 @@ import { useState, useCallback } from 'react';
 import { Download, RefreshCw } from 'lucide-react';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
 const getVectorLayers = () => {
-  const map = window.mapInstance;
+  const map = getMapInstance();
   if (!map) return [];
   const result = [];
 

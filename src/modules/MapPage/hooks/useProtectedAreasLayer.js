@@ -36,8 +36,8 @@ export const useProtectedAreasLayer = (mapInstance, isMapInitialized) => {
         format: new GeoJSON(),
       }),
       style: PA_STYLE,
-      visible,
-      opacity,
+      visible: false,
+      opacity: 1,
       zIndex: 3,
     });
 

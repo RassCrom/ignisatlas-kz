@@ -1,5 +1,5 @@
 import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Clock, Info, Eye, EyeOff, RefreshCw } from "lucide-react";
 
 import './Options.scss';
@@ -22,7 +22,7 @@ const Options = ({
   const isEnabled = getToggleState(option.id);
   const currentOpacity = getOpacityValue(option.id) * 100;
 
-  const layerType = useMemo(() => !(isOpacityOn === 'Point'), []);
+  const layerType = !(isOpacityOn === 'Point');
 
   const handleOpacityChange = (value) => {
     const numValue = Math.max(0, Math.min(100, parseInt(value) || 0));

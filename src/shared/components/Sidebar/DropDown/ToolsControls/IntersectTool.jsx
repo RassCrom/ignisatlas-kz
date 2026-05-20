@@ -8,6 +8,7 @@ import { Style, Stroke, Fill } from 'ol/style';
 import GeoJSON from 'ol/format/GeoJSON';
 import { showToast } from 'src/shared/utils/showToast';
 import useAnalysisStore from 'src/app/store/analysisStore';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
@@ -52,7 +53,7 @@ const IntersectTool = () => {
   const { drawnPolygons, activeToolId, setActiveTool } = useAnalysisStore();
 
   useEffect(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map) return;
 
     const mkLayer = (src, style, id, z) => {
@@ -79,7 +80,7 @@ const IntersectTool = () => {
   }, []);
 
   const drawForStep = useCallback((targetStep, onDone) => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map || (activeToolId !== null && activeToolId !== TOOL_ID)) return;
 
     setActiveTool(TOOL_ID);
@@ -115,7 +116,7 @@ const IntersectTool = () => {
   }, [activeToolId, setActiveTool]);
 
   const cancelDrawing = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (drawRef.current && map) {
       map.removeInteraction(drawRef.current);
       drawRef.current = null;

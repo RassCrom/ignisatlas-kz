@@ -4,6 +4,7 @@ import { toLonLat } from 'ol/proj';
 import VectorLayer from 'ol/layer/Vector';
 import { LULC_CLASSES } from 'src/utils/lulcService';
 import useAnalysisStore from 'src/app/store/analysisStore';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
@@ -164,7 +165,7 @@ const IdentifyPixelTool = () => {
   const blocked = activeToolId !== null && activeToolId !== TOOL_ID;
 
   const handleClick = useCallback(async (e) => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map) return;
 
     const [lon, lat] = toLonLat(e.coordinate, 'EPSG:3857');
@@ -215,7 +216,7 @@ const IdentifyPixelTool = () => {
   }, []);
 
   const activate = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map || blocked) return;
     setActiveTool(TOOL_ID);
     setIsActive(true);
@@ -226,7 +227,7 @@ const IdentifyPixelTool = () => {
   }, [blocked, setActiveTool, handleClick]);
 
   const deactivate = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (map && listenerRef.current) {
       map.un('singleclick', listenerRef.current);
       listenerRef.current = null;
@@ -239,7 +240,7 @@ const IdentifyPixelTool = () => {
   useEffect(() => {
     const handleContextIdentify = async (ev) => {
       const coord = ev.detail.coordinate;
-      const map = window.mapInstance;
+      const map = getMapInstance();
       if (!map) return;
       
       const pixel = map.getPixelFromCoordinate(coord);
@@ -255,7 +256,7 @@ const IdentifyPixelTool = () => {
     window.addEventListener('cm:identify_pixel', handleContextIdentify);
     return () => {
       window.removeEventListener('cm:identify_pixel', handleContextIdentify);
-      const map = window.mapInstance;
+      const map = getMapInstance();
       if (map && listenerRef.current) {
         map.un('singleclick', listenerRef.current);
         map.getTargetElement().style.cursor = '';

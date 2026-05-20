@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigation } from 'lucide-react';
 import { fromLonLat } from 'ol/proj';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import styles from './ToolsControls.module.scss';
 
 const CoordinateSearchTool = () => {
@@ -26,9 +27,10 @@ const CoordinateSearchTool = () => {
       setError('Долгота должна быть в диапазоне −180…180.');
       return;
     }
-    if (!window.mapInstance) return;
+    const map = getMapInstance();
+    if (!map) return;
 
-    window.mapInstance.getView().animate({
+    map.getView().animate({
       center: fromLonLat([lonNum, latNum]),
       zoom,
       duration: 800,

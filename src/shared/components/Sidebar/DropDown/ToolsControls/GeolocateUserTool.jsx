@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Crosshair } from 'lucide-react';
 import { fromLonLat } from 'ol/proj';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import { showToast } from 'src/shared/utils/showToast';
 import styles from './ToolsControls.module.scss';
 
@@ -14,7 +15,8 @@ const GeolocateUserTool = () => {
       setErrorMsg('Геолокация не поддерживается браузером.');
       return;
     }
-    if (!window.mapInstance) return;
+    const map = getMapInstance();
+    if (!map) return;
 
     setStatus('loading');
     setErrorMsg('');
@@ -22,7 +24,7 @@ const GeolocateUserTool = () => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const center = fromLonLat([pos.coords.longitude, pos.coords.latitude]);
-        window.mapInstance.getView().animate({ center, zoom: 12, duration: 800 });
+        map.getView().animate({ center, zoom: 12, duration: 800 });
         showToast('Местоположение определено');
         setStatus('idle');
       },

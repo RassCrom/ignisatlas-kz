@@ -6,6 +6,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { Style, Stroke, Fill } from 'ol/style';
 import GeoJSON from 'ol/format/GeoJSON';
 import useAnalysisStore from 'src/app/store/analysisStore';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
@@ -32,7 +33,7 @@ const DrawPolygonTool = () => {
 
   // Temporary preview layer for the just-drawn polygon while naming it
   useEffect(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map) return;
 
     const source = new VectorSource();
@@ -46,7 +47,7 @@ const DrawPolygonTool = () => {
   }, []);
 
   const startDrawing = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (!map || (activeToolId !== null && activeToolId !== TOOL_ID)) return;
 
     setPendingGeojson(null);
@@ -86,7 +87,7 @@ const DrawPolygonTool = () => {
   }, [activeToolId, setActiveTool]);
 
   const cancelDrawing = useCallback(() => {
-    const map = window.mapInstance;
+    const map = getMapInstance();
     if (drawRef.current && map) {
       map.removeInteraction(drawRef.current);
       drawRef.current = null;

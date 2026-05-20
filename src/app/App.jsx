@@ -5,11 +5,11 @@ import "./App.css";
 
 const MapPage = lazy(() => import("src/modules/MapPage/MapPage"));
 const NotFoundPage = lazy(() => import("src/shared/errors/NotFoundPage"));
+const ReportPage = lazy(() => import("src/modules/ReportPage/ReportPage"));
 
 import MainLayout from "src/shared/components/Layout/Layout";
 import LandingPage from "src/modules/LandingPage/LandingPage";
 import LoadingPage from "src/shared/components/LoadingPage/LoadingPage";
-import ReportPage from "../modules/ReportPage/ReportPage";
 
 function App() {
   return (

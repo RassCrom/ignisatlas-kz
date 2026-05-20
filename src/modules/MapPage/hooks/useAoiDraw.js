@@ -46,7 +46,7 @@ export const useAoiDraw = (mapInstance, isMapInitialized) => {
       source,
       style: AOI_STYLE,
       zIndex: 999,
-      visible: aoiVisible,
+      visible: false,
     });
     layer.set('id', 'aoi-draw-layer');
 

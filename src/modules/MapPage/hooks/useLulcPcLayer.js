@@ -22,8 +22,8 @@ export const useLulcPcLayer = (mapInstance, isMapInitialized) => {
           crossOrigin: 'anonymous',
           maxZoom: 14,
         }),
-        visible,
-        opacity,
+        visible: false,
+        opacity: 1,
       });
 
       layer.set('layerType', 'lulc_pc');

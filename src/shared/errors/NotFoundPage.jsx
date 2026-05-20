@@ -1,11 +1,8 @@
-import { useNavigate } from 'react-router-dom';
 import styles from './NotFoundPage.module.scss';
 
 const PARTICLE_COUNT = 5;
 
 const NotFoundPage = () => {
-  const navigate = useNavigate();
-
   return (
     <div className={styles.page}>
       <div className={styles.particles} aria-hidden="true">
