@@ -14,7 +14,16 @@ export const getMapInstance = () => activeMap;
 
 export const findLayerById = (layerId) => {
   const map = getMapInstance();
-  if (!map) return null;
+  if (!map?.getLayer) return null;
+  return map.getLayer(layerId) || null;
+};
 
-  return map.getLayers().getArray().find((layer) => layer.get('id') === layerId) || null;
+export const removeLayerById = (layerId) => {
+  const map = getMapInstance();
+  if (map?.getLayer(layerId)) map.removeLayer(layerId);
+};
+
+export const removeSourceById = (sourceId) => {
+  const map = getMapInstance();
+  if (map?.getSource(sourceId)) map.removeSource(sourceId);
 };

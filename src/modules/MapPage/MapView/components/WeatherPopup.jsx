@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { transform } from 'ol/proj';
 import {
   X,
   Wind,
@@ -38,7 +37,7 @@ const WeatherPopup = ({ coordinate, onClose }) => {
     setWeather(null);
     setLocation(null);
 
-    const [lon, lat] = transform(coordinate, 'EPSG:3857', 'EPSG:4326');
+    const [lon, lat] = coordinate;
 
     Promise.all([
       fetch(

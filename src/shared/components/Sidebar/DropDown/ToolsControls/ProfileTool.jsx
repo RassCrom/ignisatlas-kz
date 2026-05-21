@@ -1,66 +1,75 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { TrendingUp, X, Trash2, RefreshCw } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { RefreshCw, Trash2, TrendingUp, X } from 'lucide-react';
 import * as turf from '@turf/turf';
 import axios from 'axios';
-import Draw from 'ol/interaction/Draw';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import { Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style';
-import GeoJSON from 'ol/format/GeoJSON';
 import {
-  AreaChart,
   Area,
+  AreaChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Tooltip,
-  ResponsiveContainer
 } from 'recharts';
 import useAnalysisStore from 'src/app/store/analysisStore';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
+import { startMapLibreDraw } from 'src/modules/MapPage/utils/maplibreDraw';
+import { removeSourceWithLayers } from 'src/modules/MapPage/utils/maplibreHelpers';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
 const TOOL_ID = 'profile_tool';
-
-const LINE_STYLE = new Style({
-  stroke: new Stroke({ color: 'rgba(167, 139, 250, 0.85)', width: 2, lineDash: [6, 4] }),
-  image: new CircleStyle({
-    radius: 4,
-    fill: new Fill({ color: 'rgba(167, 139, 250, 0.8)' }),
-    stroke: new Stroke({ color: 'rgba(167, 139, 250, 0.4)', width: 1 }),
-  }),
-});
-
-const geojsonFormat = new GeoJSON();
+const SOURCE_ID = 'profile-line-source';
+const LAYER_ID = 'profile-line-layer';
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+const ensureLayer = (map) => {
+  if (!map.getSource(SOURCE_ID)) {
+    map.addSource(SOURCE_ID, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    });
+  }
+  if (!map.getLayer(LAYER_ID)) {
+    map.addLayer({
+      id: LAYER_ID,
+      type: 'line',
+      source: SOURCE_ID,
+      paint: {
+        'line-color': 'rgba(167, 139, 250, 0.85)',
+        'line-width': 2,
+        'line-dasharray': [2, 1],
+      },
+    });
+  }
+};
+
+const setLineData = (map, feature) => {
+  map.getSource(SOURCE_ID)?.setData({
+    type: 'FeatureCollection',
+    features: feature ? [feature] : [],
+  });
+};
 
 const ProfileTool = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [profileData, setProfileData] = useState(null); // [{ distance, elevation }]
-  const [stats, setStats] = useState(null);             // { min, max, gain, loss }
-  const [lastLine, setLastLine] = useState(null);        // GeoJSON LineString (4326)
+  const [profileData, setProfileData] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [lastLine, setLastLine] = useState(null);
   const [error, setError] = useState(null);
-
-  const drawRef = useRef(null);
-  const sourceRef = useRef(null);
-  const layerRef = useRef(null);
+  const drawCleanupRef = useRef(null);
 
   const { activeToolId, setActiveTool } = useAnalysisStore();
 
   useEffect(() => {
     const map = getMapInstance();
-    if (!map) return;
-
-    const source = new VectorSource();
-    const layer = new VectorLayer({ source, style: LINE_STYLE, zIndex: 489 });
-    layer.set('id', 'profile-line-layer');
-    map.addLayer(layer);
-    sourceRef.current = source;
-    layerRef.current = layer;
-
-    return () => { map.removeLayer(layer); };
+    if (!map) return undefined;
+    ensureLayer(map);
+    return () => {
+      drawCleanupRef.current?.();
+      removeSourceWithLayers(map, SOURCE_ID);
+    };
   }, []);
 
   const fetchProfile = useCallback(async (lineGeojson) => {
@@ -73,7 +82,6 @@ const ProfileTool = () => {
       const line = turf.feature(lineGeojson);
       const lengthKm = turf.length(line, { units: 'kilometers' });
       const n = clamp(Math.round(lengthKm * 5), 10, 100);
-
       const points = Array.from({ length: n }, (_, i) => {
         const dist = (lengthKm / (n - 1)) * i;
         return turf.along(line, dist, { units: 'kilometers' });
@@ -94,11 +102,10 @@ const ProfileTool = () => {
         elevation: r.elevation ?? 0,
       }));
 
-      // Compute stats
       const elevations = chartData.map((d) => d.elevation);
       let gain = 0;
       let loss = 0;
-      for (let i = 1; i < elevations.length; i++) {
+      for (let i = 1; i < elevations.length; i += 1) {
         const diff = elevations[i] - elevations[i - 1];
         if (diff > 0) gain += diff;
         else loss += Math.abs(diff);
@@ -122,42 +129,36 @@ const ProfileTool = () => {
     const map = getMapInstance();
     if (!map || (activeToolId !== null && activeToolId !== TOOL_ID)) return;
 
+    ensureLayer(map);
     setActiveTool(TOOL_ID);
     setIsDrawing(true);
-    sourceRef.current?.clear();
+    setLineData(map, null);
     setProfileData(null);
     setStats(null);
     setError(null);
     setLastLine(null);
 
-    const draw = new Draw({ source: sourceRef.current, type: 'LineString', style: LINE_STYLE });
-    drawRef.current = draw;
-
-    draw.on('drawend', (e) => {
-      const geom = e.feature.getGeometry();
-      const geojson = geojsonFormat.writeGeometryObject(geom, {
-        featureProjection: 'EPSG:3857',
-        dataProjection: 'EPSG:4326',
-      });
-      setLastLine(geojson);
-
-      map.removeInteraction(draw);
-      drawRef.current = null;
-      setIsDrawing(false);
-      setActiveTool(null);
-
-      fetchProfile(geojson);
+    drawCleanupRef.current = startMapLibreDraw(map, {
+      idPrefix: 'profile-line-draw',
+      type: 'LineString',
+      minPoints: 2,
+      onComplete: (feature) => {
+        setLineData(map, feature);
+        setLastLine(feature.geometry);
+        setIsDrawing(false);
+        setActiveTool(null);
+        fetchProfile(feature.geometry);
+      },
+      onCancel: () => {
+        setIsDrawing(false);
+        setActiveTool(null);
+      },
     });
-
-    map.addInteraction(draw);
   }, [activeToolId, setActiveTool, fetchProfile]);
 
   const cancelDrawing = useCallback(() => {
-    const map = getMapInstance();
-    if (drawRef.current && map) {
-      map.removeInteraction(drawRef.current);
-      drawRef.current = null;
-    }
+    drawCleanupRef.current?.();
+    drawCleanupRef.current = null;
     setIsDrawing(false);
     setActiveTool(null);
   }, [setActiveTool]);
@@ -167,7 +168,8 @@ const ProfileTool = () => {
   }, [lastLine, fetchProfile]);
 
   const clearAll = useCallback(() => {
-    sourceRef.current?.clear();
+    const map = getMapInstance();
+    if (map) setLineData(map, null);
     setProfileData(null);
     setStats(null);
     setLastLine(null);
@@ -213,7 +215,7 @@ const ProfileTool = () => {
       {loading && (
         <div className={styles.loadingRow}>
           <span className={styles.spinner} />
-          Fetching elevation data…
+          Fetching elevation data...
         </div>
       )}
 
@@ -231,22 +233,10 @@ const ProfileTool = () => {
       {profileData && stats && (
         <>
           <div className={styles.statsGrid}>
-            <div className={styles.statCard}>
-              <span>Min elevation</span>
-              <span>{stats.min} m</span>
-            </div>
-            <div className={styles.statCard}>
-              <span>Max elevation</span>
-              <span>{stats.max} m</span>
-            </div>
-            <div className={styles.statCard}>
-              <span>Total gain</span>
-              <span style={{ color: 'rgba(52,211,153,0.9)' }}>+{stats.gain} m</span>
-            </div>
-            <div className={styles.statCard}>
-              <span>Total loss</span>
-              <span style={{ color: 'rgba(248,113,113,0.9)' }}>-{stats.loss} m</span>
-            </div>
+            <div className={styles.statCard}><span>Min elevation</span><span>{stats.min} m</span></div>
+            <div className={styles.statCard}><span>Max elevation</span><span>{stats.max} m</span></div>
+            <div className={styles.statCard}><span>Total gain</span><span style={{ color: 'rgba(52,211,153,0.9)' }}>+{stats.gain} m</span></div>
+            <div className={styles.statCard}><span>Total loss</span><span style={{ color: 'rgba(248,113,113,0.9)' }}>-{stats.loss} m</span></div>
           </div>
 
           <div className={styles.chartWrap}>
@@ -254,7 +244,7 @@ const ProfileTool = () => {
               <AreaChart data={profileData} margin={{ top: 4, right: 6, bottom: 0, left: -10 }}>
                 <defs>
                   <linearGradient id="elevGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%"  stopColor="rgba(167,139,250,0.6)" stopOpacity={0.6} />
+                    <stop offset="5%" stopColor="rgba(167,139,250,0.6)" stopOpacity={0.6} />
                     <stop offset="95%" stopColor="rgba(167,139,250,0.05)" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
@@ -265,12 +255,7 @@ const ProfileTool = () => {
                   axisLine={false}
                   label={{ value: 'km', position: 'insideRight', offset: 4, fontSize: 9, fill: 'rgba(217,218,245,0.25)' }}
                 />
-                <YAxis
-                  tick={{ fontSize: 9, fill: 'rgba(217,218,245,0.35)' }}
-                  tickLine={false}
-                  axisLine={false}
-                  width={36}
-                />
+                <YAxis tick={{ fontSize: 9, fill: 'rgba(217,218,245,0.35)' }} tickLine={false} axisLine={false} width={36} />
                 <Tooltip content={<CustomTooltip />} />
                 <Area
                   type="monotone"

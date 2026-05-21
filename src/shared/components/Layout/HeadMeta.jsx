@@ -2,8 +2,7 @@ import { Helmet } from "react-helmet-async";
 
 const HeadMeta = () => {
   const baseUrl = "/map/";
-  const logoExtens = "logo.webp";
-  const logoUrl = `${baseUrl}${logoExtens}`;
+  const logoUrl = "/temp_logo.png";
 
   return (
     <Helmet>
@@ -42,7 +41,6 @@ const HeadMeta = () => {
       />
       <meta name="twitter:image" content={logoUrl} />
 
-      <link rel="preload" as="image" href={`/${logoExtens}`} />
       <link rel="preconnect" href="https://tile.openstreetmap.org" />
       <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
 

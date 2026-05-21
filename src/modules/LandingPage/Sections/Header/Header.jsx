@@ -66,7 +66,6 @@ const Header = () => {
         <motion.a
           className={styles.header__cta}
           href="/map"
-          target="_blank"
           rel="noopener noreferrer"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}

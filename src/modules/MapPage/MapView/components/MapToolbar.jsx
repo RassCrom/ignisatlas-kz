@@ -5,16 +5,14 @@ import MeasurementTools from './MeasurementTools';
 import styles from './MapToolbar.module.scss';
 
 const MapToolbar = ({ map, currentBasemap, onBasemapChange }) => {
-  const view = map?.getView();
-
   const zoomIn = () => {
-    if (!view) return;
-    view.animate({ zoom: view.getZoom() + 1, duration: 200 });
+    if (!map) return;
+    map.zoomTo(map.getZoom() + 1, { duration: 200 });
   };
 
   const zoomOut = () => {
-    if (!view) return;
-    view.animate({ zoom: view.getZoom() - 1, duration: 200 });
+    if (!map) return;
+    map.zoomTo(map.getZoom() - 1, { duration: 200 });
   };
 
   return (
@@ -30,7 +28,7 @@ const MapToolbar = ({ map, currentBasemap, onBasemapChange }) => {
       </div>
 
       <div className={styles.group}>
-        <button className={styles.btn} onClick={() => flyHome(view)} title="На главный вид">
+        <button className={styles.btn} onClick={() => flyHome(map)} title="На главный вид">
           <Home size={16} />
         </button>
       </div>

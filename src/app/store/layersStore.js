@@ -46,7 +46,7 @@ export const useLayersStore = create(set => ({
     },
     {
       "id": 'ps',
-      "geojsonFile": "Point_sobora.geojson",
+      "geojsonFile": "Point_sbora.geojson",
       "layerName": "Пункты сбора",
       "visible": false,
       "style": "pointSoboraStyle"

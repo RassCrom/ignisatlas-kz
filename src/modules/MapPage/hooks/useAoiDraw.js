@@ -1,146 +1,93 @@
-import { useEffect, useRef, useCallback } from 'react';
-import Draw, { createBox } from 'ol/interaction/Draw';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import { Style, Stroke, Fill } from 'ol/style';
-import GeoJSON from 'ol/format/GeoJSON';
-import { transformExtent } from 'ol/proj';
+import { bbox } from '@turf/turf';
+import { useEffect, useMemo, useRef, useCallback } from 'react';
 import useAoiStore from 'src/app/store/aoiStore';
+import {
+  addOrUpdateGeoJsonSource,
+  removeSourceWithLayers,
+  setLayerVisibility,
+} from '../utils/maplibreHelpers';
+import { startMapLibreDraw } from '../utils/maplibreDraw';
 
-const AOI_STYLE = new Style({
-  stroke: new Stroke({
-    color: 'rgba(136, 139, 224, 0.8)',
-    width: 2,
-    lineDash: [6, 4],
-  }),
-  fill: new Fill({
-    color: 'rgba(136, 139, 224, 0.1)',
-  }),
-});
-
-const geojsonFormat = new GeoJSON();
-
-/**
- * Hook that adds AOI (Area of Interest) drawing tools to the OpenLayers map.
- * Supports bounding box and polygon draw modes.
- * Uses the shared aoiStore so both Sentinel and Landsat explorers share one AOI.
- */
 export const useAoiDraw = (mapInstance, isMapInitialized) => {
-  const sourceRef = useRef(null);
-  const layerRef = useRef(null);
-  const drawRef = useRef(null);
-
+  const drawCleanupRef = useRef(null);
   const aoiDrawMode = useAoiStore((s) => s.aoiDrawMode);
+  const aoiGeometry = useAoiStore((s) => s.aoiGeometry);
+  const aoiVisible = useAoiStore((s) => s.aoiVisible);
   const setAoi = useAoiStore((s) => s.setAoi);
   const clearAoiStore = useAoiStore((s) => s.clearAoi);
   const setAoiDrawMode = useAoiStore((s) => s.setAoiDrawMode);
 
-  const aoiVisible = useAoiStore((s) => s.aoiVisible);
+  const aoiData = useMemo(() => ({
+    type: 'FeatureCollection',
+    features: aoiGeometry ? [{ type: 'Feature', geometry: aoiGeometry, properties: {} }] : [],
+  }), [aoiGeometry]);
 
-  // Initialize the vector layer once
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;
-
-    const source = new VectorSource();
-    const layer = new VectorLayer({
-      source,
-      style: AOI_STYLE,
-      zIndex: 999,
-      visible: false,
-    });
-    layer.set('id', 'aoi-draw-layer');
-
-    mapInstance.addLayer(layer);
-    sourceRef.current = source;
-    layerRef.current = layer;
-
-    return () => {
-      if (mapInstance) {
-        mapInstance.removeLayer(layer);
-      }
-      sourceRef.current = null;
-      layerRef.current = null;
-    };
-  }, [mapInstance, isMapInitialized]);
-
-  // Sync AOI visibility with store
-  useEffect(() => {
-    if (layerRef.current) {
-      layerRef.current.setVisible(aoiVisible);
+    addOrUpdateGeoJsonSource(mapInstance, 'aoi-source', aoiData);
+    if (!mapInstance.getLayer('aoi-fill')) {
+      mapInstance.addLayer({
+        id: 'aoi-fill',
+        type: 'fill',
+        source: 'aoi-source',
+        layout: { visibility: aoiVisible ? 'visible' : 'none' },
+        paint: {
+          'fill-color': 'rgba(136, 139, 224, 0.1)',
+          'fill-opacity': 1,
+        },
+      });
     }
-  }, [aoiVisible]);
-
-  // Handle draw mode changes
-  useEffect(() => {
-    if (!mapInstance || !isMapInitialized || !sourceRef.current) return;
-
-    // Remove any previous draw interaction
-    if (drawRef.current) {
-      mapInstance.removeInteraction(drawRef.current);
-      drawRef.current = null;
+    if (!mapInstance.getLayer('aoi-line')) {
+      mapInstance.addLayer({
+        id: 'aoi-line',
+        type: 'line',
+        source: 'aoi-source',
+        layout: { visibility: aoiVisible ? 'visible' : 'none' },
+        paint: {
+          'line-color': 'rgba(136, 139, 224, 0.8)',
+          'line-width': 2,
+          'line-dasharray': [2, 2],
+        },
+      });
     }
+    return () => removeSourceWithLayers(mapInstance, 'aoi-source');
+  }, [aoiData, aoiVisible, isMapInitialized, mapInstance]);
 
+  useEffect(() => {
+    if (!mapInstance || !isMapInitialized) return;
+    addOrUpdateGeoJsonSource(mapInstance, 'aoi-source', aoiData);
+  }, [aoiData, isMapInitialized, mapInstance]);
+
+  useEffect(() => {
+    if (!mapInstance || !isMapInitialized) return;
+    setLayerVisibility(mapInstance, 'aoi-fill', aoiVisible);
+    setLayerVisibility(mapInstance, 'aoi-line', aoiVisible);
+  }, [aoiVisible, isMapInitialized, mapInstance]);
+
+  useEffect(() => {
+    if (!mapInstance || !isMapInitialized) return;
+    drawCleanupRef.current?.();
+    drawCleanupRef.current = null;
     if (!aoiDrawMode) return;
 
-    // Clear previous AOI
-    sourceRef.current.clear();
-
-    const drawType = aoiDrawMode === 'box' ? 'Circle' : 'Polygon';
-    const drawOptions = {
-      source: sourceRef.current,
-      type: drawType,
-    };
-
-    // Box mode uses geometryFunction for rectangle
-    if (aoiDrawMode === 'box') {
-      drawOptions.geometryFunction = createBox();
-    }
-
-    const draw = new Draw(drawOptions);
-    drawRef.current = draw;
-
-    draw.on('drawend', (event) => {
-      const feature = event.feature;
-      const geom = feature.getGeometry();
-
-      // Convert to WGS84 GeoJSON
-      const geojson = geojsonFormat.writeGeometryObject(geom, {
-        featureProjection: 'EPSG:3857',
-        dataProjection: 'EPSG:4326',
-      });
-
-      // Compute bbox
-      const extent3857 = geom.getExtent();
-      const bbox = transformExtent(extent3857, 'EPSG:3857', 'EPSG:4326');
-      const roundedBbox = bbox.map((v) => Math.round(v * 1000000) / 1000000);
-
-      setAoi(geojson, roundedBbox);
-      setAoiDrawMode(null); // Exit draw mode after completing
-
-      // Remove draw interaction after completion
-      setTimeout(() => {
-        if (mapInstance && drawRef.current) {
-          mapInstance.removeInteraction(drawRef.current);
-          drawRef.current = null;
-        }
-      }, 50);
+    drawCleanupRef.current = startMapLibreDraw(mapInstance, {
+      idPrefix: 'aoi-draw-preview',
+      type: 'Polygon',
+      onComplete: (feature) => {
+        const roundedBbox = bbox(feature).map((value) => Math.round(value * 1000000) / 1000000);
+        setAoi(feature.geometry, roundedBbox);
+        setAoiDrawMode(null);
+      },
+      onCancel: () => setAoiDrawMode(null),
     });
 
-    mapInstance.addInteraction(draw);
-
     return () => {
-      if (mapInstance && drawRef.current) {
-        mapInstance.removeInteraction(drawRef.current);
-        drawRef.current = null;
-      }
+      drawCleanupRef.current?.();
+      drawCleanupRef.current = null;
     };
-  }, [aoiDrawMode, mapInstance, isMapInitialized, setAoi, setAoiDrawMode]);
+  }, [aoiDrawMode, isMapInitialized, mapInstance, setAoi, setAoiDrawMode]);
 
-  // Clear AOI from map and store
   const clearAoi = useCallback(() => {
-    if (sourceRef.current) {
-      sourceRef.current.clear();
-    }
     clearAoiStore();
   }, [clearAoiStore]);
 

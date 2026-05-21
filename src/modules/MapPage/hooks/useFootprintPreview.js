@@ -1,73 +1,50 @@
-import { useEffect, useRef } from 'react';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import GeoJSON from 'ol/format/GeoJSON';
-import { Style, Stroke, Fill } from 'ol/style';
+import { useEffect, useMemo } from 'react';
 import useSentinelExplorerStore from 'src/app/store/sentinelExplorerStore';
+import {
+  addOrUpdateGeoJsonSource,
+  removeSourceWithLayers,
+} from '../utils/maplibreHelpers';
 
-const FOOTPRINT_STYLE = new Style({
-  stroke: new Stroke({
-    color: 'rgba(52, 211, 153, 0.7)',
-    width: 2,
-  }),
-  fill: new Fill({
-    color: 'rgba(52, 211, 153, 0.08)',
-  }),
-});
-
-const geojsonFormat = new GeoJSON();
-
-/**
- * Hook that shows a temporary footprint overlay on the map
- * when hovering over search result cards.
- */
 export const useFootprintPreview = (mapInstance, isMapInitialized) => {
-  const sourceRef = useRef(null);
-  const layerRef = useRef(null);
-
   const hoveredFootprint = useSentinelExplorerStore((s) => s.hoveredFootprint);
 
-  // Initialize the vector layer
+  const data = useMemo(() => ({
+    type: 'FeatureCollection',
+    features: hoveredFootprint
+      ? [{ type: 'Feature', geometry: hoveredFootprint, properties: {} }]
+      : [],
+  }), [hoveredFootprint]);
+
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;
-
-    const source = new VectorSource();
-    const layer = new VectorLayer({
-      source,
-      style: FOOTPRINT_STYLE,
-      zIndex: 998,
-    });
-    layer.set('id', 'footprint-preview-layer');
-
-    mapInstance.addLayer(layer);
-    sourceRef.current = source;
-    layerRef.current = layer;
-
-    return () => {
-      if (mapInstance) {
-        mapInstance.removeLayer(layer);
-      }
-      sourceRef.current = null;
-      layerRef.current = null;
-    };
-  }, [mapInstance, isMapInitialized]);
-
-  // Update footprint when hoveredFootprint changes
-  useEffect(() => {
-    if (!sourceRef.current) return;
-
-    sourceRef.current.clear();
-
-    if (hoveredFootprint) {
-      try {
-        const features = geojsonFormat.readFeatures(
-          { type: 'Feature', geometry: hoveredFootprint },
-          { featureProjection: 'EPSG:3857', dataProjection: 'EPSG:4326' }
-        );
-        sourceRef.current.addFeatures(features);
-      } catch (e) {
-        console.warn('Failed to render footprint preview:', e);
-      }
+    addOrUpdateGeoJsonSource(mapInstance, 'footprint-preview-source', data);
+    if (!mapInstance.getLayer('footprint-preview-fill')) {
+      mapInstance.addLayer({
+        id: 'footprint-preview-fill',
+        type: 'fill',
+        source: 'footprint-preview-source',
+        paint: {
+          'fill-color': 'rgba(52, 211, 153, 0.08)',
+          'fill-opacity': 1,
+        },
+      });
     }
-  }, [hoveredFootprint]);
+    if (!mapInstance.getLayer('footprint-preview-line')) {
+      mapInstance.addLayer({
+        id: 'footprint-preview-line',
+        type: 'line',
+        source: 'footprint-preview-source',
+        paint: {
+          'line-color': 'rgba(52, 211, 153, 0.7)',
+          'line-width': 2,
+        },
+      });
+    }
+    return () => removeSourceWithLayers(mapInstance, 'footprint-preview-source');
+  }, [isMapInitialized, mapInstance]);
+
+  useEffect(() => {
+    if (!mapInstance || !isMapInitialized) return;
+    addOrUpdateGeoJsonSource(mapInstance, 'footprint-preview-source', data);
+  }, [data, isMapInitialized, mapInstance]);
 };

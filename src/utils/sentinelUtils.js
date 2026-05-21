@@ -1,6 +1,3 @@
-import TileLayer from 'ol/layer/Tile';
-import TileWMS from 'ol/source/TileWMS';
-
 // Configuration constants
 const SENTINEL_CONFIG = {
   sentinel3: {
@@ -161,26 +158,34 @@ export const createSentinelLayer = (satellite, layerId, bands, startDate, endDat
     wmsParams['PRODUCT_ID'] = productId;
   }
   
-  const layer = new TileLayer({
-    source: new TileWMS({
-      url: config.baseUrl,
-      params: wmsParams,
-      serverType: 'geoserver',
-      crossOrigin: 'anonymous'
-    }),
-    opacity: opacity,
-    visible: true,
-    title: `${satellite.toUpperCase()} ${bands} (${startDate} to ${endDate})`
+  const params = new URLSearchParams({
+    SERVICE: 'WMS',
+    REQUEST: 'GetMap',
+    VERSION: wmsParams.VERSION,
+    LAYERS: wmsParams.LAYERS,
+    FORMAT: wmsParams.FORMAT,
+    TRANSPARENT: String(wmsParams.TRANSPARENT),
+    TILED: String(wmsParams.TILED),
+    CRS: wmsParams.CRS,
+    WIDTH: '256',
+    HEIGHT: '256',
+    BBOX: '{bbox-epsg-3857}',
+    TIME: timeRange,
+    MAXCC: String(wmsParams.MAXCC),
   });
-  
-  // Set custom properties for layer management
-  layer.set('id', layerId);
-  layer.set('type', satellite);
-  layer.set('bands', bands);
-  layer.set('timeRange', timeRange);
-  layer.set('productId', productId);
-  
-  return layer;
+
+  if (productId) params.set('PRODUCT_ID', productId);
+
+  return {
+    id: layerId,
+    type: satellite,
+    bands,
+    timeRange,
+    productId,
+    tileUrl: `${config.baseUrl}?${params.toString()}`,
+    opacity,
+    title: `${satellite.toUpperCase()} ${bands} (${startDate} to ${endDate})`,
+  };
 };
 
 export const getProductDetails = async (satellite, productId) => {

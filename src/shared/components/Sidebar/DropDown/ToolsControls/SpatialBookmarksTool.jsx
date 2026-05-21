@@ -11,31 +11,20 @@ const captureMapScreenshot = () =>
   new Promise((resolve) => {
     const map = getMapInstance();
     if (!map) return resolve(null);
-    map.once('rendercomplete', () => {
+    map.once('render', () => {
       try {
-        const mapEl = map.getTargetElement();
-        const [w, h] = map.getSize();
+        const canvas = map.getCanvas();
         const out = document.createElement('canvas');
-        out.width  = Math.round(w * 0.3);
-        out.height = Math.round(h * 0.3);
+        out.width  = Math.round(canvas.width * 0.3);
+        out.height = Math.round(canvas.height * 0.3);
         const ctx = out.getContext('2d');
-        ctx.scale(0.3, 0.3);
-        mapEl.querySelectorAll('.ol-layer canvas, canvas.ol-layer').forEach((c) => {
-          if (!c.width) return;
-          const op = c.parentNode.style.opacity;
-          ctx.globalAlpha = op === '' ? 1 : Number(op);
-          const m = c.style.transform.match(/^matrix\(([^)]*)\)$/);
-          if (m) ctx.setTransform(...m[1].split(',').map(Number));
-          ctx.drawImage(c, 0, 0);
-        });
-        ctx.globalAlpha = 1;
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(canvas, 0, 0, out.width, out.height);
         resolve(out.toDataURL('image/jpeg', 0.6));
       } catch {
         resolve(null);
       }
     });
-    map.renderSync();
+    map.triggerRepaint();
   });
 
 const SpatialBookmarksTool = () => {
@@ -53,10 +42,10 @@ const SpatialBookmarksTool = () => {
     setSaving(true);
     const screenshot = await captureMapScreenshot();
 
-    const view = map.getView();
-    const center = view.getCenter();
-    const zoom = view.getZoom();
-    const extent = view.calculateExtent(map.getSize());
+    const center = [map.getCenter().lng, map.getCenter().lat];
+    const zoom = map.getZoom();
+    const bounds = map.getBounds();
+    const extent = [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()];
 
     const bookmarkTitle = title.trim() || `Bookmark ${store.bookmarks.length + 1}`;
 
@@ -70,7 +59,7 @@ const SpatialBookmarksTool = () => {
   const handleNavigate = useCallback((bookmark) => {
     const map = getMapInstance();
     if (!map) return;
-    map.getView().animate({
+    map.flyTo({
       center: bookmark.center,
       zoom: bookmark.zoom,
       duration: 1000

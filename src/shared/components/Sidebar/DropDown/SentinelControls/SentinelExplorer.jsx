@@ -6,15 +6,10 @@ import {
   Satellite, Sliders,
 } from 'lucide-react';
 
-import TileLayer from 'ol/layer/Tile';
-import XYZ from 'ol/source/XYZ';
 
 import useSentinelExplorerStore from 'src/app/store/sentinelExplorerStore';
 import useAoiStore from 'src/app/store/aoiStore';
-import {
-  findLayerById,
-  getMapInstance,
-} from 'src/modules/MapPage/services/mapService';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import { createSentinelLayer } from 'src/utils/sentinelUtils';
 import {
   searchSentinelPc,
@@ -87,26 +82,47 @@ function resolvePreset(resultMission, currentPreset) {
   return opts.find((o) => o.value === currentPreset) ? currentPreset : opts[0].value;
 }
 
-// Creates an XYZ TileLayer from a PC TiTiler URL.
-// Tiles outside the scene footprint return 404 — setState(4) discards them silently.
-function createXyzLayer(layerId, tileUrl, opacity01) {
-  const olLayer = new TileLayer({
-    source: new XYZ({
-      url: tileUrl,
-      crossOrigin: 'anonymous',
-      maxZoom: 18,
-      tileLoadFunction: (tile, src) => {
-        const img = tile.getImage();
-        img.onerror = () => tile.setState(4);
-        img.src = src;
-      },
-      attributions: '© ESA Sentinel / Microsoft Planetary Computer',
-    }),
-    opacity: opacity01,
-    zIndex: 100,
-  });
-  olLayer.set('id', layerId);
-  return olLayer;
+function addRasterLayer(layerId, tileUrl, opacity01) {
+  const map = getMapInstance();
+  if (!map || !tileUrl) return;
+  const sourceId = `${layerId}-source`;
+  if (!map.getSource(sourceId)) {
+    map.addSource(sourceId, {
+      type: 'raster',
+      tiles: [tileUrl],
+      tileSize: 256,
+      maxzoom: 18,
+      attribution: '© ESA Sentinel / Microsoft Planetary Computer',
+    });
+  }
+  if (!map.getLayer(layerId)) {
+    map.addLayer({
+      id: layerId,
+      type: 'raster',
+      source: sourceId,
+      paint: { 'raster-opacity': opacity01 },
+    });
+  }
+}
+
+function removeRasterLayer(layerId) {
+  const map = getMapInstance();
+  if (!map) return;
+  const sourceId = `${layerId}-source`;
+  if (map.getLayer(layerId)) map.removeLayer(layerId);
+  if (map.getSource(sourceId)) map.removeSource(sourceId);
+}
+
+function setRasterLayerVisibility(layerId, visible) {
+  const map = getMapInstance();
+  if (map?.getLayer(layerId)) {
+    map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+  }
+}
+
+function setRasterLayerOpacity(layerId, opacity01) {
+  const map = getMapInstance();
+  if (map?.getLayer(layerId)) map.setPaintProperty(layerId, 'raster-opacity', opacity01);
 }
 
 // ── Component ────────────────────────────────────────────────────────────────
@@ -192,25 +208,23 @@ const SentinelExplorer = () => {
 
     if (mission === 'sentinel-2') {
       const tileUrl = buildS2TileUrl(result.id, preset);
-      const olLayer = createXyzLayer(layerId, tileUrl, store.globalOpacity / 100);
-      getMapInstance()?.addLayer(olLayer);
+      addRasterLayer(layerId, tileUrl, store.globalOpacity / 100);
       store.addActiveLayer({ ...baseConfig, tileUrl, canRender: true });
 
     } else if (mission === 'sentinel-1') {
       const tileUrl = buildS1TileUrl(result.id, preset);
-      const olLayer = createXyzLayer(layerId, tileUrl, store.globalOpacity / 100);
-      getMapInstance()?.addLayer(olLayer);
+      addRasterLayer(layerId, tileUrl, store.globalOpacity / 100);
       store.addActiveLayer({ ...baseConfig, tileUrl, canRender: true });
 
     } else if (mission === 'sentinel-3') {
       // S-3 is not on PC; fall back to Sentinel Hub WMS via sentinelUtils
-      const olLayer = createSentinelLayer(
+      const layerConfig = createSentinelLayer(
         S3_UTILS_KEY, layerId, preset,
         store.startDate, store.endDate,
         store.globalOpacity / 100, result.id
       );
-      if (olLayer) getMapInstance()?.addLayer(olLayer);
-      store.addActiveLayer({ ...baseConfig, tileUrl: null, canRender: true });
+      if (layerConfig?.tileUrl) addRasterLayer(layerId, layerConfig.tileUrl, store.globalOpacity / 100);
+      store.addActiveLayer({ ...baseConfig, tileUrl: layerConfig?.tileUrl || null, canRender: true });
 
     } else {
       // S-5P: atmospheric data — no OL tile layer, store metadata only
@@ -221,41 +235,25 @@ const SentinelExplorer = () => {
   }, [store]);
 
   const handleRemoveLayer = useCallback((layer) => {
-    const map = getMapInstance();
-    if (layer.canRender !== false && map) {
-      const olLayer = findLayerById(layer.id);
-      if (olLayer) map.removeLayer(olLayer);
-    }
+    if (layer.canRender !== false) removeRasterLayer(layer.id);
     store.removeActiveLayer(layer.id);
   }, [store]);
 
   const handleToggleVisibility = useCallback((layer) => {
     const next = !layer.visible;
     store.toggleLayerVisibility(layer.id);
-    if (layer.canRender !== false) {
-      const olLayer = findLayerById(layer.id);
-      if (olLayer) olLayer.setVisible(next);
-    }
+    if (layer.canRender !== false) setRasterLayerVisibility(layer.id, next);
   }, [store]);
 
   const handleOpacityChange = useCallback((layer, opacity) => {
     store.updateLayerOpacity(layer.id, opacity); // stores 0–100
-    if (layer.canRender !== false) {
-      const olLayer = findLayerById(layer.id);
-      if (olLayer) olLayer.setOpacity(opacity / 100);
-    }
+    if (layer.canRender !== false) setRasterLayerOpacity(layer.id, opacity / 100);
   }, [store]);
 
   const handleClearAll = useCallback(() => {
-    const map = getMapInstance();
-    if (map) {
-      store.activeLayers.forEach((layer) => {
-        if (layer.canRender !== false) {
-          const olLayer = findLayerById(layer.id);
-          if (olLayer) map.removeLayer(olLayer);
-        }
-      });
-    }
+    store.activeLayers.forEach((layer) => {
+      if (layer.canRender !== false) removeRasterLayer(layer.id);
+    });
     store.clearActiveLayers();
   }, [store]);
 

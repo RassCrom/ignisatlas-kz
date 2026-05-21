@@ -1,51 +1,157 @@
-import { useEffect, useRef } from 'react';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import { Style, Stroke, Fill } from 'ol/style';
-import GeoJSON from 'ol/format/GeoJSON';
+import { useEffect, useMemo } from 'react';
 import useAnalysisStore from 'src/app/store/analysisStore';
+import useAdminBoundaryStore from 'src/app/store/adminBoundaryStore';
+import { useLayersStore } from 'src/app/store/layersStore';
+import {
+  addOrUpdateGeoJsonSource,
+  removeSourceWithLayers,
+  setLayerOpacity,
+  setLayerVisibility,
+} from '../utils/maplibreHelpers';
 
-const POLY_STYLE = new Style({
-  fill: new Fill({ color: 'rgba(136, 139, 224, 0.15)' }),
-  stroke: new Stroke({ color: 'rgba(136, 139, 224, 0.7)', width: 2 }),
-});
+const addGeoJsonUrl = (map, sourceId, url) => {
+  if (!map.getSource(sourceId)) {
+    map.addSource(sourceId, {
+      type: 'geojson',
+      data: url,
+    });
+  }
+};
 
-const geojsonFormat = new GeoJSON();
+const addLineLayer = (map, id, source, paint, visible = false) => {
+  if (map.getLayer(id)) return;
+  map.addLayer({
+    id,
+    type: 'line',
+    source,
+    layout: { visibility: visible ? 'visible' : 'none' },
+    paint,
+  });
+};
+
+const addFillLayer = (map, id, source, paint, visible = false) => {
+  if (map.getLayer(id)) return;
+  map.addLayer({
+    id,
+    type: 'fill',
+    source,
+    layout: { visibility: visible ? 'visible' : 'none' },
+    paint,
+  });
+};
+
+const addCircleLayer = (map, id, source, paint, visible = false) => {
+  if (map.getLayer(id)) return;
+  map.addLayer({
+    id,
+    type: 'circle',
+    source,
+    layout: { visibility: visible ? 'visible' : 'none' },
+    paint,
+  });
+};
+
+const emergencyColors = {
+  ava_ss: '#38bdf8',
+  fire_departments: '#f97316',
+  fire_hydrants: '#60a5fa',
+  hospitals: '#ef4444',
+  kaz_avia: '#c4b5fd',
+  oso: '#facc15',
+  ps: '#22c55e',
+  fire_trains: '#fb7185',
+};
 
 export const useAnalysisLayers = (mapInstance, isMapInitialized) => {
-  const sourceRef = useRef(null);
-  const layerRef = useRef(null);
-
   const drawnPolygons = useAnalysisStore((s) => s.drawnPolygons);
+  const adminVis = useAdminBoundaryStore((s) => s.layerVisibility);
+  const adminOpacity = useAdminBoundaryStore((s) => s.layerOpacity);
+  const emergencyLayers = useLayersStore((s) => s.layers);
+
+  const analysisFeatureCollection = useMemo(() => ({
+    type: 'FeatureCollection',
+    features: drawnPolygons
+      .filter((polygon) => polygon.visible)
+      .map((polygon) => ({
+        type: 'Feature',
+        id: polygon.id,
+        geometry: polygon.geojson,
+        properties: { id: polygon.id, name: polygon.name },
+      })),
+  }), [drawnPolygons]);
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;
 
-    const source = new VectorSource();
-    const layer = new VectorLayer({ source, style: POLY_STYLE, zIndex: 500 });
-    layer.set('id', 'analysis-polygons');
+    addGeoJsonUrl(mapInstance, 'blanket-source', '/layers/blanket.geojson');
+    addFillLayer(mapInstance, 'blanket-layer', 'blanket-source', {
+      'fill-color': 'rgba(13, 14, 14, 0.95)',
+      'fill-opacity': 1,
+    }, true);
 
-    mapInstance.addLayer(layer);
-    sourceRef.current = source;
-    layerRef.current = layer;
+    [
+      ['country_boundaries', '1'],
+      ['region_boundaries', '2'],
+      ['district_boundaries', '3'],
+    ].forEach(([id, level]) => {
+      addGeoJsonUrl(mapInstance, `${id}-source`, `/layers/KAZ_OSM_BORDER_LVL${level}.geojson`);
+      addLineLayer(mapInstance, id, `${id}-source`, {
+        'line-color': '#4999E8',
+        'line-width': 1,
+        'line-opacity': adminOpacity[id] ?? 1,
+      }, adminVis[id] ?? false);
+    });
+
+    emergencyLayers.forEach((cfg) => {
+      addGeoJsonUrl(mapInstance, `${cfg.id}-source`, `/layers/kchs/${cfg.geojsonFile}`);
+      addCircleLayer(mapInstance, cfg.id, `${cfg.id}-source`, {
+        'circle-color': emergencyColors[cfg.id] || '#f8fafc',
+        'circle-radius': 5,
+        'circle-stroke-color': '#fff',
+        'circle-stroke-width': 1,
+        'circle-opacity': 1,
+      }, cfg.visible);
+    });
+
+    addOrUpdateGeoJsonSource(mapInstance, 'analysis-polygons-source', analysisFeatureCollection);
+    addFillLayer(mapInstance, 'analysis-polygons-fill', 'analysis-polygons-source', {
+      'fill-color': 'rgba(136, 139, 224, 0.15)',
+      'fill-opacity': 1,
+    }, true);
+    addLineLayer(mapInstance, 'analysis-polygons-line', 'analysis-polygons-source', {
+      'line-color': 'rgba(136, 139, 224, 0.7)',
+      'line-width': 2,
+    }, true);
 
     return () => {
-      if (mapInstance) mapInstance.removeLayer(layer);
+      [
+        'blanket-source',
+        'country_boundaries-source',
+        'region_boundaries-source',
+        'district_boundaries-source',
+        'analysis-polygons-source',
+        ...emergencyLayers.map((layer) => `${layer.id}-source`),
+      ].forEach((sourceId) => removeSourceWithLayers(mapInstance, sourceId));
     };
   }, [mapInstance, isMapInitialized]);
 
   useEffect(() => {
-    if (!sourceRef.current) return;
+    if (!mapInstance || !isMapInitialized) return;
+    addOrUpdateGeoJsonSource(mapInstance, 'analysis-polygons-source', analysisFeatureCollection);
+  }, [analysisFeatureCollection, isMapInitialized, mapInstance]);
 
-    sourceRef.current.clear();
-    drawnPolygons.forEach((p) => {
-      if (!p.visible) return;
-      const feature = geojsonFormat.readFeature(p.geojson, {
-        dataProjection: 'EPSG:4326',
-        featureProjection: 'EPSG:3857',
-      });
-      feature.setId(p.id);
-      sourceRef.current.addFeature(feature);
-    });
-  }, [drawnPolygons]);
+  useEffect(() => {
+    if (!mapInstance || !isMapInitialized) return;
+    Object.entries(adminVis).forEach(([id, visible]) => setLayerVisibility(mapInstance, id, visible));
+  }, [adminVis, isMapInitialized, mapInstance]);
+
+  useEffect(() => {
+    if (!mapInstance || !isMapInitialized) return;
+    Object.entries(adminOpacity).forEach(([id, opacity]) => setLayerOpacity(mapInstance, id, opacity, 'line'));
+  }, [adminOpacity, isMapInitialized, mapInstance]);
+
+  useEffect(() => {
+    if (!mapInstance || !isMapInitialized) return;
+    emergencyLayers.forEach((layer) => setLayerVisibility(mapInstance, layer.id, layer.visible));
+  }, [emergencyLayers, isMapInitialized, mapInstance]);
 };

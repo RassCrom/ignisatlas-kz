@@ -7,7 +7,7 @@ const HomeExtentTool = () => {
   const handleClick = () => {
     const map = getMapInstance();
     if (!map) return;
-    flyHome(map.getView());
+    flyHome(map);
   };
 
   return (

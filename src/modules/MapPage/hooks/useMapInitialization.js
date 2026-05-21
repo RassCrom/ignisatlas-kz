@@ -1,92 +1,71 @@
 import { useEffect, useRef, useState } from 'react';
-import Map from "ol/Map";
-import View from "ol/View";
-import FullScreen from "ol/control/FullScreen";
-import { defaults as defaultControls } from "ol/control/defaults";
-import { getMapStateFromHash, updateMapStateInHash } from "../utils/mapState.js";
-import { createContextMenu } from "../utils/contextMenu.js";
-import { handleFullScreenChange } from "../utils/fullScreen.js";
-import { createGeocoder } from "../utils/geocoder.js";
-import { DEFAULT_POSITION } from "../utils/mapConstants.js";
-import "ol-geocoder/dist/ol-geocoder.min.css";
+import maplibregl from 'maplibre-gl';
+import { applyBasemap, createInitialStyle, DEFAULT_BASEMAP_KEY } from '../utils/basemaps.js';
+import { getMapStateFromHash, updateMapStateInHash } from '../utils/mapState.js';
+import { createContextMenu } from '../utils/contextMenu.js';
+import { handleFullScreenChange } from '../utils/fullScreen.js';
 
-const EMPTY_INITIAL_LAYERS = [];
-
-export const useMapInitialization = (mapRef, basemap, initialLayers = EMPTY_INITIAL_LAYERS, styles) => {
+export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) => {
   const mapInstance = useRef(null);
-  const initialBasemapRef = useRef(basemap);
-  const initialLayersRef = useRef(initialLayers);
   const [isMapInitialized, setIsMapInitialized] = useState(false);
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || mapInstance.current) return;
 
-    const { zoom, center, rotation } = getMapStateFromHash();
-    const view = new View({
+    const { zoom, center, bearing } = getMapStateFromHash();
+    const map = new maplibregl.Map({
+      container: mapRef.current,
+      style: createInitialStyle(basemapKey),
       center,
       zoom,
-      rotation,
-      showFullExtent: true,
+      bearing,
+      pitch: 0,
+      attributionControl: false,
+      preserveDrawingBuffer: true,
     });
 
-    const geocoder = createGeocoder();
-    const map = new Map({
-      pixelRatio: window.devicePixelRatio || 1,
-      loadTilesWhileInteracting: true,
-      loadTilesWhileAnimating: true,
-      moveTolerance: 5,
-      target: mapRef.current,
-      layers: [initialBasemapRef.current, ...initialLayersRef.current],
-      view,
-      controls: defaultControls().extend([new FullScreen(), geocoder]),
-    });
-
-    mapInstance.current = map;
-    setIsMapInitialized(true);
-
-    const contextMenu = createContextMenu(map, view, DEFAULT_POSITION, styles);
-    map.addControl(contextMenu);
+    map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
+    map.addControl(new maplibregl.FullscreenControl({ container: mapRef.current }), 'top-right');
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
     const fullscreenCleanUp = handleFullScreenChange(mapRef);
+    const contextMenuCleanUp = createContextMenu(map);
 
-    let shouldUpdate = true;
-    const updatePermalink = () => {
-      if (!shouldUpdate) {
-        shouldUpdate = true;
-        return;
-      }
-      updateMapStateInHash(view);
-    };
-
-    map.on("moveend", updatePermalink);
-
+    const handleMoveEnd = () => updateMapStateInHash(map);
     const handlePopState = (event) => {
-      if (event.state === null) return;
-      view.setCenter(event.state.center);
-      view.setZoom(event.state.zoom);
-      view.setRotation(event.state.rotation);
-      shouldUpdate = false;
+      if (event.state?.center) {
+        map.jumpTo({
+          center: event.state.center,
+          zoom: event.state.zoom,
+          bearing: event.state.bearing || 0,
+        });
+      }
     };
 
-    window.addEventListener("popstate", handlePopState);
+    map.on('load', () => {
+      applyBasemap(map, basemapKey);
+      mapInstance.current = map;
+      setIsMapInitialized(true);
+      map.on('moveend', handleMoveEnd);
+      window.addEventListener('popstate', handlePopState);
+    });
 
     return () => {
-      map.setTarget(null);
+      contextMenuCleanUp?.();
       fullscreenCleanUp();
-      window.removeEventListener("popstate", handlePopState);
-      map.un('moveend', updatePermalink);
+      window.removeEventListener('popstate', handlePopState);
+      map.off('moveend', handleMoveEnd);
+      map.remove();
+      mapInstance.current = null;
       setIsMapInitialized(false);
     };
-  }, [mapRef, styles]);
+  }, [basemapKey, mapRef]);
 
-  // Swap only the basemap layer without recreating the map
   useEffect(() => {
     const map = mapInstance.current;
-    if (!map || !basemap) return;
-
-    const layers = map.getLayers();
-    layers.setAt(0, basemap);
-  }, [basemap]);
+    if (!map || !isMapInitialized) return;
+    applyBasemap(map, basemapKey);
+  }, [basemapKey, isMapInitialized]);
 
   return { mapInstance: mapInstance.current, isMapInitialized };
 };

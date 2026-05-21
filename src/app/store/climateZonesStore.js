@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 const useClimateZonesStore = create((set) => ({
   visible: false,
-  opacity: 1,
+  opacity: 0.35,
 
   toggleVisible: () => set((s) => ({ visible: !s.visible })),
   setOpacity: (opacity) => set({ opacity }),

@@ -1,104 +1,135 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPopup, removeSourceWithLayers } from '../utils/maplibreHelpers.js';
+import {
+  fireModelFillColorExpression,
+  fireModelStrokeColorExpression,
+} from '../utils/colorFireModel.js';
 
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import GeoJSON from 'ol/format/GeoJSON';
-import Overlay from 'ol/Overlay';
+const SOURCE_PREFIX = 'fire-model-source';
+const FILL_PREFIX = 'fire-model-fill';
+const LINE_PREFIX = 'fire-model-line';
 
-import { styleFireModelFunction } from "../utils/colorFireModel.js";
-
-export const useFireModelling = (fireModelLayer, mapInstance, isMapInitialized, addFireModellingLayer, setMapInstance) => {
-  const popupRef   = useRef(null);
-  const overlayRef = useRef(null);
+export const useFireModelling = (
+  fireModelLayer,
+  mapInstance,
+  isMapInitialized,
+  addFireModellingLayer,
+  setMapInstance
+) => {
+  const popupRef = useRef(null);
+  const popupInstanceRef = useRef(null);
+  const activeSourceIdsRef = useRef([]);
   const [popupContent, setPopupContent] = useState(null);
 
-  /* ── Overlay (one per map instance) ────────────────────────────── */
-
   useEffect(() => {
-    if (!mapInstance || !popupRef.current || overlayRef.current) return;
+    if (!mapInstance || !popupRef.current || popupInstanceRef.current) return;
 
-    const overlay = new Overlay({
-      element: popupRef.current,
-      autoPan: { animation: { duration: 250 }, margin: 80 },
-    });
-
-    overlayRef.current = overlay;
-    mapInstance.addOverlay(overlay);
-
+    popupInstanceRef.current = createPopup().setDOMContent(popupRef.current);
     return () => {
-      if (mapInstance && overlay) mapInstance.removeOverlay(overlay);
-      overlayRef.current = null;
+      popupInstanceRef.current?.remove();
+      popupInstanceRef.current = null;
     };
   }, [mapInstance]);
 
-  /* ── Close popup ────────────────────────────────────────────────── */
-
   const closePopup = useCallback(() => {
-    overlayRef.current?.setPosition(undefined);
+    popupInstanceRef.current?.remove();
     setPopupContent(null);
   }, []);
 
-  /* ── Fire model layer ───────────────────────────────────────────── */
-
   useEffect(() => {
-    if (!mapInstance || !fireModelLayer || !isMapInitialized) return;
+    if (!mapInstance || !fireModelLayer || !isMapInitialized) return undefined;
 
-    let vectorLayer;
+    const id = Date.now();
+    const sourceId = `${SOURCE_PREFIX}-${id}`;
+    const fillLayerId = `${FILL_PREFIX}-${id}`;
+    const lineLayerId = `${LINE_PREFIX}-${id}`;
 
     try {
-      vectorLayer = new VectorLayer({
-        source: new VectorSource({
-          features: new GeoJSON().readFeatures(fireModelLayer, {
-            dataProjection: 'EPSG:4326',
-            featureProjection: 'EPSG:3857',
-          }),
-        }),
-        style: styleFireModelFunction,
+      mapInstance.addSource(sourceId, {
+        type: 'geojson',
+        data: fireModelLayer,
       });
 
-      const clickHandler = (evt) => {
-        const feature = mapInstance.forEachFeatureAtPixel(evt.pixel, (feat, layer) => {
-          if (layer === vectorLayer) return feat;
-        });
+      mapInstance.addLayer({
+        id: fillLayerId,
+        type: 'fill',
+        source: sourceId,
+        paint: {
+          'fill-color': fireModelFillColorExpression,
+          'fill-opacity': 1,
+        },
+      });
+      mapInstance.addLayer({
+        id: lineLayerId,
+        type: 'line',
+        source: sourceId,
+        paint: {
+          'line-color': fireModelStrokeColorExpression,
+          'line-width': 1,
+        },
+      });
 
-        if (feature) {
-          setPopupContent({
-            coordinate: evt.coordinate,
-            properties: feature.getProperties(),
-            accuracy:   fireModelLayer.accuracy || null,
-          });
-          overlayRef.current?.setPosition(evt.coordinate);
-        } else {
-          closePopup();
-        }
-      };
-
-      mapInstance.on('singleclick', clickHandler);
-      mapInstance.addLayer(vectorLayer);
+      activeSourceIdsRef.current = [...activeSourceIdsRef.current, sourceId];
       setMapInstance(mapInstance);
-
       addFireModellingLayer({
-        id:      Date.now(),
-        layer:   vectorLayer,
+        id,
+        sourceId,
+        layerIds: [fillLayerId, lineLayerId],
+        data: fireModelLayer,
         opacity: 1,
         visible: true,
-        name:    fireModelLayer.name || 'Модель распространения',
-        type:    fireModelLayer.type || 'Прогнозная модель',
-        color:   '#ff6b6b',
+        name: fireModelLayer.name || 'Модель распространения',
+        type: fireModelLayer.type || 'Прогнозная модель',
+        color: '#ff6b6b',
         metadata: {
-          source:    fireModelLayer.source || 'Автоматически',
-          accuracy:  fireModelLayer.accuracy || '—',
+          source: fireModelLayer.source || 'Автоматически',
+          accuracy: fireModelLayer.accuracy || '—',
           timestamp: new Date().toISOString(),
         },
       });
 
+      const clickHandler = (event) => {
+        const feature = mapInstance.queryRenderedFeatures(event.point, {
+          layers: [fillLayerId],
+        })[0];
+
+        if (!feature) {
+          closePopup();
+          return;
+        }
+
+        setPopupContent({
+          coordinate: [event.lngLat.lng, event.lngLat.lat],
+          properties: feature.properties,
+          accuracy: fireModelLayer.accuracy || null,
+        });
+        popupInstanceRef.current?.setLngLat(event.lngLat).addTo(mapInstance);
+      };
+
+      const moveHandler = (event) => {
+        const hasFeature = mapInstance.queryRenderedFeatures(event.point, {
+          layers: [fillLayerId],
+        }).length > 0;
+        mapInstance.getCanvas().style.cursor = hasFeature ? 'pointer' : '';
+      };
+
+      mapInstance.on('click', clickHandler);
+      mapInstance.on('mousemove', moveHandler);
+
       return () => {
-        mapInstance.un('singleclick', clickHandler);
+        mapInstance.off('click', clickHandler);
+        mapInstance.off('mousemove', moveHandler);
       };
     } catch (error) {
       console.error('Error processing fire model GeoJSON:', error);
+      return undefined;
     }
   }, [fireModelLayer, isMapInitialized, mapInstance, addFireModellingLayer, setMapInstance, closePopup]);
+
+  useEffect(() => () => {
+    activeSourceIdsRef.current.forEach((sourceId) => removeSourceWithLayers(mapInstance, sourceId));
+    activeSourceIdsRef.current = [];
+  }, [mapInstance]);
 
   return { popupRef, popupContent, closePopup };
 };

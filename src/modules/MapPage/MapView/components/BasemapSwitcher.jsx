@@ -29,13 +29,13 @@ const BasemapSwitcher = ({ currentBasemap, onBasemapChange }) => {
   }, [isOpen]);
 
   const handleBasemapChange = async (basemap) => {
-    if (currentBasemap === basemap.layer) return;
+    if (currentBasemap === basemap.key) return;
     
     setIsLoading(true);
     
     try {
       await new Promise(resolve => setTimeout(resolve, 100));
-      onBasemapChange(basemap.layer);
+      onBasemapChange(basemap.key);
       setIsOpen(false);
     } catch (error) {
       console.error('Error changing basemap:', error);
@@ -72,12 +72,12 @@ const BasemapSwitcher = ({ currentBasemap, onBasemapChange }) => {
           <button
             key={basemap.key}
             className={`${styles.basemapOption} ${
-              currentBasemap === basemap.layer ? styles.active : ""
+              currentBasemap === basemap.key ? styles.active : ""
             }`}
             onClick={() => handleBasemapChange(basemap)}
             onKeyDown={(e) => handleKeyDown(e, basemap)}
             disabled={isLoading}
-            aria-pressed={currentBasemap === basemap.layer}
+            aria-pressed={currentBasemap === basemap.key}
           >
             <span className={styles.basemapName}>
               {formatName(basemap.name)}
@@ -127,16 +127,14 @@ const BasemapSwitcher = ({ currentBasemap, onBasemapChange }) => {
                     <button
                       key={key}
                       className={`${styles.basemapOption} ${
-                        currentBasemap === basemapOptions[key] ? styles.active : ""
+                        currentBasemap === key ? styles.active : ""
                       }`}
                       onClick={() => handleBasemapChange({ 
-                        key, 
-                        layer: basemapOptions[key], 
+                        key,
                         name: key 
                       })}
                       onKeyDown={(e) => handleKeyDown(e, { 
                         key, 
-                        layer: basemapOptions[key], 
                         name: key 
                       })}
                     >

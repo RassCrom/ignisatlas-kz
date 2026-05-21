@@ -1,54 +1,53 @@
-import { useEffect, useRef } from 'react';
-import ImageLayer from 'ol/layer/Image.js';
-import ImageArcGISRest from 'ol/source/ImageArcGISRest.js';
+import { useEffect } from 'react';
 import useLulcStore from 'src/app/store/lulcStore';
+import {
+  removeSourceWithLayers,
+  setLayerOpacity,
+  setLayerVisibility,
+} from '../utils/maplibreHelpers.js';
 
-// ArcGIS Sentinel-2 10m Land Cover ImageServer
-const LULC_URL =
-  'https://ic.imagery1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer';
+const SOURCE_ID = 'lulc-source';
+const LAYER_ID = 'lulc-layer';
+const LULC_TILE_URL =
+  'https://ic.imagery1.arcgis.com/arcgis/rest/services/Sentinel2_10m_LandCover/ImageServer/tile/{z}/{y}/{x}';
 
 export const useLulcLayer = (mapInstance, isMapInitialized) => {
-  const layerRef = useRef(null);
-
   const isAdded = useLulcStore((state) => state.isAdded);
   const visible = useLulcStore((state) => state.visible);
   const opacity = useLulcStore((state) => state.opacity);
 
-  /* ── Add / remove layer based on isAdded flag ─────────── */
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;
 
-    if (isAdded && !layerRef.current) {
-      const layer = new ImageLayer({
-        source: new ImageArcGISRest({
-          url: LULC_URL,
-          ratio: 1,
-          crossOrigin: 'anonymous',
-          params: {
-            FORMAT: 'png32',
-            TRANSPARENT: true,
-          },
-        }),
-        visible,
-        opacity,
-      });
-
-      layer.set('layerType', 'lulc');
-      mapInstance.addLayer(layer);
-      layerRef.current = layer;
-    } else if (!isAdded && layerRef.current) {
-      mapInstance.removeLayer(layerRef.current);
-      layerRef.current = null;
+    if (!isAdded) {
+      removeSourceWithLayers(mapInstance, SOURCE_ID);
+      return;
     }
-  }, [mapInstance, isMapInitialized, isAdded, opacity, visible]);
 
-  /* ── Sync visibility ───────────────────────────────────── */
-  useEffect(() => {
-    layerRef.current?.setVisible(visible);
-  }, [visible]);
+    if (!mapInstance.getSource(SOURCE_ID)) {
+      mapInstance.addSource(SOURCE_ID, {
+        type: 'raster',
+        tiles: [LULC_TILE_URL],
+        tileSize: 256,
+      });
+    }
 
-  /* ── Sync opacity ──────────────────────────────────────── */
+    if (!mapInstance.getLayer(LAYER_ID)) {
+      mapInstance.addLayer({
+        id: LAYER_ID,
+        type: 'raster',
+        source: SOURCE_ID,
+        layout: { visibility: visible ? 'visible' : 'none' },
+        paint: { 'raster-opacity': opacity },
+      });
+    }
+  }, [mapInstance, isMapInitialized, isAdded, visible, opacity]);
+
   useEffect(() => {
-    layerRef.current?.setOpacity(opacity);
-  }, [opacity]);
+    setLayerVisibility(mapInstance, LAYER_ID, visible);
+  }, [mapInstance, visible]);
+
+  useEffect(() => {
+    setLayerOpacity(mapInstance, LAYER_ID, opacity, 'raster');
+  }, [mapInstance, opacity]);
 };

@@ -3,7 +3,7 @@ import { motion, useInView, useMotionValue, useTransform, animate } from 'framer
 import styles from './DataCoverage.module.scss';
 
 const stats = [
-  { value: 6470,  suffix: '+', label: 'точек пожаров в архиве' },
+  { value: 1000000,  suffix: '+', label: 'точек пожаров в архиве' },
   { value: 2001,  suffix: '',  label: 'начало наблюдений' },
   { value: 2024,  suffix: '',  label: 'последнее обновление' },
   { value: 23,    suffix: '',  label: 'года истории данных' },

@@ -6,16 +6,11 @@ import {
   Square, Pentagon, X, Navigation,
 } from 'lucide-react';
 
-import TileLayer from 'ol/layer/Tile';
-import XYZ from 'ol/source/XYZ';
 
 import { KAZAKHSTAN_EXTENT_GEO } from '../../../../../modules/MapPage/utils/mapConstants';
 import useLstStore from 'src/app/store/lstStore';
 import useAoiStore from 'src/app/store/aoiStore';
-import {
-  findLayerById,
-  getMapInstance,
-} from 'src/modules/MapPage/services/mapService';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import {
   LST_PRODUCTS,
   LST_RANGE_C,
@@ -51,6 +46,42 @@ function sortResults(results, sortBy, sortOrder) {
     return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
   });
 }
+
+const addRasterLayer = (layerId, tileUrl, opacity01) => {
+  const map = getMapInstance();
+  if (!map) return;
+  const sourceId = `${layerId}-source`;
+  if (!map.getSource(sourceId)) {
+    map.addSource(sourceId, {
+      type: 'raster',
+      tiles: [tileUrl],
+      tileSize: 256,
+      maxzoom: 18,
+      attribution: 'NASA / USGS via Microsoft Planetary Computer',
+    });
+  }
+  if (!map.getLayer(layerId)) {
+    map.addLayer({ id: layerId, type: 'raster', source: sourceId, paint: { 'raster-opacity': opacity01 } });
+  }
+};
+
+const removeRasterLayer = (layerId) => {
+  const map = getMapInstance();
+  if (!map) return;
+  const sourceId = `${layerId}-source`;
+  if (map.getLayer(layerId)) map.removeLayer(layerId);
+  if (map.getSource(sourceId)) map.removeSource(sourceId);
+};
+
+const setRasterVisibility = (layerId, visible) => {
+  const map = getMapInstance();
+  if (map?.getLayer(layerId)) map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+};
+
+const setRasterOpacity = (layerId, opacity01) => {
+  const map = getMapInstance();
+  if (map?.getLayer(layerId)) map.setPaintProperty(layerId, 'raster-opacity', opacity01);
+};
 
 const LSTExplorer = () => {
   const store = useLstStore();
@@ -108,57 +139,29 @@ const LSTExplorer = () => {
       visible: true,
       acquisitionDate: result.acquisitionDate,
     };
-
-    const olLayer = new TileLayer({
-      source: new XYZ({
-        url: tileUrl,
-        crossOrigin: 'anonymous',
-        maxZoom: 18,
-        attributions: '© NASA / USGS via Microsoft Planetary Computer',
-        tileLoadFunction: (tile, src) => {
-          const img = tile.getImage();
-          img.onerror = () => tile.setState(4); // EMPTY — tile outside scene bounds
-          img.src = src;
-        },
-      }),
-      opacity: store.globalOpacity / 100,
-      zIndex: 100,
-    });
-    olLayer.set('id', layerId);
-
-    getMapInstance()?.addLayer(olLayer);
-
-    store.addActiveLayer(layerConfig);
+    addRasterLayer(layerId, tileUrl, store.globalOpacity / 100);
+    store.addActiveLayer({ ...layerConfig, tileUrl });
     store.setActiveTab('layers');
   }, [store]);
 
   const handleRemoveLayer = useCallback((layerId) => {
-    const map = getMapInstance();
-    const olLayer = findLayerById(layerId);
-    if (map && olLayer) map.removeLayer(olLayer);
+    removeRasterLayer(layerId);
     store.removeActiveLayer(layerId);
   }, [store]);
 
   const handleToggleVisibility = useCallback((layerId) => {
-    const olLayer = findLayerById(layerId);
-    if (olLayer) olLayer.setVisible(!olLayer.getVisible());
+    const layer = store.activeLayers.find((item) => item.id === layerId);
+    setRasterVisibility(layerId, !(layer?.visible ?? true));
     store.toggleLayerVisibility(layerId);
   }, [store]);
 
   const handleOpacityChange = useCallback((layerId, opacity) => {
-    const olLayer = findLayerById(layerId);
-    if (olLayer) olLayer.setOpacity(opacity / 100);
+    setRasterOpacity(layerId, opacity / 100);
     store.updateLayerOpacity(layerId, opacity);
   }, [store]);
 
   const handleClearAll = useCallback(() => {
-    const map = getMapInstance();
-    if (map) {
-      store.activeLayers.forEach((layer) => {
-        const olLayer = findLayerById(layer.id);
-        if (olLayer) map.removeLayer(olLayer);
-      });
-    }
+    store.activeLayers.forEach((layer) => removeRasterLayer(layer.id));
     store.clearActiveLayers();
   }, [store]);
 
@@ -170,8 +173,7 @@ const LSTExplorer = () => {
     const next = !(store.activeLayers.length > 0 && store.activeLayers.every((l) => l.visible));
     if (getMapInstance()) {
       store.activeLayers.forEach((layer) => {
-        const ol = findLayerById(layer.id);
-        if (ol) ol.setVisible(next);
+        setRasterVisibility(layer.id, next);
       });
     }
     store.setAllLayersVisible(next);
@@ -654,3 +656,4 @@ const LSTExplorer = () => {
 };
 
 export default LSTExplorer;
+

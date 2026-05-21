@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Navigation } from 'lucide-react';
-import { fromLonLat } from 'ol/proj';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import styles from './ToolsControls.module.scss';
 
@@ -30,8 +29,8 @@ const CoordinateSearchTool = () => {
     const map = getMapInstance();
     if (!map) return;
 
-    map.getView().animate({
-      center: fromLonLat([lonNum, latNum]),
+    map.flyTo({
+      center: [lonNum, latNum],
       zoom,
       duration: 800,
     });

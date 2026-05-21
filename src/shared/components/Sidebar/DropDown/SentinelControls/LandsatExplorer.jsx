@@ -6,15 +6,9 @@ import {
   Satellite, Sliders,
 } from 'lucide-react';
 
-import TileLayer from 'ol/layer/Tile';
-import XYZ from 'ol/source/XYZ';
-
 import useLandsatExplorerStore from 'src/app/store/landsatExplorerStore';
 import useAoiStore from 'src/app/store/aoiStore';
-import {
-  findLayerById,
-  getMapInstance,
-} from 'src/modules/MapPage/services/mapService';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import {
   searchLandsat,
   buildTileUrl,
@@ -47,6 +41,36 @@ const BAND_OPTIONS = [
   { value: 'swir',        label: 'SWIR Composite',          icon: '🔥' },
   { value: 'agriculture', label: 'Agriculture (SWIR-NIR-B)', icon: '🌾' },
 ];
+
+const addRasterLayer = (layerId, tileUrl, opacity01, attribution) => {
+  const map = getMapInstance();
+  if (!map) return;
+  const sourceId = `${layerId}-source`;
+  if (!map.getSource(sourceId)) {
+    map.addSource(sourceId, { type: 'raster', tiles: [tileUrl], tileSize: 256, maxzoom: 18, attribution });
+  }
+  if (!map.getLayer(layerId)) {
+    map.addLayer({ id: layerId, type: 'raster', source: sourceId, paint: { 'raster-opacity': opacity01 } });
+  }
+};
+
+const removeRasterLayer = (layerId) => {
+  const map = getMapInstance();
+  if (!map) return;
+  const sourceId = `${layerId}-source`;
+  if (map.getLayer(layerId)) map.removeLayer(layerId);
+  if (map.getSource(sourceId)) map.removeSource(sourceId);
+};
+
+const setRasterVisibility = (layerId, visible) => {
+  const map = getMapInstance();
+  if (map?.getLayer(layerId)) map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+};
+
+const setRasterOpacity = (layerId, opacity01) => {
+  const map = getMapInstance();
+  if (map?.getLayer(layerId)) map.setPaintProperty(layerId, 'raster-opacity', opacity01);
+};
 
 // ── Component ────────────────────────────────────────────────────────────
 
@@ -118,53 +142,29 @@ const LandsatExplorer = () => {
       visible: true,
       acquisitionDate: result.acquisitionDate,
     };
-
-    // Create OpenLayers XYZ tile layer
-    const olLayer = new TileLayer({
-      source: new XYZ({
-        url: tileUrl,
-        crossOrigin: 'anonymous',
-        maxZoom: 18,
-        attributions: '© USGS/NASA Landsat via Microsoft Planetary Computer',
-      }),
-      opacity: store.globalOpacity / 100,
-      zIndex: 100,
-    });
-    olLayer.set('id', layerId);
-
-    getMapInstance()?.addLayer(olLayer);
-
-    store.addActiveLayer(layerConfig);
+    addRasterLayer(layerId, tileUrl, store.globalOpacity / 100, 'USGS/NASA Landsat via Microsoft Planetary Computer');
+    store.addActiveLayer({ ...layerConfig, tileUrl });
     store.setActiveTab('layers');
   }, [store]);
 
   const handleRemoveLayer = useCallback((layerId) => {
-    const map = getMapInstance();
-    const olLayer = findLayerById(layerId);
-    if (map && olLayer) map.removeLayer(olLayer);
+    removeRasterLayer(layerId);
     store.removeActiveLayer(layerId);
   }, [store]);
 
   const handleToggleVisibility = useCallback((layerId) => {
-    const olLayer = findLayerById(layerId);
-    if (olLayer) olLayer.setVisible(!olLayer.getVisible());
+    const layer = store.activeLayers.find((item) => item.id === layerId);
+    setRasterVisibility(layerId, !(layer?.visible ?? true));
     store.toggleLayerVisibility(layerId);
   }, [store]);
 
   const handleOpacityChange = useCallback((layerId, opacity) => {
-    const olLayer = findLayerById(layerId);
-    if (olLayer) olLayer.setOpacity(opacity / 100);
+    setRasterOpacity(layerId, opacity / 100);
     store.updateLayerOpacity(layerId, opacity);
   }, [store]);
 
   const handleClearAll = useCallback(() => {
-    const map = getMapInstance();
-    if (map) {
-      store.activeLayers.forEach((layer) => {
-        const olLayer = findLayerById(layer.id);
-        if (olLayer) map.removeLayer(olLayer);
-      });
-    }
+    store.activeLayers.forEach((layer) => removeRasterLayer(layer.id));
     store.clearActiveLayers();
   }, [store]);
 
@@ -668,3 +668,4 @@ const LandsatExplorer = () => {
 };
 
 export default LandsatExplorer;
+

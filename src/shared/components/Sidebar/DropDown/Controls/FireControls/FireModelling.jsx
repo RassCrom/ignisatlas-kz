@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Style } from 'ol/style';
+import { bbox } from '@turf/turf';
 import {
   Layers,
   Eye,
@@ -16,6 +16,44 @@ import {
 
 import './fireControls.scss';
 import useFireModellingStore from 'src/app/store/fireModellingStore';
+
+const setMapLayerVisibility = (map, layerIds = [], visible) => {
+  layerIds.forEach((id) => {
+    if (map?.getLayer(id)) {
+      map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+    }
+  });
+};
+
+const setMapLayerOpacity = (map, layerIds = [], opacity) => {
+  layerIds.forEach((id) => {
+    if (!map?.getLayer(id)) return;
+    const type = map.getLayer(id).type;
+    if (type === 'fill') map.setPaintProperty(id, 'fill-opacity', opacity);
+    if (type === 'line') map.setPaintProperty(id, 'line-opacity', opacity);
+  });
+};
+
+const removeMapModelLayer = (map, layer) => {
+  layer?.layerIds?.forEach((id) => {
+    if (map?.getLayer(id)) map.removeLayer(id);
+  });
+  if (layer?.sourceId && map?.getSource(layer.sourceId)) {
+    map.removeSource(layer.sourceId);
+  }
+};
+
+const setModelFrameFilter = (map, layer, frame) => {
+  layer?.layerIds?.forEach((id) => {
+    if (map?.getLayer(id)) map.setFilter(id, ['<=', ['to-number', ['get', 'dn']], frame]);
+  });
+};
+
+const clearModelFrameFilter = (map, layer) => {
+  layer?.layerIds?.forEach((id) => {
+    if (map?.getLayer(id)) map.setFilter(id, null);
+  });
+};
 
 /* ── helpers ───────────────────────────────────────────── */
 
@@ -62,6 +100,9 @@ const FireModelling = () => {
     visible: layer.visible,
     addedAt: new Date(layer.id),
     metadata: layer.metadata || {},
+    data: layer.data,
+    layerIds: layer.layerIds,
+    sourceId: layer.sourceId,
   }));
 
   /* Auto-enable eye when a new layer is added */
@@ -87,9 +128,7 @@ const FireModelling = () => {
     setIsVisible(next);
     Object.keys(fireModellingLayers).forEach(id => {
       updateFireModellingLayer(id, { visible: next });
-      if (fireModellingLayers[id].layer) {
-        fireModellingLayers[id].layer.setVisible(next);
-      }
+      setMapLayerVisibility(mapInstance, fireModellingLayers[id].layerIds, next);
     });
   };
 
@@ -98,38 +137,37 @@ const FireModelling = () => {
     if (!layer) return;
     const next = !layer.visible;
     updateFireModellingLayer(id, { visible: next });
-    if (layer.layer) layer.layer.setVisible(next);
+    setMapLayerVisibility(mapInstance, layer.layerIds, next);
   };
 
   const handleOpacityChange = (id, value) => {
     const opacity = value / 100;
     updateFireModellingLayer(id, { opacity });
-    if (fireModellingLayers[id]?.layer) {
-      fireModellingLayers[id].layer.setOpacity(opacity);
-    }
+    setMapLayerOpacity(mapInstance, fireModellingLayers[id]?.layerIds, opacity);
   };
 
   const handleResetLayer = (id) => {
     updateFireModellingLayer(id, { opacity: 1, visible: true });
-    const layer = fireModellingLayers[id]?.layer;
-    if (layer) { layer.setOpacity(1); layer.setVisible(true); }
+    const layer = fireModellingLayers[id];
+    setMapLayerOpacity(mapInstance, layer?.layerIds, 1);
+    setMapLayerVisibility(mapInstance, layer?.layerIds, true);
+    clearModelFrameFilter(mapInstance, layer);
   };
 
   const handleDeleteLayer = (id) => {
     const layer = fireModellingLayers[id];
-    if (layer?.layer && mapInstance) mapInstance.removeLayer(layer.layer);
+    removeMapModelLayer(mapInstance, layer);
     removeFireModellingLayer(id);
   };
 
   const handleZoomToLayer = (id) => {
     const layer = fireModellingLayers[id];
-    if (!layer?.layer || !mapInstance) return;
+    if (!layer?.data || !mapInstance) return;
     try {
-      const source = layer.layer.getSource();
-      const extent = source.getExtent();
-      if (extent && extent.every(isFinite)) {
-        mapInstance.getView().fit(extent, {
-          padding: [80, 80, 80, 80],
+      const extent = bbox(layer.data);
+      if (extent && extent.every(Number.isFinite)) {
+        mapInstance.fitBounds([[extent[0], extent[1]], [extent[2], extent[3]]], {
+          padding: 80,
           duration: 800,
           maxZoom: 14,
         });
@@ -141,9 +179,9 @@ const FireModelling = () => {
 
   const startAnimation = (layerId) => {
     const layer = fireModellingLayers[layerId];
-    if (!layer?.layer) return;
-    const features = layer.layer.getSource().getFeatures();
-    const maxDn = Math.max(...features.map(f => f.get('dn') || 0));
+    const features = layer?.data?.features || [];
+    if (!layer || !features.length) return;
+    const maxDn = Math.max(...features.map(f => Number(f.properties?.dn) || 0));
 
     setAnimatingLayers(prev => ({
       ...prev,
@@ -155,10 +193,7 @@ const FireModelling = () => {
         const anim = prev[layerId];
         if (!anim) return prev;
         const next = anim.currentFrame >= anim.maxFrame ? 0 : anim.currentFrame + 1;
-        features.forEach(f => {
-          const dn = f.get('dn') || 0;
-          f.setStyle(dn <= next ? undefined : new Style({}));
-        });
+        setModelFrameFilter(mapInstance, layer, next);
         return { ...prev, [layerId]: { ...anim, currentFrame: next } };
       });
     }, 500);
@@ -173,18 +208,14 @@ const FireModelling = () => {
   const resetAnimation = (layerId) => {
     pauseAnimation(layerId);
     const layer = fireModellingLayers[layerId];
-    if (layer?.layer) {
-      layer.layer.getSource().getFeatures().forEach(f => f.setStyle(undefined));
-    }
+    clearModelFrameFilter(mapInstance, layer);
     setAnimatingLayers(prev => { const u = { ...prev }; delete u[layerId]; return u; });
   };
 
   const setAnimationFrame = (layerId, frame) => {
     const layer = fireModellingLayers[layerId];
-    if (!layer?.layer) return;
-    layer.layer.getSource().getFeatures().forEach(f => {
-      f.setStyle((f.get('dn') || 0) <= frame ? undefined : new Style({}));
-    });
+    if (!layer) return;
+    setModelFrameFilter(mapInstance, layer, frame);
     setAnimatingLayers(prev => ({ ...prev, [layerId]: { ...prev[layerId], currentFrame: frame } }));
   };
 

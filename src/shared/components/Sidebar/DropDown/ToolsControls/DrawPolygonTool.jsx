@@ -1,49 +1,72 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { Pencil, X, Eye, EyeOff, Trash2, Save } from 'lucide-react';
-import Draw from 'ol/interaction/Draw';
-import VectorSource from 'ol/source/Vector';
-import VectorLayer from 'ol/layer/Vector';
-import { Style, Stroke, Fill } from 'ol/style';
-import GeoJSON from 'ol/format/GeoJSON';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Eye, EyeOff, Pencil, Save, Trash2, X } from 'lucide-react';
 import useAnalysisStore from 'src/app/store/analysisStore';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
+import { startMapLibreDraw } from 'src/modules/MapPage/utils/maplibreDraw';
+import { removeSourceWithLayers } from 'src/modules/MapPage/utils/maplibreHelpers';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
 const TOOL_ID = 'draw_polygon';
+const SOURCE_ID = 'draw-polygon-preview-source';
+const FILL_LAYER_ID = 'draw-polygon-preview-fill';
+const LINE_LAYER_ID = 'draw-polygon-preview-line';
 
-const PREVIEW_STYLE = new Style({
-  fill: new Fill({ color: 'rgba(52, 211, 153, 0.1)' }),
-  stroke: new Stroke({ color: 'rgba(52, 211, 153, 0.7)', width: 2, lineDash: [6, 4] }),
-});
-
-const geojsonFormat = new GeoJSON();
+const ensurePreviewLayer = (map) => {
+  if (!map.getSource(SOURCE_ID)) {
+    map.addSource(SOURCE_ID, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    });
+  }
+  if (!map.getLayer(FILL_LAYER_ID)) {
+    map.addLayer({
+      id: FILL_LAYER_ID,
+      type: 'fill',
+      source: SOURCE_ID,
+      paint: { 'fill-color': 'rgba(52, 211, 153, 0.1)' },
+    });
+  }
+  if (!map.getLayer(LINE_LAYER_ID)) {
+    map.addLayer({
+      id: LINE_LAYER_ID,
+      type: 'line',
+      source: SOURCE_ID,
+      paint: {
+        'line-color': 'rgba(52, 211, 153, 0.7)',
+        'line-width': 2,
+        'line-dasharray': [2, 1],
+      },
+    });
+  }
+};
 
 const DrawPolygonTool = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [pendingGeojson, setPendingGeojson] = useState(null);
   const [pendingName, setPendingName] = useState('');
-
-  const drawRef = useRef(null);
-  const previewSourceRef = useRef(null);
-  const previewLayerRef = useRef(null);
+  const drawCleanupRef = useRef(null);
 
   const { drawnPolygons, addPolygon, removePolygon, togglePolygonVisibility, activeToolId, setActiveTool } =
     useAnalysisStore();
 
-  // Temporary preview layer for the just-drawn polygon while naming it
   useEffect(() => {
     const map = getMapInstance();
-    if (!map) return;
+    if (!map) return undefined;
+    ensurePreviewLayer(map);
+    return () => {
+      drawCleanupRef.current?.();
+      removeSourceWithLayers(map, SOURCE_ID);
+    };
+  }, []);
 
-    const source = new VectorSource();
-    const layer = new VectorLayer({ source, style: PREVIEW_STYLE, zIndex: 498 });
-    layer.set('id', 'draw-polygon-preview');
-    map.addLayer(layer);
-    previewSourceRef.current = source;
-    previewLayerRef.current = layer;
-
-    return () => { map.removeLayer(layer); };
+  const setPreview = useCallback((feature) => {
+    const map = getMapInstance();
+    ensurePreviewLayer(map);
+    map.getSource(SOURCE_ID)?.setData({
+      type: 'FeatureCollection',
+      features: feature ? [feature] : [],
+    });
   }, []);
 
   const startDrawing = useCallback(() => {
@@ -52,46 +75,31 @@ const DrawPolygonTool = () => {
 
     setPendingGeojson(null);
     setPendingName('');
-    if (previewSourceRef.current) previewSourceRef.current.clear();
-
+    setPreview(null);
     setActiveTool(TOOL_ID);
     setIsDrawing(true);
 
-    const draw = new Draw({ type: 'Polygon', style: PREVIEW_STYLE });
-    drawRef.current = draw;
-
-    draw.on('drawend', (e) => {
-      const geom = e.feature.getGeometry();
-      const geojson = geojsonFormat.writeGeometryObject(geom, {
-        featureProjection: 'EPSG:3857',
-        dataProjection: 'EPSG:4326',
-      });
-
-      // Show preview on the temporary layer
-      const feat = geojsonFormat.readFeature({ type: 'Feature', geometry: geojson }, {
-        dataProjection: 'EPSG:4326',
-        featureProjection: 'EPSG:3857',
-      });
-      previewSourceRef.current?.addFeature(feat);
-
-      setPendingGeojson(geojson);
-      setPendingName(`Polygon ${Date.now().toString().slice(-4)}`);
-
-      map.removeInteraction(draw);
-      drawRef.current = null;
-      setIsDrawing(false);
-      setActiveTool(null);
+    drawCleanupRef.current = startMapLibreDraw(map, {
+      idPrefix: 'draw-polygon-tool',
+      type: 'Polygon',
+      minPoints: 3,
+      onComplete: (feature) => {
+        setPreview(feature);
+        setPendingGeojson(feature.geometry);
+        setPendingName(`Polygon ${Date.now().toString().slice(-4)}`);
+        setIsDrawing(false);
+        setActiveTool(null);
+      },
+      onCancel: () => {
+        setIsDrawing(false);
+        setActiveTool(null);
+      },
     });
-
-    map.addInteraction(draw);
-  }, [activeToolId, setActiveTool]);
+  }, [activeToolId, setActiveTool, setPreview]);
 
   const cancelDrawing = useCallback(() => {
-    const map = getMapInstance();
-    if (drawRef.current && map) {
-      map.removeInteraction(drawRef.current);
-      drawRef.current = null;
-    }
+    drawCleanupRef.current?.();
+    drawCleanupRef.current = null;
     setIsDrawing(false);
     setActiveTool(null);
   }, [setActiveTool]);
@@ -101,14 +109,14 @@ const DrawPolygonTool = () => {
     addPolygon(pendingName.trim() || 'Polygon', pendingGeojson);
     setPendingGeojson(null);
     setPendingName('');
-    if (previewSourceRef.current) previewSourceRef.current.clear();
-  }, [pendingGeojson, pendingName, addPolygon]);
+    setPreview(null);
+  }, [pendingGeojson, pendingName, addPolygon, setPreview]);
 
   const discardPending = useCallback(() => {
     setPendingGeojson(null);
     setPendingName('');
-    if (previewSourceRef.current) previewSourceRef.current.clear();
-  }, []);
+    setPreview(null);
+  }, [setPreview]);
 
   const blocked = activeToolId !== null && activeToolId !== TOOL_ID;
 

@@ -4,7 +4,7 @@ import { create } from 'zustand';
  * Each stored item:
  * {
  *   id: number, // Date.now() or custom id
- *   layer: ol/layer/Layer instance (or null until provided),
+ *   layerIds: MapLibre layer ids,
  *   opacity: number,
  *   visible: boolean,
  * }

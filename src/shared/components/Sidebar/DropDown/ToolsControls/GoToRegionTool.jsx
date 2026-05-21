@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Map } from 'lucide-react';
-import { transformExtent } from 'ol/proj';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import styles from './ToolsControls.module.scss';
 
@@ -36,10 +35,9 @@ const GoToRegionTool = () => {
     const region = REGIONS.find((r) => r.short === selected);
     if (!region) return;
 
-    const extent = transformExtent(region.bbox, 'EPSG:4326', 'EPSG:3857');
-    map.getView().fit(extent, {
+    map.fitBounds([[region.bbox[0], region.bbox[1]], [region.bbox[2], region.bbox[3]]], {
       duration: 800,
-      padding: [24, 24, 24, 24],
+      padding: 24,
     });
   };
 

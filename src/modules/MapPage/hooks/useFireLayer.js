@@ -3,10 +3,7 @@ import { createFireLayer } from "../utils/fireLayer.js";
 
 export const useFireLayer = (fireStore) => {
   const {
-    fireLayerVisible,
     setFireLength,
-    fireStartDate,
-    fireEndDate,
     updateFireStatistics,
     showTechnogenicOnly,
     showNaturalOnly,
@@ -19,27 +16,17 @@ export const useFireLayer = (fireStore) => {
     [setFireLength, updateFireStatistics]
   );
 
-  const loadFireData = useCallback(async (mapInstance) => {
+  const loadFireData = useCallback(async (mapInstance, date1, date2, nextVisible) => {
     if (!fireLayer || !mapInstance) return;
 
     try {
-      const layers = fireLayer.getLayers();
-      layers.forEach(layer => {
-        if (!mapInstance.getLayers().getArray().includes(layer)) {
-          mapInstance.addLayer(layer);
-        }
-      });
-
       fireLayer.attachToMap(mapInstance);
-      await fireLayer.loadFireData(fireStartDate, fireEndDate);
-      fireLayer.setVisible(fireLayerVisible);
-      fireLayer.getLayers().forEach((layer, index) => {
-        layer.setZIndex(1000 + index);
-      });
+      await fireLayer.loadFireData(date1, date2);
+      fireLayer.setVisible(nextVisible);
     } catch (error) {
       console.error('Error loading fire data:', error);
     }
-  }, [fireLayer, fireLayerVisible, fireStartDate, fireEndDate]);
+  }, [fireLayer]);
 
   // Apply filters
   useEffect(() => {

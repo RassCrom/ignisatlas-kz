@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
 import MapToolbar from "./components/MapToolbar.jsx";
@@ -9,15 +9,9 @@ import SettlementsPopup from "./components/SettlementsPopup.jsx";
 import WeatherPopup from "./components/WeatherPopup.jsx";
 import usePopupManager from "./components/PopupManager.jsx";
 
-import {
-  createAdminBoundary,
-  createBlanketLayer,
-  createEmergencyLayers,
-} from "../utils/layers.jsx";
-import { osmLayer } from "../utils/basemaps.js";
+import { DEFAULT_BASEMAP_KEY } from "../utils/basemaps.js";
 
 import useFireStore from "src/app/store/fireStore";
-import useAdminBoundaryStore from "src/app/store/adminBoundaryStore.js";
 import {
   clearMapInstance,
   setMapInstance,
@@ -25,7 +19,6 @@ import {
 
 import useRiskMapStore from "src/app/store/riskMapStore.js";
 import useFireModellingStore from "src/app/store/fireModellingStore.js";
-import { useLayersStore } from "src/app/store/layersStore.js";
 import useMapStore from "src/app/store/mapStore.js";
 
 import { useMapInitialization } from "../hooks/useMapInitialization";
@@ -49,59 +42,46 @@ import ClimateZonesPopup from "./components/ClimateZonesPopup.jsx";
 import ProtectedAreasPopup from "./components/ProtectedAreasPopup.jsx";
 import PeatlandsPopup from "./components/PeatlandsPopup.jsx";
 
-import "ol/ol.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./MapView.module.scss";
 import "./mapStyles.scss";
 
 const MapView = () => {
   const mapRef = useRef(null);
-  const [basemap, setBasemap] = useState(osmLayer);
+  const [basemap, setBasemap] = useState(DEFAULT_BASEMAP_KEY);
   const [weatherCoordinate, setWeatherCoordinate] = useState(null);
 
   // Store hooks
   const fireStore = useFireStore();
-  const adminBoundaryStore = useAdminBoundaryStore();
-
   const riskMapStore = useRiskMapStore();
-  const { layers } = useLayersStore();
+  const fireDatesRef = useRef({
+    start: fireStore.fireStartDate,
+    end: fireStore.fireEndDate,
+  });
+  const fireLayerVisibleRef = useRef(fireStore.fireLayerVisible);
 
   // Custom hooks
   const { fireLayer, loadFireData } = useFireLayer(fireStore);
   const mapStore = useMapStore();
   const fireModellingStore = useFireModellingStore();
 
-  // Base layers
-  const blanket = useMemo(() => createBlanketLayer(), []);
-  const adminBoundaries = useMemo(
-    () => ({
-      country: createAdminBoundary("1"),
-      region: createAdminBoundary("2"),
-      district: createAdminBoundary("3"),
-    }),
-    []
-  );
-  const emergencyLayers = useMemo(() => createEmergencyLayers(), []);
-
-  // initial layers for map
-  const initialLayers = useMemo(
-    () => [
-      adminBoundaries.country,
-      adminBoundaries.region,
-      adminBoundaries.district,
-      blanket,
-      ...emergencyLayers,
-    ],
-    [adminBoundaries, blanket, emergencyLayers]
-  );
-
   // Initialize map
   const { mapInstance, isMapInitialized } = useMapInitialization(
     mapRef,
-    basemap,
-    initialLayers,
-    styles
+    basemap
   );
+
+  useEffect(() => {
+    fireDatesRef.current = {
+      start: fireStore.fireStartDate,
+      end: fireStore.fireEndDate,
+    };
+  }, [fireStore.fireStartDate, fireStore.fireEndDate]);
+
+  useEffect(() => {
+    fireLayerVisibleRef.current = fireStore.fireLayerVisible;
+  }, [fireStore.fireLayerVisible]);
 
   // Shared reference for sidebar tools that are rendered outside MapView.
   useEffect(() => {
@@ -176,7 +156,7 @@ const MapView = () => {
     popupRef:    emergencyPopupRef,
     popupContent: emergencyPopupContent,
     closePopup:  closeEmergencyPopup,
-  } = useEmergencyPopup(mapInstance, emergencyLayers);
+  } = useEmergencyPopup(mapInstance, isMapInitialized);
 
   // Popup management
   const {
@@ -205,47 +185,13 @@ const MapView = () => {
     fireLayer,
   ]);
 
-  // Admin boundary visibility and opacity
-  useEffect(() => {
-    Object.entries(adminBoundaries).forEach(([key, layer]) => {
-      const visibilityKey = `${key}_boundaries`;
-      const visibility = adminBoundaryStore.layerVisibility[visibilityKey];
-      const opacity = adminBoundaryStore.layerOpacity[visibilityKey] ?? 1;
-
-      layer.setVisible(visibility);
-      layer.setOpacity(opacity);
-    });
-  }, [
-    adminBoundaries,
-    adminBoundaryStore.layerVisibility,
-    adminBoundaryStore.layerOpacity,
-  ]);
-
-  // Emergency layers
-  useEffect(() => {
-    emergencyLayers.forEach((layer) => {
-      const id = layer.get("id");
-      const layerConfig = layers.find((i) => i.id === id);
-      if (layerConfig) {
-        layer.setVisible(layerConfig.visible);
-      }
-    });
-  }, [emergencyLayers, layers]);
-
   // Fire layer management
   useEffect(() => {
     if (!isMapInitialized || !mapInstance || !fireLayer) return;
 
     if (fireStore.fireLayerVisible) {
-      if (
-        fireLayer
-          .getLayers()
-          .every((layer) => !mapInstance.getLayers().getArray().includes(layer))
-      ) {
-        loadFireData(mapInstance);
-      } else {
-        fireLayer.setVisible(true);
-      }
+      const { start, end } = fireDatesRef.current;
+      loadFireData(mapInstance, start, end, true);
     } else if (fireLayer.getVisible()) {
       fireLayer.setVisible(false);
     }
@@ -253,10 +199,11 @@ const MapView = () => {
 
   // Update fire layer when date changes
   useEffect(() => {
-    if (fireStore.fireLayerVisible && fireLayer && mapInstance) {
-      loadFireData(mapInstance);
+    if (fireLayerVisibleRef.current && fireLayer && mapInstance) {
+      const { start, end } = fireDatesRef.current;
+      loadFireData(mapInstance, start, end, true);
     }
-  }, [fireStore.dateHasChanged, fireStore.fireLayerVisible, fireLayer, loadFireData, mapInstance]);
+  }, [fireStore.dateHasChanged, fireLayer, loadFireData, mapInstance]);
 
   // Add map interactions
   useEffect(() => {

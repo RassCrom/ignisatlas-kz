@@ -13,7 +13,7 @@ export const KAZAKHSTAN_EXTENT_GEO = [
 ];
 
 export const DEFAULT_POSITION = {
-    center: [7593493.19, 6273692.57],
+    center: [68.2, 49.0],
     zoom: 4.5,
-    rotation: 0,
+    bearing: 0,
 };

@@ -15,17 +15,33 @@ import useSentinelExplorerOldStore from 'src/app/store/sentinelExplorerOldStore'
 import useModisExplorerStore from 'src/app/store/modisExplorerStore';
 import useAtmosphereStore from 'src/app/store/atmosphereStore';
 import useLstStore from 'src/app/store/lstStore';
-import { findLayerById } from 'src/modules/MapPage/services/mapService';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 
 import './FireControls/fireControls.scss';
 import './LayersPanel.scss';
 
-// Used only for explorer tile layers that have no reactive MapView hook.
-function syncOlLayer(id, visible, opacity01) {
-  const ol = findLayerById(id);
-  if (!ol) return;
-  if (visible !== undefined) ol.setVisible(visible);
-  if (opacity01 !== undefined) ol.setOpacity(opacity01);
+// Used for explorer tile layers that are added directly from sidebar tools.
+function syncMapLayer(id, visible, opacity01) {
+  const map = getMapInstance();
+  if (!map?.getLayer(id)) return;
+  if (visible !== undefined) {
+    map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+  }
+  if (opacity01 !== undefined) {
+    const layerType = map.getLayer(id)?.type;
+    const paintProperty = layerType === 'fill'
+      ? 'fill-opacity'
+      : layerType === 'line'
+        ? 'line-opacity'
+        : layerType === 'circle'
+          ? 'circle-opacity'
+          : 'raster-opacity';
+    map.setPaintProperty(id, paintProperty, opacity01);
+  }
+}
+
+function syncMapLayers(ids = [], visible, opacity01) {
+  ids.forEach((id) => syncMapLayer(id, visible, opacity01));
 }
 
 // ─── Shared row ─────────────────────────────────────────────────────────────
@@ -146,16 +162,16 @@ const LayersPanel = () => {
   const toggleLst = useLstStore((s) => s.toggleLayerVisibility);
   const updateLstOpa = useLstStore((s) => s.updateLayerOpacity);
 
-  // Build handlers for a single explorer tile layer (needs store + direct OL sync)
+  // Build handlers for a single explorer tile layer (needs store + direct map sync)
   const makeExplorerHandlers = useCallback((layer, toggleFn, updateOpaFn) => ({
     onToggle: () => {
       const next = !layer.visible;
       toggleFn(layer.id);
-      syncOlLayer(layer.id, next, undefined);
+      syncMapLayer(layer.layerId || layer.id, next, undefined);
     },
     onOpacity: (v01) => {
       updateOpaFn(layer.id, Math.round(v01 * 100));
-      syncOlLayer(layer.id, undefined, v01);
+      syncMapLayer(layer.layerId || layer.id, undefined, v01);
     },
   }), []);
 
@@ -256,12 +272,11 @@ const LayersPanel = () => {
               provider="Local GeoJSON"
               visible={layer.visible}
               opacity01={layer.opacity ?? 1}
-              onToggle={() => changeKchsVis(layer.id)}
-              onOpacity={(v01) => {
-                updateKchs(layer.id, { opacity: v01 });
-                syncOlLayer(layer.id, undefined, v01);
-              }}
-            />
+                onToggle={() => changeKchsVis(layer.id)}
+                onOpacity={(v01) => {
+                  updateKchs(layer.id, { opacity: v01 });
+                }}
+              />
           ))}
         </div>
 
@@ -321,11 +336,11 @@ const LayersPanel = () => {
                 onToggle={() => {
                   const next = !(fm.visible ?? true);
                   updateFm(fm.id, { visible: next });
-                  if (fm.layer) fm.layer.setVisible(next);
+                  syncMapLayers(fm.layerIds, next, undefined);
                 }}
                 onOpacity={(v01) => {
                   updateFm(fm.id, { opacity: v01 });
-                  if (fm.layer) fm.layer.setOpacity(v01);
+                  syncMapLayers(fm.layerIds, undefined, v01);
                 }}
               />
             ))}
@@ -380,11 +395,11 @@ const LayersPanel = () => {
                 onToggle={() => {
                   const next = !layer.visible;
                   toggleSentinelOld(layer.id);
-                  syncOlLayer(layer.id, next, undefined);
+                  syncMapLayer(layer.layerId || layer.id, next, undefined);
                 }}
                 onOpacity={(v01) => {
                   updateSentinelOldOpa(layer.id, v01);
-                  syncOlLayer(layer.id, undefined, v01);
+                  syncMapLayer(layer.layerId || layer.id, undefined, v01);
                 }}
               />
             ))}

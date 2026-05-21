@@ -123,25 +123,6 @@
     gap: 1rem;
 }
 
-.hero__scroll {
-    position: absolute;
-    bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.scroll__line {
-    display: block;
-    width: 1px;
-    height: 48px;
-    background: linear-gradient(to bottom, transparent, var(--color-fire-amber), transparent);
-    animation: scroll-bounce 1.8s ease-in-out infinite;
-}
-
 @media (max-width: 768px) {
     .hero {
         min-height: 100svh;
@@ -154,9 +135,5 @@
             width: 100%;
             text-align: center;
         }
-    }
-
-    .hero__scroll {
-        display: none;
     }
 }

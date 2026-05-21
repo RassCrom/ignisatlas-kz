@@ -1,16 +1,16 @@
-import { useRef, useState, useEffect, useCallback } from "react";
-import Overlay from "ol/Overlay";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { area } from '@turf/turf';
 import useMapStore from "../../../../app/store/mapStore";
 import useFireModellingStore from 'src/app/store/fireModellingStore';
+import { createPopup } from "../../utils/maplibreHelpers";
 
-/* ── Helpers ───────────────────────────────────────── */
+const FIRE_INTERACTIVE_LAYERS = ['fire-clusters', 'fire-points'];
 
 const formatDate = (dateStr) => {
   if (!dateStr) return "";
   try {
     const date = new Date(dateStr);
-    if (isNaN(date)) return dateStr;
+    if (Number.isNaN(date.getTime())) return dateStr;
     return date.toLocaleString("ru-RU", {
       year: "numeric",
       month: "short",
@@ -26,12 +26,12 @@ const formatDate = (dateStr) => {
 const getConfidenceLabel = (confidence) => {
   if (!confidence) return null;
   const confValue = parseFloat(confidence);
-  if (isNaN(confValue)) {
+  if (Number.isNaN(confValue)) {
     if (typeof confidence === "string") {
       const lower = confidence.toLowerCase();
       if (lower.includes("high")) return ["high", "Высокая"];
-      if (lower.includes("med"))  return ["medium", "Средняя"];
-      if (lower.includes("low"))  return ["low", "Низкая"];
+      if (lower.includes("med")) return ["medium", "Средняя"];
+      if (lower.includes("low")) return ["low", "Низкая"];
     }
     return null;
   }
@@ -40,7 +40,6 @@ const getConfidenceLabel = (confidence) => {
   return ["low", "Низкая"];
 };
 
-// Keys that are shown in dedicated fields → skip in "extra" section
 const SKIP_PROPS = new Set([
   'name', 'date', 'datetime', 'acq_date', 'acq_time',
   'confidence', 'power', 'brightness', 'frp',
@@ -49,14 +48,14 @@ const SKIP_PROPS = new Set([
 ]);
 
 const PROP_LABELS = {
-  satellite:    'Спутник',
-  satname:      'Спутник',
-  instrument:   'Инструмент',
-  scan:         'Скан',
-  track:        'Трек',
-  version:      'Версия',
-  type:         'Тип',
-  daynight:     'День/Ночь',
+  satellite: 'Спутник',
+  satname: 'Спутник',
+  instrument: 'Инструмент',
+  scan: 'Скан',
+  track: 'Трек',
+  version: 'Версия',
+  type: 'Тип',
+  daynight: 'День/Ночь',
 };
 
 const formatPropValue = (key, value) => {
@@ -64,14 +63,10 @@ const formatPropValue = (key, value) => {
   return String(value);
 };
 
-/* ── API call ──────────────────────────────────────── */
-
 const callFireModelAPI = async (fireImageId) => {
-  if (!fireImageId) return;
+  if (!fireImageId) return undefined;
   try {
-    const response = await fetch(
-      `https://api.igmass.kz/fire/firemodelbyid?id=${fireImageId}`
-    );
+    const response = await fetch(`https://api.igmass.kz/fire/firemodelbyid?id=${fireImageId}`);
     const data = await response.json();
     return {
       ...data,
@@ -82,8 +77,8 @@ const callFireModelAPI = async (fireImageId) => {
           type: "Feature",
           properties: {
             ...feature.properties,
-            area_sqm:  areaSqM,
-            area_ha:   areaSqM / 10_000,
+            area_sqm: areaSqM,
+            area_ha: areaSqM / 10_000,
             area_sqkm: areaSqM / 1_000_000,
           },
         };
@@ -91,171 +86,127 @@ const callFireModelAPI = async (fireImageId) => {
     };
   } catch (error) {
     console.error("Error calling Fire Model API:", error);
+    return undefined;
   }
 };
 
-/* ── Hook ──────────────────────────────────────────── */
-
 const usePopupManager = (map, fireLayer) => {
   const popupRef = useRef();
+  const popupInstanceRef = useRef(null);
   const [popupContent, setPopupContent] = useState(null);
-  const overlayRef = useRef(null);
-  const [isOverlayReady, setIsOverlayReady] = useState(false);
+  const [isPopupReady, setIsPopupReady] = useState(false);
   const { setFireModelLayer } = useMapStore();
   const { setTotalArea } = useFireModellingStore();
 
   const handleFireModelLayer = useCallback(async (fireImageId) => {
     const modelLayer = await callFireModelAPI(fireImageId);
     if (modelLayer?.features) {
-      const totalAreaHa = modelLayer.features.reduce(
-        (sum, f) => sum + (f.properties.area_ha || 0), 0
-      );
+      const totalAreaHa = modelLayer.features.reduce((sum, f) => sum + (f.properties.area_ha || 0), 0);
       setTotalArea(totalAreaHa);
     }
     setFireModelLayer(modelLayer);
   }, [setFireModelLayer, setTotalArea]);
 
-  /* ── Overlay setup ── */
-
   useEffect(() => {
-    if (!map || !popupRef.current || overlayRef.current) return;
-
-    const overlay = new Overlay({
-      element: popupRef.current,
-      autoPan: { animation: { duration: 250 }, margin: 80 },
-    });
-
-    overlayRef.current = overlay;
-    map.addOverlay(overlay);
-    setIsOverlayReady(true);
-
+    if (!map || !popupRef.current || popupInstanceRef.current) return;
+    popupInstanceRef.current = createPopup().setDOMContent(popupRef.current);
+    setIsPopupReady(true);
     return () => {
-      if (map && overlay) map.removeOverlay(overlay);
-      overlayRef.current = null;
-      setIsOverlayReady(false);
+      popupInstanceRef.current?.remove();
+      popupInstanceRef.current = null;
+      setIsPopupReady(false);
     };
   }, [map]);
 
-  /* ── Popup actions ── */
-
   const closePopup = useCallback((e) => {
     e?.preventDefault();
-    overlayRef.current?.setPosition(undefined);
+    popupInstanceRef.current?.remove();
     setPopupContent(null);
     return false;
   }, []);
 
   const showPopup = useCallback((coordinate, content) => {
-    if (overlayRef.current && coordinate) {
-      setPopupContent(content);
-      overlayRef.current.setPosition(coordinate);
-    }
-  }, []);
-
-  /* ── Map interactions ── */
+    if (!map || !coordinate) return;
+    setPopupContent(content);
+    popupInstanceRef.current?.setLngLat(coordinate).addTo(map);
+  }, [map]);
 
   const setupPopupInteractions = useCallback(() => {
     if (!map || !fireLayer) return () => {};
 
-    const handlePointerMove = (evt) => {
-      if (evt.dragging) return;
-      const pixel = map.getEventPixel(evt.originalEvent);
-      const hit = map.hasFeatureAtPixel(pixel, {
-        layerFilter: (layer) =>
-          fireLayer.containsLayer
-            ? fireLayer.containsLayer(layer)
-            : fireLayer.getLayers().includes(layer),
-      });
-      map.getTargetElement().style.cursor = hit ? "pointer" : "";
+    const getAvailableFireLayers = () =>
+      FIRE_INTERACTIVE_LAYERS.filter((layerId) => map.getLayer(layerId));
+
+    const handlePointerMove = (event) => {
+      const layers = getAvailableFireLayers();
+      const hit = layers.length
+        ? map.queryRenderedFeatures(event.point, { layers }).length > 0
+        : false;
+      map.getCanvas().style.cursor = hit ? "pointer" : "";
     };
 
-    const handleFirePopupClick = (evt) => {
+    const handleFirePopupClick = (event) => {
       closePopup();
-      let foundFeature = false;
+      const layers = getAvailableFireLayers();
+      if (!layers.length) return;
 
-      map.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
-        const isFireLayer = fireLayer.containsLayer
-          ? fireLayer.containsLayer(layer)
-          : fireLayer.getLayers().includes(layer);
+      const feature = map.queryRenderedFeatures(event.point, { layers })[0];
+      if (!feature) return;
 
-        if (!foundFeature && isFireLayer) {
-          /* ── Cluster ── */
-          if (layer === fireLayer.clusterLayer) {
-            const features = feature.get("features");
-            if (features?.length > 1) {
-              showPopup(evt.coordinate, {
-                type: 'fire-cluster',
-                coordinate: evt.coordinate,
-                count: features.length,
-                dateRange: {
-                  start: formatDate(features[0].get("date") || features[0].get("datetime")),
-                  end: formatDate(
-                    features[features.length - 1].get("date") ||
-                    features[features.length - 1].get("datetime")
-                  ),
-                },
-              });
-              foundFeature = true;
-              return true;
-            }
-            if (features?.length === 1) feature = features[0];
-          }
+      const props = feature.properties || {};
 
-          /* ── Single fire point ── */
-          const props         = feature.getProperties();
-          const name          = props.name || 'Очаг возгорания';
-          const date          = formatDate(props.date || props.datetime || '');
-          const confidenceRaw = props.confidence || '';
-          const power         = props.power || props.brightness || props.frp || '';
-          const model         = props.model || '';
-          const fireImageId   = props.fireimageid || '';
+      if (props.cluster || props.point_count) {
+        showPopup([event.lngLat.lng, event.lngLat.lat], {
+          type: 'fire-cluster',
+          coordinate: [event.lngLat.lng, event.lngLat.lat],
+          count: props.point_count || props.point_count_abbreviated || 0,
+          dateRange: null,
+        });
+        return;
+      }
 
-          // Collect extra props (translated, de-duped)
-          const seenLabels = new Set();
-          const extra = [];
-          Object.entries(props).forEach(([key, value]) => {
-            if (
-              SKIP_PROPS.has(key) ||
-              value === undefined || value === null || value === ''
-            ) return;
-            const label = PROP_LABELS[key] || key;
-            if (seenLabels.has(label)) return;
-            seenLabels.add(label);
-            extra.push({ key: label, value: formatPropValue(key, value) });
-          });
+      const name = props.name || 'Очаг возгорания';
+      const date = formatDate(props.date || props.datetime || props.acq_date || '');
+      const confidenceRaw = props.confidence || '';
+      const power = props.power || props.brightness || props.frp || '';
+      const model = props.model || '';
+      const fireImageId = props.fireimageid || '';
+      const seenLabels = new Set();
+      const extra = [];
 
-          showPopup(evt.coordinate, {
-            type:           'fire-point',
-            coordinate:     evt.coordinate,
-            name,
-            date,
-            confidence:     getConfidenceLabel(confidenceRaw)
-              ? { level: getConfidenceLabel(confidenceRaw)[0], label: getConfidenceLabel(confidenceRaw)[1], raw: confidenceRaw }
-              : null,
-            power:          power ? String(power) : '',
-            model,
-            fireImageId,
-            isTechnogenic:  props.technogenic === true,
-            extra,
-          });
+      Object.entries(props).forEach(([key, value]) => {
+        if (SKIP_PROPS.has(key) || value === undefined || value === null || value === '') return;
+        const label = PROP_LABELS[key] || key;
+        if (seenLabels.has(label)) return;
+        seenLabels.add(label);
+        extra.push({ key: label, value: formatPropValue(key, value) });
+      });
 
-          foundFeature = true;
-          return true;
-        }
-        return false;
+      const confidenceLabel = getConfidenceLabel(confidenceRaw);
+      showPopup([event.lngLat.lng, event.lngLat.lat], {
+        type: 'fire-point',
+        coordinate: [event.lngLat.lng, event.lngLat.lat],
+        name,
+        date,
+        confidence: confidenceLabel
+          ? { level: confidenceLabel[0], label: confidenceLabel[1], raw: confidenceRaw }
+          : null,
+        power: power ? String(power) : '',
+        model,
+        fireImageId,
+        isTechnogenic: props.technogenic === true || props.technogenic === 'true',
+        extra,
       });
     };
 
-    if (!isOverlayReady) return () => {};
-
-    map.on("pointermove", handlePointerMove);
+    map.on("mousemove", handlePointerMove);
     map.on("click", handleFirePopupClick);
 
     return () => {
-      map.un("pointermove", handlePointerMove);
-      map.un("click", handleFirePopupClick);
+      map.off("mousemove", handlePointerMove);
+      map.off("click", handleFirePopupClick);
     };
-  }, [map, fireLayer, closePopup, showPopup, isOverlayReady]);
+  }, [map, fireLayer, closePopup, showPopup]);
 
   return {
     popupRef,
@@ -263,7 +214,7 @@ const usePopupManager = (map, fireLayer) => {
     closePopup,
     showPopup,
     setupPopupInteractions,
-    isOverlayReady,
+    isOverlayReady: isPopupReady,
     handleFireModelLayer,
   };
 };

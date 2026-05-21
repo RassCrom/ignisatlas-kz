@@ -1,32 +1,62 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { CircleDashed, X, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { CircleDashed, Trash2, X } from 'lucide-react';
 import * as turf from '@turf/turf';
-import Draw from 'ol/interaction/Draw';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import { Style, Stroke, Fill } from 'ol/style';
-import GeoJSON from 'ol/format/GeoJSON';
 import useAnalysisStore from 'src/app/store/analysisStore';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
+import { startMapLibreDraw } from 'src/modules/MapPage/utils/maplibreDraw';
+import { removeSourceWithLayers } from 'src/modules/MapPage/utils/maplibreHelpers';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
 const TOOL_ID = 'buffer_tool';
+const INPUT_SOURCE_ID = 'buffer-input-source';
+const INPUT_LAYER_ID = 'buffer-input-layer';
+const RESULT_SOURCE_ID = 'buffer-result-source';
+const RESULT_FILL_ID = 'buffer-result-fill';
+const RESULT_LINE_ID = 'buffer-result-line';
 
-const INPUT_STYLE = new Style({
-  fill: new Fill({ color: 'rgba(52, 211, 153, 0.08)' }),
-  stroke: new Stroke({ color: 'rgba(52, 211, 153, 0.6)', width: 2, lineDash: [6, 4] }),
-});
+const setSourceData = (map, sourceId, feature) => {
+  map.getSource(sourceId)?.setData({
+    type: 'FeatureCollection',
+    features: feature ? [feature] : [],
+  });
+};
 
-const BUFFER_STYLE = new Style({
-  fill: new Fill({ color: 'rgba(45, 212, 191, 0.15)' }),
-  stroke: new Stroke({ color: 'rgba(45, 212, 191, 0.8)', width: 2 }),
-});
-
-const geojsonFormat = new GeoJSON();
+const ensureLayers = (map) => {
+  if (!map.getSource(INPUT_SOURCE_ID)) {
+    map.addSource(INPUT_SOURCE_ID, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+  }
+  if (!map.getLayer(INPUT_LAYER_ID)) {
+    map.addLayer({
+      id: INPUT_LAYER_ID,
+      type: 'line',
+      source: INPUT_SOURCE_ID,
+      paint: { 'line-color': 'rgba(52, 211, 153, 0.7)', 'line-width': 2, 'line-dasharray': [2, 1] },
+    });
+  }
+  if (!map.getSource(RESULT_SOURCE_ID)) {
+    map.addSource(RESULT_SOURCE_ID, { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+  }
+  if (!map.getLayer(RESULT_FILL_ID)) {
+    map.addLayer({
+      id: RESULT_FILL_ID,
+      type: 'fill',
+      source: RESULT_SOURCE_ID,
+      paint: { 'fill-color': 'rgba(45, 212, 191, 0.15)' },
+    });
+  }
+  if (!map.getLayer(RESULT_LINE_ID)) {
+    map.addLayer({
+      id: RESULT_LINE_ID,
+      type: 'line',
+      source: RESULT_SOURCE_ID,
+      paint: { 'line-color': 'rgba(45, 212, 191, 0.8)', 'line-width': 2 },
+    });
+  }
+};
 
 const BufferTool = () => {
-  const [mode, setMode] = useState('draw'); // 'draw' | 'saved'
+  const [mode, setMode] = useState('draw');
   const [selectedPolyId, setSelectedPolyId] = useState('');
   const [distance, setDistance] = useState(10);
   const [units, setUnits] = useState('kilometers');
@@ -34,37 +64,18 @@ const BufferTool = () => {
   const [drawnGeojson, setDrawnGeojson] = useState(null);
   const [bufferArea, setBufferArea] = useState(null);
   const [error, setError] = useState(null);
-
-  const drawRef = useRef(null);
-  const inputSourceRef = useRef(null);
-  const inputLayerRef = useRef(null);
-  const resultSourceRef = useRef(null);
-  const resultLayerRef = useRef(null);
+  const drawCleanupRef = useRef(null);
 
   const { drawnPolygons, activeToolId, setActiveTool } = useAnalysisStore();
 
   useEffect(() => {
     const map = getMapInstance();
-    if (!map) return;
-
-    const iSrc = new VectorSource();
-    const iLay = new VectorLayer({ source: iSrc, style: INPUT_STYLE, zIndex: 488 });
-    iLay.set('id', 'buffer-input-layer');
-    map.addLayer(iLay);
-
-    const rSrc = new VectorSource();
-    const rLay = new VectorLayer({ source: rSrc, style: BUFFER_STYLE, zIndex: 487 });
-    rLay.set('id', 'buffer-result-layer');
-    map.addLayer(rLay);
-
-    inputSourceRef.current = iSrc;
-    inputLayerRef.current = iLay;
-    resultSourceRef.current = rSrc;
-    resultLayerRef.current = rLay;
-
+    if (!map) return undefined;
+    ensureLayers(map);
     return () => {
-      map.removeLayer(iLay);
-      map.removeLayer(rLay);
+      drawCleanupRef.current?.();
+      removeSourceWithLayers(map, INPUT_SOURCE_ID);
+      removeSourceWithLayers(map, RESULT_SOURCE_ID);
     };
   }, []);
 
@@ -72,57 +83,46 @@ const BufferTool = () => {
     const map = getMapInstance();
     if (!map || (activeToolId !== null && activeToolId !== TOOL_ID)) return;
 
+    ensureLayers(map);
     setActiveTool(TOOL_ID);
     setIsDrawing(true);
     setDrawnGeojson(null);
-    inputSourceRef.current?.clear();
-    resultSourceRef.current?.clear();
+    setSourceData(map, INPUT_SOURCE_ID, null);
+    setSourceData(map, RESULT_SOURCE_ID, null);
     setBufferArea(null);
 
-    const draw = new Draw({ type: 'Polygon', style: INPUT_STYLE });
-    drawRef.current = draw;
-
-    draw.on('drawend', (e) => {
-      const geom = e.feature.getGeometry();
-      const geojson = geojsonFormat.writeGeometryObject(geom, {
-        featureProjection: 'EPSG:3857',
-        dataProjection: 'EPSG:4326',
-      });
-      const feat = geojsonFormat.readFeature({ type: 'Feature', geometry: geojson }, {
-        dataProjection: 'EPSG:4326',
-        featureProjection: 'EPSG:3857',
-      });
-      inputSourceRef.current?.addFeature(feat);
-      setDrawnGeojson(geojson);
-
-      map.removeInteraction(draw);
-      drawRef.current = null;
-      setIsDrawing(false);
-      setActiveTool(null);
+    drawCleanupRef.current = startMapLibreDraw(map, {
+      idPrefix: 'buffer-input-draw',
+      type: 'Polygon',
+      minPoints: 3,
+      onComplete: (feature) => {
+        setSourceData(map, INPUT_SOURCE_ID, feature);
+        setDrawnGeojson(feature.geometry);
+        setIsDrawing(false);
+        setActiveTool(null);
+      },
+      onCancel: () => {
+        setIsDrawing(false);
+        setActiveTool(null);
+      },
     });
-
-    map.addInteraction(draw);
   }, [activeToolId, setActiveTool]);
 
   const cancelDrawing = useCallback(() => {
-    const map = getMapInstance();
-    if (drawRef.current && map) {
-      map.removeInteraction(drawRef.current);
-      drawRef.current = null;
-    }
+    drawCleanupRef.current?.();
+    drawCleanupRef.current = null;
     setIsDrawing(false);
     setActiveTool(null);
   }, [setActiveTool]);
 
   const applyBuffer = useCallback(() => {
+    const map = getMapInstance();
+    if (!map) return;
     setError(null);
 
-    let inputGeojson = null;
-    if (mode === 'draw') {
-      inputGeojson = drawnGeojson;
-    } else {
-      const poly = drawnPolygons.find((p) => p.id === selectedPolyId);
-      if (poly) inputGeojson = poly.geojson;
+    let inputGeojson = mode === 'draw' ? drawnGeojson : null;
+    if (mode === 'saved') {
+      inputGeojson = drawnPolygons.find((p) => p.id === selectedPolyId)?.geojson;
     }
 
     if (!inputGeojson) {
@@ -133,28 +133,26 @@ const BufferTool = () => {
     try {
       const feature = turf.feature(inputGeojson);
       const buffered = turf.buffer(feature, Number(distance), { units });
-      if (!buffered) { setError('Buffer failed. Check input geometry.'); return; }
+      if (!buffered) {
+        setError('Buffer failed. Check input geometry.');
+        return;
+      }
 
-      resultSourceRef.current?.clear();
-      const olFeature = geojsonFormat.readFeature(buffered, {
-        dataProjection: 'EPSG:4326',
-        featureProjection: 'EPSG:3857',
-      });
-      resultSourceRef.current?.addFeature(olFeature);
-
+      ensureLayers(map);
+      setSourceData(map, RESULT_SOURCE_ID, buffered);
       const areaM2 = turf.area(buffered);
-      const label = areaM2 > 1e6
-        ? `${(areaM2 / 1e6).toFixed(2)} km²`
-        : `${areaM2.toFixed(0)} m²`;
-      setBufferArea(label);
+      setBufferArea(areaM2 > 1e6 ? `${(areaM2 / 1e6).toFixed(2)} km2` : `${areaM2.toFixed(0)} m2`);
     } catch (e) {
       setError(e.message || 'Buffer computation failed.');
     }
   }, [mode, drawnGeojson, drawnPolygons, selectedPolyId, distance, units]);
 
   const clearResult = useCallback(() => {
-    resultSourceRef.current?.clear();
-    inputSourceRef.current?.clear();
+    const map = getMapInstance();
+    if (map) {
+      setSourceData(map, RESULT_SOURCE_ID, null);
+      setSourceData(map, INPUT_SOURCE_ID, null);
+    }
     setDrawnGeojson(null);
     setBufferArea(null);
     setError(null);
@@ -192,12 +190,8 @@ const BufferTool = () => {
       )}
 
       {mode === 'saved' && (
-        <select
-          className={baseStyles.select}
-          value={selectedPolyId}
-          onChange={(e) => setSelectedPolyId(e.target.value)}
-        >
-          <option value="">— select a saved polygon —</option>
+        <select className={baseStyles.select} value={selectedPolyId} onChange={(e) => setSelectedPolyId(e.target.value)}>
+          <option value="">- select a saved polygon -</option>
           {drawnPolygons.map((p) => (
             <option key={p.id} value={p.id}>{p.name}</option>
           ))}
@@ -215,11 +209,7 @@ const BufferTool = () => {
           className={baseStyles.input}
           style={{ width: '80px' }}
         />
-        <select
-          className={styles.unitSelect}
-          value={units}
-          onChange={(e) => setUnits(e.target.value)}
-        >
+        <select className={styles.unitSelect} value={units} onChange={(e) => setUnits(e.target.value)}>
           <option value="meters">m</option>
           <option value="kilometers">km</option>
           <option value="miles">mi</option>

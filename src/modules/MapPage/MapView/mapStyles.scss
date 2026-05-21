@@ -1,4 +1,4 @@
-.ol-control {
+.maplibregl-ctrl-group {
     background-color: transparent;
 
     button {
@@ -27,15 +27,11 @@
     }
 }
 
-.ol-zoom {
+.maplibregl-ctrl-compass {
     display: none;
 }
 
-.ol-rotate {
-    display: none;
-}
-
-.ol-attribution {
+.maplibregl-ctrl-attrib {
     background: rgba(9, 10, 36, 0.7) !important;
     backdrop-filter: blur(8px);
     border-radius: 8px;
@@ -46,175 +42,8 @@
         color: rgba(136, 139, 224, 0.5);
     }
 
-    &.ol-uncollapsible {
+    &.maplibregl-compact-show {
         background: rgba(9, 10, 36, 0.6) !important;
-    }
-}
-
-.ol-geocoder.gcd-gl-container {
-    top: 16.6rem;
-    right: 0.5rem;
-    left: auto;
-    z-index: 100;
-    display: flex;
-    justify-content: flex-end;
-    
-    .gcd-gl-control.ol-control {
-        background: rgba(9, 10, 36, 0.85);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(136, 139, 224, 0.1);
-        border-radius: 12px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-        padding: 2px;
-        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease;
-        overflow: hidden;
-        width: 2.75rem;
-        height: 2.75rem;
-        position: relative;
-        display: flex;
-        align-items: center;
-        flex-direction: row-reverse;
-        box-sizing: border-box;
-        
-        .gcd-gl-btn {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            width: 2.25rem;
-            height: 2.25rem;
-            border: none;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 8px;
-            color: rgba(217, 218, 245, 0.7);
-            transition: color 0.2s ease, background 0.2s ease;
-            z-index: 10;
-
-            &::after {
-                font-family: inherit;
-                font-size: 1.1rem;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            &:hover {
-                background: rgba(136, 139, 224, 0.1);
-                color: rgba(217, 218, 245, 0.95);
-            }
-        }
-        
-        .gcd-gl-input {
-            width: 0;
-            height: 2.25rem;
-            font-size: 0.9rem;
-            background: transparent;
-            border: none;
-            color: rgba(217, 218, 245, 0.85);
-            padding: 0;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            box-sizing: border-box;
-
-            &::placeholder {
-                color: rgba(217, 218, 245, 0.4);
-            }
-            &:focus {
-                outline: none;
-            }
-        }
-
-        .gcd-gl-search {
-            display: none;
-        }
-    }
-    
-    .gcd-gl-control.ol-control.gcd-gl-expanded {
-        width: 280px;
-        background: rgba(9, 10, 36, 0.92);
-        
-        .gcd-gl-input {
-            width: 100%;
-            padding: 0 2.8rem 0 0.8rem; 
-            opacity: 1;
-        }
-        
-        .gcd-gl-btn {
-            background: rgba(136, 139, 224, 0.1);
-            color: rgba(217, 218, 245, 0.95);
-        }
-    }
-
-    /* Dropdown Styling */
-    ul.gcd-gl-result {
-        background: rgba(9, 10, 36, 0.95) !important;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(136, 139, 224, 0.15) !important;
-        border-radius: 12px !important;
-        margin-top: 8px !important;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
-        overflow-x: hidden;
-        right: 0 !important;
-        left: auto !important;
-        width: 100% !important;
-        
-        > li {
-            border-bottom: 1px solid rgba(136, 139, 224, 0.08) !important;
-            background-color: transparent !important;
-            
-            &:last-child {
-                border-bottom: none !important;
-            }
-
-            > a {
-                color: rgba(217, 218, 245, 0.85) !important;
-                padding: 10px 14px !important;
-                display: block;
-                transition: background 0.2s ease;
-
-                &:hover {
-                    background: rgba(136, 139, 224, 0.15) !important;
-                }
-
-                /* Sub-elements inside result anchor */
-                .gcd-address, .gcd-road {
-                    color: rgba(217, 218, 245, 0.95);
-                    font-size: 0.9rem;
-                }
-                .gcd-city, .gcd-country {
-                    color: rgba(217, 218, 245, 0.55);
-                    font-size: 0.8rem;
-                }
-            }
-        }
-    }
-}
-
-.gcd-gl-result {
-    background: rgba(9, 10, 36, 0.94) !important;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(136, 139, 224, 0.1) !important;
-    border-radius: 12px !important;
-    overflow: hidden;
-
-    > ul > li {
-        border-bottom: 1px solid rgba(136, 139, 224, 0.06);
-
-        > a {
-            color: rgba(217, 218, 245, 0.7);
-            padding: 0.6rem 0.85rem;
-            transition: all 0.2s ease;
-
-            &:hover {
-                background: rgba(136, 139, 224, 0.08);
-                color: rgba(217, 218, 245, 0.95);
-            }
-        }
     }
 }
 

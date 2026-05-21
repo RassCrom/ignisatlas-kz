@@ -1,86 +1,62 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import Overlay from 'ol/Overlay';
+import { createPopup } from '../utils/maplibreHelpers';
 import { useLayersStore } from 'src/app/store/layersStore';
 
-export const useEmergencyPopup = (mapInstance, emergencyLayers) => {
-  const popupRef   = useRef(null);
-  const overlayRef = useRef(null);
+export const useEmergencyPopup = (mapInstance, isMapInitialized) => {
+  const popupRef = useRef(null);
+  const popupInstanceRef = useRef(null);
   const [popupContent, setPopupContent] = useState(null);
-
-  /* ── Overlay setup (once per mapInstance) ───────────────────── */
+  const emergencyLayers = useLayersStore((s) => s.layers);
 
   useEffect(() => {
-    if (!mapInstance || !popupRef.current || overlayRef.current) return;
-
-    const overlay = new Overlay({
-      element: popupRef.current,
-      autoPan: { animation: { duration: 250 }, margin: 80 },
-    });
-
-    overlayRef.current = overlay;
-    mapInstance.addOverlay(overlay);
-
+    if (!mapInstance || !popupRef.current || popupInstanceRef.current) return;
+    popupInstanceRef.current = createPopup().setDOMContent(popupRef.current);
     return () => {
-      if (mapInstance && overlay) mapInstance.removeOverlay(overlay);
-      overlayRef.current = null;
+      popupInstanceRef.current?.remove();
+      popupInstanceRef.current = null;
     };
   }, [mapInstance]);
 
-  /* ── Close ──────────────────────────────────────────────────── */
-
   const closePopup = useCallback(() => {
-    overlayRef.current?.setPosition(undefined);
+    popupInstanceRef.current?.remove();
     setPopupContent(null);
   }, []);
 
-  /* ── Click handler ──────────────────────────────────────────── */
-
   useEffect(() => {
-    if (!mapInstance || !emergencyLayers?.length) return;
+    if (!mapInstance || !isMapInitialized || !emergencyLayers.length) return;
+    const layerIds = emergencyLayers.map((layer) => layer.id).filter((id) => mapInstance.getLayer(id));
+    if (!layerIds.length) return;
 
-    const isEmergencyLayer = (layer) => emergencyLayers.includes(layer);
+    const handleClick = (event) => {
+      const features = mapInstance.queryRenderedFeatures(event.point, { layers: layerIds });
+      const feature = features[0];
+      if (!feature) {
+        closePopup();
+        return;
+      }
 
-    const handleClick = (evt) => {
-      let handled = false;
-
-      mapInstance.forEachFeatureAtPixel(evt.pixel, (feature, layer) => {
-        if (handled || !isEmergencyLayer(layer)) return;
-
-        const layerId = layer.get('id');
-        // Read current store state at click time (no subscription needed)
-        const { layers: configs } = useLayersStore.getState();
-        const cfg = configs.find(c => c.id === layerId);
-
-        setPopupContent({
-          layerId,
-          layerName:  cfg?.layerName || layerId,
-          properties: feature.getProperties(),
-        });
-        overlayRef.current?.setPosition(evt.coordinate);
-        handled = true;
-        return true;
+      const layerId = feature.layer.id;
+      const cfg = useLayersStore.getState().layers.find((item) => item.id === layerId);
+      setPopupContent({
+        layerId,
+        layerName: cfg?.layerName || layerId,
+        properties: feature.properties || {},
       });
-
-      // Close popup when clicking outside any emergency feature
-      if (!handled) closePopup();
+      popupInstanceRef.current?.setLngLat(event.lngLat).addTo(mapInstance);
     };
 
-    /* Pointer cursor on hover */
-    const handlePointerMove = (evt) => {
-      if (evt.dragging) return;
-      const pixel = mapInstance.getEventPixel(evt.originalEvent);
-      const hit   = mapInstance.hasFeatureAtPixel(pixel, { layerFilter: isEmergencyLayer });
-      if (hit) mapInstance.getTargetElement().style.cursor = 'pointer';
+    const handlePointerMove = (event) => {
+      const features = mapInstance.queryRenderedFeatures(event.point, { layers: layerIds });
+      mapInstance.getCanvas().style.cursor = features.length ? 'pointer' : '';
     };
 
     mapInstance.on('click', handleClick);
-    mapInstance.on('pointermove', handlePointerMove);
-
+    mapInstance.on('mousemove', handlePointerMove);
     return () => {
-      mapInstance.un('click', handleClick);
-      mapInstance.un('pointermove', handlePointerMove);
+      mapInstance.off('click', handleClick);
+      mapInstance.off('mousemove', handlePointerMove);
     };
-  }, [mapInstance, emergencyLayers, closePopup]);
+  }, [closePopup, emergencyLayers, isMapInitialized, mapInstance]);
 
   return { popupRef, popupContent, closePopup };
 };

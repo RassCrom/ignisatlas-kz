@@ -8,10 +8,7 @@ import {
 
 import useSentinelExplorerOldStore from 'src/app/store/sentinelExplorerOldStore';
 import useAoiStore from 'src/app/store/aoiStore';
-import {
-  findLayerById,
-  getMapInstance,
-} from 'src/modules/MapPage/services/mapService';
+import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import { createSentinelLayer } from 'src/utils/sentinelUtils';
 import {
   searchSentinel,
@@ -64,6 +61,36 @@ const SENTINEL_UTILS_KEY = {
   'sentinel-2':  'sentinel2',
   'sentinel-3':  'sentinel1',
   'sentinel-5p': 'sentinel5',
+};
+
+const addRasterLayer = (layerId, tileUrl, opacity01) => {
+  const map = getMapInstance();
+  if (!map || !tileUrl) return;
+  const sourceId = `${layerId}-source`;
+  if (!map.getSource(sourceId)) {
+    map.addSource(sourceId, { type: 'raster', tiles: [tileUrl], tileSize: 256, maxzoom: 18 });
+  }
+  if (!map.getLayer(layerId)) {
+    map.addLayer({ id: layerId, type: 'raster', source: sourceId, paint: { 'raster-opacity': opacity01 } });
+  }
+};
+
+const removeRasterLayer = (layerId) => {
+  const map = getMapInstance();
+  if (!map) return;
+  const sourceId = `${layerId}-source`;
+  if (map.getLayer(layerId)) map.removeLayer(layerId);
+  if (map.getSource(sourceId)) map.removeSource(sourceId);
+};
+
+const setRasterVisibility = (layerId, visible) => {
+  const map = getMapInstance();
+  if (map?.getLayer(layerId)) map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+};
+
+const setRasterOpacity = (layerId, opacity01) => {
+  const map = getMapInstance();
+  if (map?.getLayer(layerId)) map.setPaintProperty(layerId, 'raster-opacity', opacity01);
 };
 
 // ── Component ────────────────────────────────────────────────────────────
@@ -142,7 +169,7 @@ const SentinelExplorerOld = () => {
       utilsKey,
     };
 
-    const olLayer = createSentinelLayer(
+    const layerInfo = createSentinelLayer(
       utilsKey,
       layerId,
       bands,
@@ -152,39 +179,30 @@ const SentinelExplorerOld = () => {
       result.id
     );
 
-    if (olLayer) getMapInstance()?.addLayer(olLayer);
+    if (layerInfo?.tileUrl) addRasterLayer(layerId, layerInfo.tileUrl, store.globalOpacity / 100);
 
-    store.addActiveLayer(layerConfig);
+    store.addActiveLayer({ ...layerConfig, tileUrl: layerInfo?.tileUrl || null });
     store.setActiveTab('layers');
   }, [store]);
 
   const handleRemoveLayer = useCallback((layerId) => {
-    const map = getMapInstance();
-    const olLayer = findLayerById(layerId);
-    if (map && olLayer) map.removeLayer(olLayer);
+    removeRasterLayer(layerId);
     store.removeActiveLayer(layerId);
   }, [store]);
 
   const handleToggleVisibility = useCallback((layerId) => {
-    const olLayer = findLayerById(layerId);
-    if (olLayer) olLayer.setVisible(!olLayer.getVisible());
+    const layer = store.activeLayers.find((item) => item.id === layerId);
+    setRasterVisibility(layerId, !(layer?.visible ?? true));
     store.toggleLayerVisibility(layerId);
   }, [store]);
 
   const handleOpacityChange = useCallback((layerId, opacity) => {
-    const olLayer = findLayerById(layerId);
-    if (olLayer) olLayer.setOpacity(opacity / 100);
+    setRasterOpacity(layerId, opacity / 100);
     store.updateLayerOpacity(layerId, opacity);
   }, [store]);
 
   const handleClearAll = useCallback(() => {
-    const map = getMapInstance();
-    if (map) {
-      store.activeLayers.forEach((layer) => {
-        const olLayer = findLayerById(layer.id);
-        if (olLayer) map.removeLayer(olLayer);
-      });
-    }
+    store.activeLayers.forEach((layer) => removeRasterLayer(layer.id));
     store.clearActiveLayers();
   }, [store]);
 

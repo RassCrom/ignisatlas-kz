@@ -133,7 +133,6 @@ const Hero = () => {
           >
             <Button
               href="/map"
-              target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -152,16 +151,6 @@ const Hero = () => {
           </motion.div>
         </div>
       </div>
-
-      <motion.div
-        className={styles.hero__scroll}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: shouldReduceMotion ? 0 : 1 }}
-        transition={{ delay: 1.8, duration: 0.6 }}
-        aria-hidden="true"
-      >
-        <span className={styles.scroll__line} />
-      </motion.div>
     </section>
   );
 };

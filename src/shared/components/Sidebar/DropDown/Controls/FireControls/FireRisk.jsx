@@ -7,6 +7,25 @@ import useRiskMapStore from 'src/app/store/riskMapStore';
 
 const RISK_LABELS = { Low: 'Низкий', Medium: 'Средний', High: 'Высокий' };
 
+const normalizeRiskDate = (value) => {
+  const match = String(value ?? '').match(/^(\d{4})[-.](\d{1,2})[-.](\d{1,2})/);
+  if (!match) return null;
+
+  const [, year, month, day] = match;
+  const normalized = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  const parsed = new Date(Number(year), Number(month) - 1, Number(day));
+
+  if (
+    parsed.getFullYear() !== Number(year)
+    || parsed.getMonth() !== Number(month) - 1
+    || parsed.getDate() !== Number(day)
+  ) {
+    return null;
+  }
+
+  return normalized;
+};
+
 const getRiskLevel = (dateString) => {
   const month = new Date(dateString).getMonth();
   if (month >= 5 && month <= 8) return 'High';
@@ -51,7 +70,10 @@ const FireRisk = () => {
           .replace(/'/g, '"')
           .replace(/(\d{4})\.(\d{1,2})\.(\d{1,2})/g, '$1-$2-$3');
         const data      = JSON.parse(cleaned);
-        const dates     = data.map(item => new Date(item[0]).toISOString().split('T')[0]);
+        const dates     = [...new Set(data
+          .map(item => normalizeRiskDate(item[0]))
+          .filter(Boolean))]
+          .sort((a, b) => b.localeCompare(a));
         setAvailableDates(dates);
       } catch (err) {
         console.error('Error fetching fire dates:', err);
@@ -64,8 +86,12 @@ const FireRisk = () => {
   }, []);
 
   const handleAddItem = useCallback(() => {
-    if (selectedDate && !riskDates.some(item => item.date === selectedDate)) {
-      addDate(selectedDate);
+    const normalizedDate = normalizeRiskDate(selectedDate);
+    if (
+      normalizedDate
+      && !riskDates.some(item => item.date === normalizedDate)
+    ) {
+      addDate(normalizedDate);
       setSelectedDate('');
     }
   }, [selectedDate, riskDates, addDate]);
@@ -126,9 +152,13 @@ const FireRisk = () => {
               </select>
               <button
                 onClick={handleAddItem}
-                disabled={!selectedDate || riskDates.some(item => item.date === selectedDate)}
+                disabled={
+                  !selectedDate
+                  || riskDates.some(item => item.date === selectedDate)
+                }
                 className={`fire-controls__update-btn ${
-                  selectedDate && !riskDates.some(item => item.date === selectedDate)
+                  selectedDate
+                  && !riskDates.some(item => item.date === selectedDate)
                     ? 'fire-controls__update-btn--active' : ''
                 }`}
                 title="Добавить оценку риска"
