@@ -20,6 +20,9 @@ export const S2_BAND_CONFIGS = {
   'nir-swir':      { assets: ['B8A', 'B11', 'B04'], rescale: '0,3000', label: 'NIR-SWIR Burn Severity' },
 
   'ndvi': { assets: ['B08', 'B04'], expression: '(B08-B04)/(B08+B04)', rescale: '-1,1', colormap_name: 'rdylgn', label: 'NDVI Vegetation Index' },
+  'evi':  { assets: ['B08', 'B04', 'B02'], expression: '2.5*((B08-B04)/(B08+6*B04-7.5*B02+1))', rescale: '-1,1', colormap_name: 'rdylgn', label: 'EVI / AEVI Vegetation Index' },
+  'ndmi': { assets: ['B08', 'B11'], expression: '(B08-B11)/(B08+B11)', rescale: '-1,1', colormap_name: 'brbg', label: 'NDMI Moisture Index' },
+  'savi': { assets: ['B08', 'B04'], expression: '1.5*((B08-B04)/(B08+B04+0.5))', rescale: '-1,1', colormap_name: 'rdylgn', label: 'SAVI Soil-Adjusted Vegetation Index' },
   'nbr':  { assets: ['B08', 'B12'], expression: '(B08-B12)/(B08+B12)', rescale: '-1,1', colormap_name: 'rdylgn_r', label: 'NBR Burn Severity Index' },
   'ndwi': { assets: ['B03', 'B08'], expression: '(B03-B08)/(B03+B08)', rescale: '-1,1', colormap_name: 'curl', label: 'NDWI Water Index' },
 };
@@ -46,6 +49,7 @@ export function buildS2TileUrl(itemId, preset) {
     params.set('expression', cfg.expression);
     params.set('rescale', cfg.rescale);
     params.set('colormap_name', cfg.colormap_name);
+    params.set('asset_as_band', 'true');
   } else {
     if (cfg.assetBidx) params.set('asset_bidx', cfg.assetBidx);
     if (cfg.nodata) params.set('nodata', cfg.nodata);

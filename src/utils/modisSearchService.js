@@ -15,6 +15,10 @@ export const MODIS_PRODUCTS = [
   { id: 'modis-11A2-061', label: '11A2 Land Surface Temperature/Emissivity 8-Day' },
   { id: 'modis-14A2-061', label: '14A2 (8-Day Active Fire)' },
   { id: 'modis-09A1-061', label: '09A1 (8-Day Surface Reflectance)' },
+  { id: 'modis-13Q1-061', label: '13Q1 Vegetation Indices 16-Day (250m)' },
+  { id: 'modis-13A1-061', label: '13A1 Vegetation Indices 16-Day (500m)' },
+  { id: 'modis-15A3H-061', label: '15A3H Leaf Area Index/FPAR 4-Day' },
+  { id: 'modis-15A2H-061', label: '15A2H Leaf Area Index/FPAR 8-Day' },
   { id: 'modis-64A1-061', label: '64A1 (Monthly Burned Area)' },
 ];
 
@@ -33,6 +37,48 @@ export const BAND_CONFIGS = {
     assets: ['sur_refl_b07', 'sur_refl_b02', 'sur_refl_b01'], // SWIR-NIR-Red useful for burn scars
     params: 'color_formula=gamma+RGB+3.0%2C+saturation+1.9%2C+sigmoidal+RGB+0+0.55',
     product: 'modis-09A1-061'
+  },
+  // Vegetation Indices (13Q1, 13A1)
+  'ndvi-250m': {
+    assets: ['250m_16_days_NDVI'],
+    params: 'rescale=-2000,10000&colormap_name=rdylgn',
+    product: 'modis-13Q1-061'
+  },
+  'evi-250m': {
+    assets: ['250m_16_days_EVI'],
+    params: 'rescale=-2000,10000&colormap_name=rdylgn',
+    product: 'modis-13Q1-061'
+  },
+  'ndvi-500m': {
+    assets: ['500m_16_days_NDVI'],
+    params: 'rescale=-2000,10000&colormap_name=rdylgn',
+    product: 'modis-13A1-061'
+  },
+  'evi-500m': {
+    assets: ['500m_16_days_EVI'],
+    params: 'rescale=-2000,10000&colormap_name=rdylgn',
+    product: 'modis-13A1-061'
+  },
+  // Leaf Area Index / FPAR (15A3H, 15A2H)
+  'lai-4day': {
+    assets: ['Lai_500m'],
+    params: 'rescale=0,100&colormap_name=viridis',
+    product: 'modis-15A3H-061'
+  },
+  'fpar-4day': {
+    assets: ['Fpar_500m'],
+    params: 'rescale=0,100&colormap_name=viridis',
+    product: 'modis-15A3H-061'
+  },
+  'lai-8day': {
+    assets: ['Lai_500m'],
+    params: 'rescale=0,100&colormap_name=viridis',
+    product: 'modis-15A2H-061'
+  },
+  'fpar-8day': {
+    assets: ['Fpar_500m'],
+    params: 'rescale=0,100&colormap_name=viridis',
+    product: 'modis-15A2H-061'
   },
   // Active Fires (14A1, 14A2)
   'fire-mask': {
@@ -203,6 +249,10 @@ export function getModisProductColor(product) {
     'modis-14A1-061':  '#ef4444', // Red for fire
     'modis-14A2-061':  '#f97316', // Orange for fire 8-day
     'modis-09A1-061':  '#10b981', // Green for optical
+    'modis-13Q1-061':  '#22c55e', // Green for VI 250m
+    'modis-13A1-061':  '#84cc16', // Lime for VI 500m
+    'modis-15A3H-061': '#06b6d4', // Cyan for LAI/FPAR 4-day
+    'modis-15A2H-061': '#38bdf8', // Blue for LAI/FPAR 8-day
     'modis-64A1-061':  '#8b5cf6', // Purple for burned area
   }[product] || '#6b7280';
 }

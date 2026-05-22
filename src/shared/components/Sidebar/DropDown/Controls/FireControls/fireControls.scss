@@ -2046,3 +2046,1314 @@
     transform: translateY(0);
   }
 }
+
+/* ============================================
+   Drought Monitoring Panel
+   ============================================ */
+
+.drought-panel {
+  --drought-bg: rgba(9, 10, 36, 0.72);
+  --drought-card: rgba(136, 139, 224, 0.055);
+  --drought-card-strong: rgba(136, 139, 224, 0.095);
+  --drought-border: rgba(136, 139, 224, 0.12);
+  --drought-border-strong: rgba(136, 139, 224, 0.22);
+  --drought-text: rgba(217, 218, 245, 0.9);
+  --drought-muted: rgba(217, 218, 245, 0.52);
+  --drought-faint: rgba(217, 218, 245, 0.34);
+  --drought-green: #34d399;
+  --drought-amber: #fb923c;
+  --drought-red: #f87171;
+  --drought-accent: #8b8ee6;
+
+  background: linear-gradient(180deg, rgba(12, 14, 43, 0.84), rgba(7, 9, 31, 0.78));
+}
+
+.drought-panel__main-toggle {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.drought-panel__main-toggle:focus-visible,
+.drought-panel__tab:focus-visible,
+.drought-panel__segmented-btn:focus-visible,
+.drought-panel__source-btn:focus-visible,
+.drought-panel__preset-btn:focus-visible,
+.drought-panel__imagery-search:focus-visible,
+.drought-panel__map-action:focus-visible,
+.drought-panel__region-row:focus-visible,
+.drought-panel__icon-button:focus-visible,
+.drought-panel__action-button:focus-visible,
+.drought-panel__ghost-action:focus-visible {
+  outline: 2px solid rgba(139, 142, 230, 0.85);
+  outline-offset: 2px;
+}
+
+.drought-panel__source-card a:focus-visible {
+  outline: 2px solid rgba(139, 142, 230, 0.85);
+  outline-offset: 2px;
+}
+
+.drought-panel__status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 18px;
+  border: 1px solid rgba(217, 218, 245, 0.12);
+  border-radius: 999px;
+  color: rgba(217, 218, 245, 0.34);
+  background: rgba(217, 218, 245, 0.045);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.drought-panel__status--active {
+  color: var(--drought-green);
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.22);
+}
+
+.drought-panel__status--forecast {
+  color: #93c5fd;
+  background: rgba(96, 165, 250, 0.1);
+  border-color: rgba(96, 165, 250, 0.22);
+}
+
+.drought-panel__content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.drought-panel__tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid rgba(136, 139, 224, 0.1);
+  border-radius: 8px;
+  background: rgba(4, 6, 24, 0.34);
+}
+
+.drought-panel__tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 34px;
+  padding: 7px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--drought-muted);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.drought-panel__tab:hover {
+  background: rgba(136, 139, 224, 0.08);
+  color: var(--drought-text);
+}
+
+.drought-panel__tab--active {
+  background: rgba(136, 139, 224, 0.16);
+  border-color: rgba(136, 139, 224, 0.22);
+  color: rgba(224, 225, 255, 0.96);
+}
+
+.drought-panel__tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.drought-panel__hero,
+.drought-panel__section,
+.drought-panel__metric,
+.drought-panel__pin-card {
+  border: 1px solid var(--drought-border);
+  border-radius: 8px;
+  background: var(--drought-card);
+}
+
+.drought-panel__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 86px;
+  gap: 10px;
+  padding: 12px;
+}
+
+.drought-panel__hero strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--drought-text);
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.drought-panel__hero p {
+  margin: 5px 0 0;
+  color: var(--drought-faint);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.drought-panel__eyebrow {
+  color: var(--drought-accent);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.drought-panel__hero-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  border-radius: 7px;
+  background: rgba(251, 146, 60, 0.1);
+  border: 1px solid rgba(251, 146, 60, 0.18);
+}
+
+.drought-panel__hero-score span {
+  color: #fed7aa;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.drought-panel__hero-score small {
+  margin-top: 4px;
+  color: rgba(254, 215, 170, 0.58);
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.drought-panel__metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.drought-panel__metric {
+  display: flex;
+  min-width: 0;
+  min-height: 72px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 10px;
+}
+
+.drought-panel__metric--warning {
+  border-color: rgba(251, 146, 60, 0.18);
+  background: rgba(251, 146, 60, 0.075);
+}
+
+.drought-panel__metric--danger {
+  border-color: rgba(248, 113, 113, 0.18);
+  background: rgba(248, 113, 113, 0.075);
+}
+
+.drought-panel__metric--good {
+  border-color: rgba(52, 211, 153, 0.18);
+  background: rgba(52, 211, 153, 0.075);
+}
+
+.drought-panel__metric--muted {
+  background: rgba(217, 218, 245, 0.035);
+}
+
+.drought-panel__metric-label,
+.drought-panel__metric-caption {
+  color: var(--drought-faint);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.drought-panel__metric-value {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--drought-text);
+  font-size: 18px;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drought-panel__metric--warning .drought-panel__metric-value {
+  color: var(--drought-amber);
+}
+
+.drought-panel__metric--danger .drought-panel__metric-value {
+  color: var(--drought-red);
+}
+
+.drought-panel__metric--good .drought-panel__metric-value {
+  color: var(--drought-green);
+}
+
+.drought-panel__section {
+  padding: 11px;
+}
+
+.drought-panel__section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.drought-panel__section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: rgba(217, 218, 245, 0.7);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+}
+
+.drought-panel__ghost-action {
+  padding: 3px 7px;
+  border: 1px solid rgba(136, 139, 224, 0.13);
+  border-radius: 999px;
+  background: rgba(136, 139, 224, 0.06);
+  color: rgba(217, 218, 245, 0.56);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.drought-panel__pin-card {
+  padding: 10px;
+}
+
+.drought-panel__pin-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.drought-panel__pin-dot,
+.drought-panel__region-color,
+.drought-panel__severity-dot {
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.12);
+}
+
+.drought-panel__pin-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.drought-panel__pin-title-wrap {
+  min-width: 0;
+  flex: 1;
+}
+
+.drought-panel__pin-title {
+  display: block;
+  overflow: hidden;
+  color: var(--drought-text);
+  font-size: 13px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drought-panel__pin-subtitle {
+  display: block;
+  margin-top: 2px;
+  color: var(--drought-faint);
+  font-size: 10px;
+}
+
+.drought-panel__icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(248, 113, 113, 0.16);
+  border-radius: 7px;
+  background: rgba(248, 113, 113, 0.06);
+  color: rgba(248, 113, 113, 0.82);
+  cursor: pointer;
+}
+
+.drought-panel__pin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.drought-panel__pin-stats .drought-panel__metric {
+  min-height: 54px;
+  padding: 7px;
+}
+
+.drought-panel__pin-stats .drought-panel__metric-value {
+  font-size: 16px;
+}
+
+.drought-panel__trend {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: end;
+  gap: 7px;
+  min-height: 78px;
+}
+
+.drought-panel__trend--compact {
+  min-height: 58px;
+}
+
+.drought-panel__trend-column {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.drought-panel__trend-bar {
+  width: 100%;
+  border-radius: 5px 5px 3px 3px;
+  background: linear-gradient(180deg, rgba(248, 113, 113, 0.9), rgba(234, 179, 8, 0.76));
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  transition: height 0.25s ease, opacity 0.2s ease;
+}
+
+.drought-panel__trend-bar--active {
+  background: linear-gradient(180deg, rgba(251, 146, 60, 1), rgba(214, 97, 47, 0.92));
+}
+
+.drought-panel__trend-column span {
+  overflow: hidden;
+  width: 100%;
+  color: var(--drought-faint);
+  font-size: 9px;
+  font-weight: 600;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drought-panel__severity-list,
+.drought-panel__region-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drought-panel__severity-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  gap: 6px 8px;
+  align-items: center;
+}
+
+.drought-panel__severity-meta {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 7px;
+  grid-column: 1 / 3;
+}
+
+.drought-panel__severity-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+}
+
+.drought-panel__severity-name,
+.drought-panel__region-name {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(217, 218, 245, 0.72);
+  font-size: 11px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drought-panel__severity-area {
+  margin-left: auto;
+  color: var(--drought-faint);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.drought-panel__severity-track,
+.drought-panel__region-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(136, 139, 224, 0.09);
+}
+
+.drought-panel__severity-fill,
+.drought-panel__region-fill {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  transition: width 0.25s ease;
+}
+
+.drought-panel__severity-percent {
+  color: var(--drought-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.drought-panel__region-row {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) 40px;
+  gap: 8px;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid rgba(136, 139, 224, 0.09);
+  border-radius: 8px;
+  background: rgba(136, 139, 224, 0.035);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.drought-panel__region-row:hover {
+  background: rgba(136, 139, 224, 0.075);
+  border-color: rgba(136, 139, 224, 0.18);
+  transform: translateY(-1px);
+}
+
+.drought-panel__region-color {
+  width: 9px;
+  height: 24px;
+  border-radius: 999px;
+}
+
+.drought-panel__region-track {
+  grid-column: 2 / 4;
+}
+
+.drought-panel__delta {
+  font-size: 12px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.drought-panel__delta--bad {
+  color: var(--drought-amber);
+}
+
+.drought-panel__delta--good {
+  color: var(--drought-green);
+}
+
+.drought-panel__delta--neutral {
+  color: var(--drought-faint);
+}
+
+.drought-panel__empty {
+  padding: 14px 12px;
+  border: 1px dashed rgba(136, 139, 224, 0.14);
+  border-radius: 8px;
+  background: rgba(136, 139, 224, 0.035);
+  color: var(--drought-faint);
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.drought-panel__empty--pin {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drought-panel__legend {
+  margin-top: 0;
+}
+
+.drought-panel__forecast-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 84px;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(96, 165, 250, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(251, 146, 60, 0.07)),
+    rgba(136, 139, 224, 0.055);
+}
+
+.drought-panel__forecast-hero strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--drought-text);
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.drought-panel__forecast-hero p {
+  margin: 5px 0 0;
+  color: var(--drought-faint);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.drought-panel__forecast-score {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(251, 146, 60, 0.2);
+  border-radius: 7px;
+  background: rgba(251, 146, 60, 0.1);
+}
+
+.drought-panel__forecast-score span {
+  color: #fed7aa;
+  font-size: 27px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.drought-panel__forecast-score small {
+  margin-top: 4px;
+  color: rgba(254, 215, 170, 0.62);
+  font-size: 9px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.drought-panel__forecast-chart {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  min-height: 138px;
+}
+
+.drought-panel__forecast-column {
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  min-width: 0;
+  gap: 5px;
+  text-align: center;
+}
+
+.drought-panel__forecast-bar-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 94px;
+  overflow: hidden;
+  border: 1px solid rgba(136, 139, 224, 0.1);
+  border-radius: 7px;
+  background: rgba(4, 6, 24, 0.42);
+}
+
+.drought-panel__forecast-bar {
+  display: block;
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, rgba(248, 113, 113, 0.95), rgba(251, 146, 60, 0.82));
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+.drought-panel__forecast-confidence {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  z-index: 1;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(96, 165, 250, 0.95);
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.35);
+}
+
+.drought-panel__forecast-column strong {
+  color: var(--drought-text);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.drought-panel__forecast-column > span {
+  color: var(--drought-faint);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.drought-panel__forecast-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 9px;
+  color: var(--drought-faint);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.drought-panel__forecast-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.drought-panel__forecast-legend span:first-child i,
+.drought-panel__forecast-legend span:last-child i {
+  display: inline-block;
+  width: 14px;
+  height: 6px;
+  border-radius: 999px;
+}
+
+.drought-panel__forecast-legend span:first-child i {
+  background: rgba(251, 146, 60, 0.9);
+}
+
+.drought-panel__forecast-legend span:last-child i {
+  height: 2px;
+  background: rgba(96, 165, 250, 0.95);
+}
+
+.drought-panel__driver-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.drought-panel__forecast-region-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drought-panel__forecast-region {
+  padding: 9px;
+  border: 1px solid rgba(136, 139, 224, 0.1);
+  border-radius: 8px;
+  background: rgba(136, 139, 224, 0.04);
+}
+
+.drought-panel__forecast-region-top,
+.drought-panel__forecast-region-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.drought-panel__forecast-region-top span {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(217, 218, 245, 0.76);
+  font-size: 11px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drought-panel__forecast-region-top strong {
+  color: #fed7aa;
+  font-size: 13px;
+}
+
+.drought-panel__forecast-region-track {
+  height: 7px;
+  margin: 7px 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(136, 139, 224, 0.09);
+}
+
+.drought-panel__forecast-region-track span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.72), rgba(251, 146, 60, 0.88));
+}
+
+.drought-panel__forecast-region-meta {
+  color: var(--drought-faint);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.drought-panel__source-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid rgba(96, 165, 250, 0.16);
+  border-radius: 8px;
+  background: rgba(96, 165, 250, 0.055);
+}
+
+.drought-panel__source-card a {
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.drought-panel__source-card a:hover {
+  color: #bfdbfe;
+  text-decoration: underline;
+}
+
+.drought-panel__source-card span,
+.drought-panel__source-card p {
+  margin: 0;
+  color: var(--drought-faint);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.drought-panel__segmented {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.drought-panel__segmented--wrap {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.drought-panel__segmented-btn {
+  min-height: 44px;
+  padding: 6px;
+  border: 1px solid rgba(136, 139, 224, 0.12);
+  border-radius: 7px;
+  background: rgba(136, 139, 224, 0.045);
+  color: var(--drought-muted);
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.drought-panel__segmented-btn:hover,
+.drought-panel__segmented-btn--active {
+  background: rgba(136, 139, 224, 0.16);
+  border-color: rgba(136, 139, 224, 0.24);
+  color: var(--drought-text);
+}
+
+.drought-panel__hint {
+  margin: 8px 0 0;
+  color: var(--drought-faint);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.drought-panel__field-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.drought-panel__field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.drought-panel__field span {
+  color: var(--drought-faint);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.drought-panel__field input,
+.drought-panel__field select {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  border: 1px solid rgba(136, 139, 224, 0.15);
+  border-radius: 8px;
+  outline: none;
+  background: rgba(9, 10, 36, 0.62);
+  color: rgba(217, 218, 245, 0.86);
+  font-size: 12px;
+}
+
+.drought-panel__field input:focus,
+.drought-panel__field select:focus {
+  border-color: rgba(139, 142, 230, 0.44);
+  box-shadow: 0 0 0 2px rgba(139, 142, 230, 0.1);
+}
+
+.drought-panel__slider-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: var(--drought-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.drought-panel__slider-row strong {
+  color: var(--drought-text);
+}
+
+.drought-panel__check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  margin-top: 9px;
+  color: var(--drought-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.drought-panel__check-row input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--drought-accent);
+}
+
+.drought-panel__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.drought-panel__action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  border: 1px solid rgba(136, 139, 224, 0.14);
+  border-radius: 8px;
+  background: rgba(136, 139, 224, 0.06);
+  color: rgba(217, 218, 245, 0.72);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.drought-panel__action-button:hover {
+  background: rgba(136, 139, 224, 0.12);
+  border-color: rgba(136, 139, 224, 0.22);
+  color: var(--drought-text);
+}
+
+.drought-panel__action-button--primary {
+  background: rgba(52, 211, 153, 0.11);
+  border-color: rgba(52, 211, 153, 0.2);
+  color: rgba(167, 243, 208, 0.95);
+}
+
+.drought-panel__tabs--forecast {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.drought-panel__imagery-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 84px;
+  gap: 10px;
+  align-items: stretch;
+  padding: 12px;
+  border: 1px solid rgba(96, 165, 250, 0.16);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.11), rgba(52, 211, 153, 0.055));
+}
+
+.drought-panel__imagery-hero strong {
+  display: block;
+  margin-top: 3px;
+  color: var(--drought-text);
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.drought-panel__imagery-hero p {
+  margin: 5px 0 0;
+  color: var(--drought-faint);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.drought-panel__imagery-scope {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid rgba(96, 165, 250, 0.16);
+  border-radius: 8px;
+  background: rgba(9, 10, 36, 0.38);
+  color: #93c5fd;
+  text-align: center;
+}
+
+.drought-panel__imagery-scope span {
+  color: rgba(191, 219, 254, 0.82);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.drought-panel__source-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.drought-panel__source-btn,
+.drought-panel__preset-btn,
+.drought-panel__imagery-search {
+  border: 1px solid rgba(136, 139, 224, 0.14);
+  border-radius: 8px;
+  background: rgba(136, 139, 224, 0.045);
+  color: rgba(217, 218, 245, 0.74);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.drought-panel__source-btn {
+  display: flex;
+  min-width: 0;
+  min-height: 68px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 5px;
+  text-align: center;
+}
+
+.drought-panel__source-btn span {
+  max-width: 100%;
+  overflow: hidden;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drought-panel__source-btn small {
+  color: var(--drought-faint);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.drought-panel__source-btn:hover,
+.drought-panel__source-btn--active {
+  background: rgba(96, 165, 250, 0.13);
+  border-color: rgba(96, 165, 250, 0.28);
+  color: rgba(191, 219, 254, 0.95);
+}
+
+.drought-panel__preset-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.drought-panel__preset-btn {
+  display: flex;
+  min-width: 0;
+  min-height: 72px;
+  flex-direction: column;
+  gap: 5px;
+  padding: 9px;
+  text-align: left;
+}
+
+.drought-panel__preset-btn strong {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(224, 225, 255, 0.92);
+  font-size: 12px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drought-panel__preset-btn span {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--drought-faint);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.drought-panel__preset-btn:hover,
+.drought-panel__preset-btn--active {
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.24);
+}
+
+.drought-panel__field-grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 8px;
+}
+
+.drought-panel__field small {
+  color: var(--drought-faint);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.drought-panel__field input[type="range"] {
+  min-height: 24px;
+  padding: 0;
+  accent-color: #60a5fa;
+}
+
+.drought-panel__field input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.drought-panel__imagery-search {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 2px;
+  background: rgba(96, 165, 250, 0.13);
+  border-color: rgba(96, 165, 250, 0.28);
+  color: rgba(191, 219, 254, 0.96);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.drought-panel__imagery-search:hover:not(:disabled) {
+  background: rgba(96, 165, 250, 0.19);
+  border-color: rgba(96, 165, 250, 0.36);
+}
+
+.drought-panel__imagery-search:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.drought-panel__imagery-error,
+.drought-panel__empty-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.drought-panel__imagery-error {
+  border: 1px solid rgba(248, 113, 113, 0.22);
+  background: rgba(248, 113, 113, 0.08);
+  color: rgba(254, 202, 202, 0.92);
+}
+
+.drought-panel__empty-state {
+  justify-content: center;
+  border: 1px dashed rgba(136, 139, 224, 0.2);
+  background: rgba(136, 139, 224, 0.035);
+  color: var(--drought-faint);
+  text-align: center;
+}
+
+.drought-panel__image-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drought-panel__image-card {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  gap: 9px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid rgba(136, 139, 224, 0.12);
+  border-radius: 8px;
+  background: rgba(136, 139, 224, 0.045);
+}
+
+.drought-panel__image-thumb {
+  display: flex;
+  width: 74px;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: rgba(4, 6, 24, 0.52);
+}
+
+.drought-panel__image-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.drought-panel__image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--drought-faint);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.drought-panel__image-body {
+  min-width: 0;
+}
+
+.drought-panel__image-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.drought-panel__image-title-row strong {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  color: var(--drought-text);
+  font-size: 11px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drought-panel__image-title-row span {
+  flex: 0 0 auto;
+  padding: 3px 6px;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 999px;
+  background: rgba(52, 211, 153, 0.09);
+  color: rgba(167, 243, 208, 0.94);
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.drought-panel__image-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.drought-panel__image-meta span {
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: rgba(136, 139, 224, 0.07);
+  color: var(--drought-faint);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.drought-panel__image-body p {
+  display: -webkit-box;
+  margin: 7px 0 0;
+  overflow: hidden;
+  color: rgba(217, 218, 245, 0.52);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.drought-panel__map-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  border: 1px solid rgba(96, 165, 250, 0.22);
+  border-radius: 8px;
+  background: rgba(96, 165, 250, 0.09);
+  color: rgba(191, 219, 254, 0.94);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.drought-panel__map-action:hover {
+  background: rgba(96, 165, 250, 0.16);
+  border-color: rgba(96, 165, 250, 0.34);
+  color: rgba(219, 234, 254, 0.98);
+}
+
+.drought-panel__map-action--active {
+  border-color: rgba(52, 211, 153, 0.24);
+  background: rgba(52, 211, 153, 0.1);
+  color: rgba(167, 243, 208, 0.96);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drought-panel__tab,
+  .drought-panel__segmented-btn,
+  .drought-panel__source-btn,
+  .drought-panel__preset-btn,
+  .drought-panel__imagery-search,
+  .drought-panel__map-action,
+  .drought-panel__region-row,
+  .drought-panel__trend-bar,
+  .drought-panel__severity-fill,
+  .drought-panel__region-fill,
+  .drought-panel__forecast-region-track span,
+  .drought-panel__action-button {
+    transition: none;
+  }
+
+  .drought-panel__region-row:hover {
+    transform: none;
+  }
+}

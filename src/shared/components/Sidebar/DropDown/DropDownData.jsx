@@ -376,6 +376,18 @@ export const newDD = [
             "status": "active"
           },
           {
+            "id": "burned_areas_modis",
+            "label": "MODIS Burned Areas",
+            "label_ru": "Сгоревшие территории MODIS",
+            "description": "Ежемесячные данные MODIS MCD64A1 v6.1 о сгоревших территориях, дате выгорания и качестве через Microsoft Planetary Computer.",
+            "layerType": "Raster",
+            "source": "NASA LP DAAC / MODIS MCD64A1 / Microsoft Planetary Computer",
+            "isTemporal": true,
+            "isDownloadable": false,
+            "tags": ["fire", "burned-area", "modis", "mcd64a1"],
+            "status": "active"
+          },
+          {
             "id": "lst_explorer",
             "label": "Land Surface Temperature (LST)",
             "label_ru": "Температура поверхности (LST)",
@@ -391,20 +403,44 @@ export const newDD = [
       },
       {
         "id": "drought",
-        "label_ru": "Мониторинг засухи (не работает)",
+        "label_ru": "Засуха",
         "isExpanded": true,
         "options": [
           {
             "id": "drought_indices",
-            "label": "Drought Indices",
-            "label_ru": "Индексы засухи",
-            "description": "Актуальные данные о местах возможных возгораний, зафиксированных спутниковыми системами (hotspots).",
-            "layerType": "Raster",
-            "source": "NASA FIRMS / MODIS",
+            "label": "Drought Monitoring",
+            "label_ru": "Мониторинг засухи",
+            "description": "Региональная оценка засухи по VHI, VCI, TCI, SPEI и аномалии NDVI с фильтрами, статистикой и экспортом.",
+            "layerType": "Polygon",
+            "source": "Regional drought monitor model",
             "isTemporal": true,
             "isDownloadable": false,
             "tags": ["drought", "indices", "vegetation"],
-            "status": "not active"
+            "status": "active"
+          },
+          {
+            "id": "drought_forecast",
+            "label": "Drought Forecast",
+            "label_ru": "Прогноз засухи",
+            "description": "Демонстрационный прогноз риска засухи на 3 месяца с региональными горячими точками и ссылкой на источник реальных сезонных данных.",
+            "layerType": null,
+            "source": "Copernicus CDS C3S seasonal forecasts",
+            "isTemporal": true,
+            "isDownloadable": false,
+            "tags": ["drought", "forecast", "seasonal"],
+            "status": "active"
+          },
+          {
+            "id": "drought_imagery",
+            "label": "Drought Indices",
+            "label_ru": "Индексы засухи",
+            "description": "Поиск снимков Sentinel-2, Landsat и MODIS через Microsoft Planetary Computer для индексов NDVI, EVI/AEVI, NDMI, SAVI, NBR, NDWI, LAI и FPAR.",
+            "layerType": "Raster",
+            "source": "Microsoft Planetary Computer",
+            "isTemporal": true,
+            "isDownloadable": false,
+            "tags": ["drought", "indices", "satellite", "planetary-computer"],
+            "status": "active"
           },
         ]
       },
@@ -995,6 +1031,31 @@ export const newDD = [
             isTemporal: false,
             isDownloadable: false,
             tags: ['feedback', 'suggestion'],
+            status: 'active'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 8,
+    key: 'presets',
+    items: [
+      {
+        id: 'presets_item',
+        label_ru: 'Пресеты',
+        isExpanded: true,
+        options: [
+          {
+            id: 'presets_controls',
+            label: 'Map Presets',
+            label_ru: 'Пресеты карты',
+            description: 'Готовые сценарии отображения слоёв, фильтров и охвата карты для оперативной работы.',
+            layerType: null,
+            source: null,
+            isTemporal: false,
+            isDownloadable: false,
+            tags: ['presets', 'map', 'workflow'],
             status: 'active'
           }
         ]

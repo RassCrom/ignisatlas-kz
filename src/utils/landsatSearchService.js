@@ -19,19 +19,41 @@ const PLATFORM_MAP = {
 
 // ── Band combinations → asset lists for tile rendering ───────────────────
 
-const BAND_CONFIGS = {
-  'true-color':   { assets: ['red', 'green', 'blue'],   formula: 'gamma+RGB+2.7%2C+saturation+1.5%2C+sigmoidal+RGB+15+0.55' },
-  'false-color':  { assets: ['nir08', 'red', 'green'],   formula: 'gamma+RGB+2.7%2C+saturation+1.5%2C+sigmoidal+RGB+15+0.55' },
-  'swir':         { assets: ['swir22', 'nir08', 'red'],   formula: 'gamma+RGB+2.7%2C+saturation+1.5%2C+sigmoidal+RGB+15+0.55' },
-  'agriculture':  { assets: ['swir16', 'nir08', 'blue'],  formula: 'gamma+RGB+2.7%2C+saturation+1.5%2C+sigmoidal+RGB+15+0.55' },
+export const BAND_CONFIGS = {
+  'true-color':   { assets: ['red', 'green', 'blue'],   formula: 'gamma+RGB+2.7%2C+saturation+1.5%2C+sigmoidal+RGB+15+0.55', label: 'True Color (RGB)' },
+  'false-color':  { assets: ['nir08', 'red', 'green'],   formula: 'gamma+RGB+2.7%2C+saturation+1.5%2C+sigmoidal+RGB+15+0.55', label: 'False Color (NIR-R-G)' },
+  'swir':         { assets: ['swir22', 'nir08', 'red'],   formula: 'gamma+RGB+2.7%2C+saturation+1.5%2C+sigmoidal+RGB+15+0.55', label: 'SWIR Composite' },
+  'agriculture':  { assets: ['swir16', 'nir08', 'blue'],  formula: 'gamma+RGB+2.7%2C+saturation+1.5%2C+sigmoidal+RGB+15+0.55', label: 'Agriculture (SWIR-NIR-B)' },
+  'ndvi':         { assets: ['nir08', 'red'], expression: '(nir08-red)/(nir08+red)', rescale: '-1,1', colormap_name: 'rdylgn', label: 'NDVI Vegetation Index' },
+  'evi':          { assets: ['nir08', 'red', 'blue'], expression: '2.5*((nir08-red)/(nir08+6*red-7.5*blue+1))', rescale: '-1,1', colormap_name: 'rdylgn', label: 'EVI / AEVI Vegetation Index' },
+  'ndmi':         { assets: ['nir08', 'swir16'], expression: '(nir08-swir16)/(nir08+swir16)', rescale: '-1,1', colormap_name: 'brbg', label: 'NDMI Moisture Index' },
+  'savi':         { assets: ['nir08', 'red'], expression: '1.5*((nir08-red)/(nir08+red+0.5))', rescale: '-1,1', colormap_name: 'rdylgn', label: 'SAVI Soil-Adjusted Vegetation Index' },
+  'nbr':          { assets: ['nir08', 'swir22'], expression: '(nir08-swir22)/(nir08+swir22)', rescale: '-1,1', colormap_name: 'rdylgn_r', label: 'NBR Burn Severity Index' },
+  'ndwi':         { assets: ['green', 'nir08'], expression: '(green-nir08)/(green+nir08)', rescale: '-1,1', colormap_name: 'curl', label: 'NDWI Water Index' },
 };
 
 // ── Build tile URL for a given STAC item ─────────────────────────────────
 
 export function buildTileUrl(itemId, bands = 'true-color') {
   const config = BAND_CONFIGS[bands] || BAND_CONFIGS['true-color'];
-  const assetParams = config.assets.map((a) => `assets=${a}`).join('&');
-  return `${PC_TILE_BASE}/{z}/{x}/{y}@1x?collection=landsat-c2-l2&item=${itemId}&${assetParams}&color_formula=${config.formula}&format=png`;
+  const params = new URLSearchParams({
+    collection: 'landsat-c2-l2',
+    item: itemId,
+    format: 'png',
+  });
+
+  config.assets.forEach((asset) => params.append('assets', asset));
+
+  if (config.expression) {
+    params.set('expression', config.expression);
+    params.set('rescale', config.rescale);
+    params.set('colormap_name', config.colormap_name);
+    params.set('asset_as_band', 'true');
+  } else if (config.formula) {
+    params.set('color_formula', config.formula);
+  }
+
+  return `${PC_TILE_BASE}/{z}/{x}/{y}@1x?${params.toString()}`;
 }
 
 // ── Transform a PC STAC feature into our unified shape ───────────────────

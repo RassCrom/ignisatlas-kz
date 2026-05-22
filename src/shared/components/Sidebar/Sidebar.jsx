@@ -1,5 +1,5 @@
-import { useRef, memo } from "react";
-import { PencilRuler, Flame, Satellite, Wrench, Layers } from "lucide-react";
+import { memo, useRef } from "react";
+import { Flame, Layers, PencilRuler, Satellite, Sparkles, Wrench } from "lucide-react";
 import useMenuStore from "src/app/store/store";
 import DropDown from "./DropDown/DropDown.jsx";
 import styles from "./Sidebar.module.scss";
@@ -9,6 +9,7 @@ const TABS = [
   { id: 2, icon: Flame,       tooltip: "Мониторинг природных явлений" },
   { id: 3, icon: Satellite,   tooltip: "Космические снимки" },
   { id: 4, icon: Wrench,      tooltip: "Инструменты" },
+  { id: 8, icon: Sparkles,    tooltip: "Пресеты" },
   { id: 7, icon: Layers,      tooltip: "Управление слоями" },
 ];
 
@@ -65,29 +66,29 @@ const Sidebar = memo(() => {
           const isExpanded = isMenuOpen && isActive;
 
           return (
-          <button
-            key={id}
-            id={`sidebar-tab-${id}`}
-            ref={(node) => {
-              tabRefs.current[index] = node;
-            }}
-            type="button"
-            data-tab-id={id}
-            className={`${styles.tab} ${isActive ? styles.active : ""}`}
-            onClick={handleTabClick}
-            onKeyDown={(e) => handleTabKeyDown(e, index)}
-            title={tooltip}
-            aria-label={tooltip}
-            aria-controls="sidebar-panel"
-            aria-expanded={isExpanded}
-            aria-pressed={isExpanded}
-          >
-            <div className={styles["tab-inner"]}>
-              <div className={styles["tab-icon"]}>
-                <Icon aria-hidden="true" focusable="false" />
+            <button
+              key={id}
+              id={`sidebar-tab-${id}`}
+              ref={(node) => {
+                tabRefs.current[index] = node;
+              }}
+              type="button"
+              data-tab-id={id}
+              className={`${styles.tab} ${isActive ? styles.active : ""}`}
+              onClick={handleTabClick}
+              onKeyDown={(e) => handleTabKeyDown(e, index)}
+              title={tooltip}
+              aria-label={tooltip}
+              aria-controls="sidebar-panel"
+              aria-expanded={isExpanded}
+              aria-pressed={isExpanded}
+            >
+              <div className={styles["tab-inner"]}>
+                <div className={styles["tab-icon"]}>
+                  <Icon aria-hidden="true" focusable="false" />
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
           );
         })}
       </div>

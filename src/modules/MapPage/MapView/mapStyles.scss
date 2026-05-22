@@ -276,7 +276,10 @@
     padding: 4px 10px;
     border-radius: 8px;
     font-size: 12px;
-    white-space: nowrap;
+    max-width: min(220px, 42vw);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
     pointer-events: none;
     border: 1px solid rgba(136, 139, 224, 0.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -296,6 +299,31 @@
 
 .ol-tooltip.hidden {
     display: none;
+}
+
+.map-drawing-cursor {
+    cursor: crosshair !important;
+}
+
+.draw-tooltip {
+    max-width: min(230px, 42vw);
+    padding: 7px 10px;
+    border: 1px solid rgba(52, 211, 153, 0.22);
+    border-radius: 8px;
+    background: rgba(9, 10, 36, 0.92);
+    color: rgba(217, 218, 245, 0.86);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.38);
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+}
+
+.draw-tooltip[data-ready="true"] {
+    border-color: rgba(96, 165, 250, 0.28);
+    color: rgba(191, 219, 254, 0.94);
 }
 
 @keyframes popup-fade-in {

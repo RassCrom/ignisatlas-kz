@@ -7,6 +7,8 @@ import { handleFullScreenChange } from '../utils/fullScreen.js';
 
 export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) => {
   const mapInstance = useRef(null);
+  const activeBasemapRef = useRef(basemapKey);
+  const initialBasemapRef = useRef(basemapKey);
   const [isMapInitialized, setIsMapInitialized] = useState(false);
 
   useEffect(() => {
@@ -15,7 +17,7 @@ export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) =
     const { zoom, center, bearing } = getMapStateFromHash();
     const map = new maplibregl.Map({
       container: mapRef.current,
-      style: createInitialStyle(basemapKey),
+      style: createInitialStyle(initialBasemapRef.current),
       center,
       zoom,
       bearing,
@@ -43,7 +45,7 @@ export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) =
     };
 
     map.on('load', () => {
-      applyBasemap(map, basemapKey);
+      activeBasemapRef.current = initialBasemapRef.current;
       mapInstance.current = map;
       setIsMapInitialized(true);
       map.on('moveend', handleMoveEnd);
@@ -59,11 +61,22 @@ export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) =
       mapInstance.current = null;
       setIsMapInitialized(false);
     };
-  }, [basemapKey, mapRef]);
+  }, [mapRef]);
 
   useEffect(() => {
     const map = mapInstance.current;
     if (!map || !isMapInitialized) return;
+
+    if (activeBasemapRef.current === basemapKey) return;
+
+    setIsMapInitialized(false);
+
+    const handleStyleLoad = () => {
+      activeBasemapRef.current = basemapKey;
+      setIsMapInitialized(true);
+    };
+
+    map.once('style.load', handleStyleLoad);
     applyBasemap(map, basemapKey);
   }, [basemapKey, isMapInitialized]);
 

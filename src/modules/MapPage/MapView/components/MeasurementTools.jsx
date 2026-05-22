@@ -244,6 +244,14 @@ const MeasurementTools = ({ map }) => {
             </button>
           </div>
 
+          {type && (
+            <div className={styles.measureInstructions}>
+              <span>
+                Click on the map to place points. Double-click or press Enter to finish. Press Esc to cancel.
+              </span>
+            </div>
+          )}
+
           {measurementResults.length > 0 && (
             <div className={styles.measurementResults}>
               <h4>Results</h4>

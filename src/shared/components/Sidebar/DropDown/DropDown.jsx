@@ -23,6 +23,7 @@ const LSTExplorer = lazy(() => import("./SentinelControls/LSTExplorer"));
 
 const FireRisk = lazy(() => import("./Controls/FireControls/FireRisk"));
 const FireModelling = lazy(() => import("./Controls/FireControls/FireModelling"));
+const BurnedAreaControls = lazy(() => import("./Controls/FireControls/BurnedAreaControls"));
 
 const LulcControls = lazy(() => import("./Controls/LulcControls"));
 const LulcPcControls = lazy(() => import("./Controls/LulcPcControls"));
@@ -31,7 +32,11 @@ const SettlementsControls = lazy(() => import("./Controls/SettlementsControls"))
 const ClimateZonesControls = lazy(() => import("./Controls/ClimateZonesControls"));
 const ProtectedAreasControls = lazy(() => import("./Controls/ProtectedAreasControls"));
 const PeatlandsControls = lazy(() => import("./Controls/PeatlandsControls"));
+const DroughtMonitoring = lazy(() => import("./Controls/DroughtMonitoring"));
+const DroughtForecast = lazy(() => import("./Controls/DroughtForecast"));
+const DroughtIndices = lazy(() => import("./Controls/DroughtIndices"));
 const LayersPanel = lazy(() => import("./Controls/LayersPanel"));
+const PresetsControls = lazy(() => import("./Controls/PresetsControls"));
 
 const MeasureDistanceTool = lazy(() => import("./ToolsControls/MeasureDistanceTool"));
 const MeasureAreaTool = lazy(() => import("./ToolsControls/MeasureAreaTool"));
@@ -69,6 +74,7 @@ const SELF_SUBSCRIBED = {
   fire_pinpoints: FireControls,
   fire_risk: FireRisk,
   fire_modelling: FireModelling,
+  burned_areas_modis: BurnedAreaControls,
   lst_explorer: LSTExplorer,
   lulc: LulcControls,
   lulc_pc: LulcPcControls,
@@ -89,12 +95,16 @@ const SELF_SUBSCRIBED = {
   climate_zones: ClimateZonesControls,
   protected_area_boundaries: ProtectedAreasControls,
   peatlands: PeatlandsControls,
+  drought_indices: DroughtMonitoring,
+  drought_forecast: DroughtForecast,
+  drought_imagery: DroughtIndices,
   identify_pixel: IdentifyPixelTool,
   feature_info: FeatureInfoTool,
   download_data: DownloadDataTool,
   export_csv: ExportCsvTool,
   export_geojson: ExportGeojsonTool,
   api_links: ApiLinksTool,
+  presets_controls: PresetsControls,
 };
 
 const DropDown = memo(({ openTabIndex }) => {
@@ -184,29 +194,33 @@ const DropDown = memo(({ openTabIndex }) => {
   return (
     <div className={styles.dropdown}>
 
-      {currentSection.items.map((item) => (
-        <div key={item.id} className={styles.dropdown__item}>
-          <div
-            className={styles.dropdown__heading}
-            onClick={() => toggleExpandedItem(item.id)}
-            aria-expanded={expandedItems[item.id]}
-          >
-            <h3>{item.label_ru}</h3>
-            <ChevronDown
-              size={18}
-              className={`${styles.dropdown__icon} ${
-                expandedItems[item.id] ? styles["dropdown__icon--rotated"] : ""
-              }`}
-            />
-          </div>
+      {currentSection.items.map((item) => {
+        const isExpanded = expandedItems[item.id] ?? item.isExpanded ?? false;
 
-          {expandedItems[item.id] && (
-            <div className={styles.dropdown__options}>
-              {item.options.map(renderOption)}
+        return (
+          <div key={item.id} className={styles.dropdown__item}>
+            <div
+              className={styles.dropdown__heading}
+              onClick={() => toggleExpandedItem(item.id)}
+              aria-expanded={isExpanded}
+            >
+              <h3>{item.label_ru}</h3>
+              <ChevronDown
+                size={18}
+                className={`${styles.dropdown__icon} ${
+                  isExpanded ? styles["dropdown__icon--rotated"] : ""
+                }`}
+              />
             </div>
-          )}
-        </div>
-      ))}
+
+            {isExpanded && (
+              <div className={styles.dropdown__options}>
+                {item.options.map(renderOption)}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 });

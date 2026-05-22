@@ -38,9 +38,11 @@ import { useBookmarksLayer } from "../hooks/useBookmarksLayer.js";
 import { useClimateZonesLayer } from "../hooks/useClimateZonesLayer.js";
 import { useProtectedAreasLayer } from "../hooks/useProtectedAreasLayer.js";
 import { usePeatlandsLayer } from "../hooks/usePeatlandsLayer.js";
+import { useDroughtLayer } from "../hooks/useDroughtLayer.js";
 import ClimateZonesPopup from "./components/ClimateZonesPopup.jsx";
 import ProtectedAreasPopup from "./components/ProtectedAreasPopup.jsx";
 import PeatlandsPopup from "./components/PeatlandsPopup.jsx";
+import DroughtPopup from "./components/DroughtPopup.jsx";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -150,6 +152,12 @@ const MapView = () => {
     popupContent: peatPopupContent,
     closePopup:   closePeatPopup,
   } = usePeatlandsLayer(mapInstance, isMapInitialized);
+
+  const {
+    popupRef:     droughtPopupRef,
+    popupContent: droughtPopupContent,
+    closePopup:   closeDroughtPopup,
+  } = useDroughtLayer(mapInstance, isMapInitialized);
 
   // Emergency layers popup
   const {
@@ -282,6 +290,12 @@ const MapView = () => {
           popupRef={peatPopupRef}
           content={peatPopupContent}
           onClose={closePeatPopup}
+        />
+
+        <DroughtPopup
+          popupRef={droughtPopupRef}
+          content={droughtPopupContent}
+          onClose={closeDroughtPopup}
         />
 
         {weatherCoordinate && (
