@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import useSettlementsStore from 'src/app/store/settlementsStore';
+import { useMapStyleStore } from 'src/app/store/mapStyleStore';
 import {
   createPopup,
   removeSourceWithLayers,
@@ -8,6 +9,7 @@ import {
 } from '../utils/maplibreHelpers';
 
 export const useSettlementsLayer = (mapInstance, isMapInitialized) => {
+  const styleVersion = useMapStyleStore((s) => s.styleVersion);
   const popupRef = useRef(null);
   const popupInstanceRef = useRef(null);
   const [popupContent, setPopupContent] = useState(null);
@@ -38,7 +40,7 @@ export const useSettlementsLayer = (mapInstance, isMapInitialized) => {
       });
     }
     return () => removeSourceWithLayers(mapInstance, 'settlements-source');
-  }, [isMapInitialized, mapInstance]);
+  }, [isMapInitialized, mapInstance, styleVersion]);
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;

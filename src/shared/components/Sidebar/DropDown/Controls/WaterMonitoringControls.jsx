@@ -66,7 +66,7 @@ const WATER_BODY_STATS = {
 };
 
 const CLASS_OPTIONS = [
-  { value: 'all', label: 'All classes' },
+  { value: 'all', label: 'Все классы' },
   { value: 'water', label: 'Water' },
   { value: 'reservoir', label: 'Reservoir' },
   { value: 'riverbank', label: 'Riverbank' },
@@ -735,10 +735,10 @@ const WaterMonitoringControls = ({ option }) => {
                         <div className={styles.layersHeader}>
                           <button className={styles.clearBtn} onClick={handleToggleRasterLayers}>
                             {allRasterVisible ? <EyeOff size={12} /> : <Eye size={12} />}
-                            {allRasterVisible ? 'Hide all' : 'Show all'}
+                            {allRasterVisible ? 'Скрыть все' : 'Показать все'}
                           </button>
                           <button className={styles.clearBtn} onClick={clearActiveLayers}>
-                            <Trash2 size={12} /> Clear all
+                            <Trash2 size={12} /> Очистить
                           </button>
                         </div>
 
@@ -747,14 +747,14 @@ const WaterMonitoringControls = ({ option }) => {
                             <div key={layer.id} className={styles.layerCard}>
                               <div className={styles.layerTop}>
                                 <div className={styles.layerInfo}>
-                                  <div className={styles.layerName}>{layer.indexName || 'Water monitoring'}</div>
+                                  <div className={styles.layerName}>{layer.indexName || 'Мониторинг воды'}</div>
                                   <div className={styles.layerDate}>{formatDate(layer.acquisitionDate)}</div>
                                 </div>
                                 <div className={styles.layerActions}>
                                   <button
                                     className={`${styles.layerActionBtn} ${layer.visible ? styles['layerActionBtn--active'] : ''}`}
                                     onClick={() => toggleLayerVisibility(layer.id)}
-                                    title={layer.visible ? 'Hide layer' : 'Show layer'}
+                                    title={layer.visible ? 'Скрыть слой' : 'Показать слой'}
                                   >
                                     {layer.visible ? <Eye size={13} /> : <EyeOff size={13} />}
                                   </button>

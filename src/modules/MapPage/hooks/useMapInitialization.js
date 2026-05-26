@@ -10,6 +10,7 @@ import {
 import { getMapStateFromHash, updateMapStateInHash } from '../utils/mapState.js';
 import { createContextMenu } from '../utils/contextMenu.js';
 import { handleFullScreenChange } from '../utils/fullScreen.js';
+import { useMapStyleStore } from 'src/app/store/mapStyleStore.js';
 
 const PRESERVE_DRAWING_BUFFER = import.meta.env.VITE_MAP_PRESERVE_DRAWING_BUFFER === 'true';
 let pmtilesRegistered = false;
@@ -19,6 +20,7 @@ export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) =
   const activeBasemapRef = useRef(basemapKey);
   const initialBasemapRef = useRef(basemapKey);
   const [isMapInitialized, setIsMapInitialized] = useState(false);
+  const bumpStyleVersion = useMapStyleStore((s) => s.bumpStyleVersion);
 
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
@@ -90,6 +92,7 @@ export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) =
     const handleStyleLoad = () => {
       activeBasemapRef.current = basemapKey;
       setIsMapInitialized(true);
+      bumpStyleVersion();
     };
 
     if (requiresStyleReload) {

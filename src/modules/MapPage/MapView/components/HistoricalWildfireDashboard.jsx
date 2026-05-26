@@ -1,5 +1,6 @@
 import {
   CalendarDays,
+  Droplets,
   Eye,
   EyeOff,
   Flame,
@@ -12,15 +13,16 @@ import useHistoricalWildfireStore from 'src/app/store/historicalWildfireStore';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import { fitCaseBounds } from 'src/modules/MapPage/hooks/useHistoricalWildfireLayer';
 import { getHistoricalWildfireCase } from 'src/utils/historicalWildfireCases';
+import { getHistoricalFloodCase } from 'src/utils/historicalFloodCases';
 import styles from './HistoricalWildfireDashboard.module.scss';
 
-const formatArea = (areaHa) => `${areaHa.toLocaleString('en-US')} ha`;
+const formatArea = (areaHa) => `${areaHa.toLocaleString('ru-RU')} га`;
 
-const BurnedAreaBars = ({ items }) => {
+const AreaBars = ({ items }) => {
   const maxValue = Math.max(...items.map((item) => item.areaHa), 1);
 
   return (
-    <div className={styles.bars} aria-label="Burned area progression">
+    <div className={styles.bars} aria-label="Динамика площади">
       {items.map((item) => (
         <div key={item.label} className={styles.barColumn}>
           <div className={styles.barTrack}>
@@ -56,27 +58,37 @@ const TerritoryRows = ({ items }) => (
 
 const HistoricalWildfireDashboard = () => {
   const selectedCaseId = useHistoricalWildfireStore((state) => state.selectedCaseId);
+  const caseType = useHistoricalWildfireStore((state) => state.caseType);
   const dashboardOpen = useHistoricalWildfireStore((state) => state.dashboardOpen);
   const layerVisible = useHistoricalWildfireStore((state) => state.layerVisible);
   const clearSelection = useHistoricalWildfireStore((state) => state.clearSelection);
   const toggleLayerVisible = useHistoricalWildfireStore((state) => state.toggleLayerVisible);
-  const selectedCase = getHistoricalWildfireCase(selectedCaseId);
+
+  const selectedCase = selectedCaseId
+    ? (caseType === 'flood' ? getHistoricalFloodCase(selectedCaseId) : getHistoricalWildfireCase(selectedCaseId))
+    : null;
 
   if (!selectedCase || !dashboardOpen) return null;
+
+  const isFlood = caseType === 'flood';
+  const areaHa = isFlood ? selectedCase.affectedAreaHa : selectedCase.burnedAreaHa;
+  const areaLabel = isFlood ? 'Площадь затопления' : 'Площадь пожара';
 
   const handleFocus = () => {
     fitCaseBounds(getMapInstance(), selectedCase);
   };
 
   return (
-    <aside className={styles.dashboard} aria-label="Historical wildfire dashboard">
+    <aside className={styles.dashboard} aria-label="Карточка исторического события">
       <header className={styles.header}>
         <div className={styles.titleWrap}>
           <span className={styles.icon} style={{ color: selectedCase.color }}>
-            <Flame size={17} />
+            {isFlood ? <Droplets size={17} /> : <Flame size={17} />}
           </span>
           <div>
-            <span className={styles.kicker}>Historical case</span>
+            <span className={styles.kicker}>
+              {isFlood ? 'Исторический паводок' : 'Исторический пожар'}
+            </span>
             <h2>{selectedCase.title}</h2>
           </div>
         </div>
@@ -85,15 +97,15 @@ const HistoricalWildfireDashboard = () => {
           <button
             type="button"
             onClick={toggleLayerVisible}
-            title={layerVisible ? 'Hide AOI layer' : 'Show AOI layer'}
-            aria-label={layerVisible ? 'Hide AOI layer' : 'Show AOI layer'}
+            title={layerVisible ? 'Скрыть зону АОИ' : 'Показать зону АОИ'}
+            aria-label={layerVisible ? 'Скрыть зону АОИ' : 'Показать зону АОИ'}
           >
             {layerVisible ? <Eye size={15} /> : <EyeOff size={15} />}
           </button>
-          <button type="button" onClick={handleFocus} title="Zoom to AOI" aria-label="Zoom to AOI">
+          <button type="button" onClick={handleFocus} title="Приблизить к АОИ" aria-label="Приблизить к АОИ">
             <Focus size={15} />
           </button>
-          <button type="button" onClick={clearSelection} title="Close dashboard" aria-label="Close dashboard">
+          <button type="button" onClick={clearSelection} title="Закрыть" aria-label="Закрыть карточку">
             <X size={15} />
           </button>
         </div>
@@ -125,24 +137,24 @@ const HistoricalWildfireDashboard = () => {
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h3>Burned area</h3>
-          <span>{formatArea(selectedCase.burnedAreaHa)}</span>
+          <h3>{areaLabel}</h3>
+          <span>{formatArea(areaHa)}</span>
         </div>
-        <BurnedAreaBars items={selectedCase.timeline} />
+        <AreaBars items={selectedCase.timeline} />
       </section>
 
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <h3>Territory</h3>
+          <h3>Территория</h3>
           <span>{selectedCase.territory}</span>
         </div>
         <TerritoryRows items={selectedCase.landCover} />
       </section>
 
       <section className={styles.impact}>
-        <h3>Available information</h3>
+        <h3>Дополнительные сведения</h3>
         <p>{selectedCase.impact}</p>
-        <span>Source notes: {selectedCase.sourceLabel}</span>
+        <span>Источник: {selectedCase.sourceLabel}</span>
       </section>
 
       <p className={styles.note}>{selectedCase.sourceNote}</p>

@@ -1,9 +1,14 @@
 import { useEffect, useMemo, useRef } from 'react';
 import useHistoricalWildfireStore from 'src/app/store/historicalWildfireStore';
+import { useMapStyleStore } from 'src/app/store/mapStyleStore';
 import {
   buildHistoricalWildfireFeatureCollection,
   getHistoricalWildfireCase,
 } from 'src/utils/historicalWildfireCases';
+import {
+  buildHistoricalFloodFeatureCollection,
+  getHistoricalFloodCase,
+} from 'src/utils/historicalFloodCases';
 import {
   addOrUpdateGeoJsonSource,
   removeSourceWithLayers,
@@ -15,8 +20,8 @@ const FILL_LAYER_ID = 'historical-wildfire-fill';
 const OUTLINE_LAYER_ID = 'historical-wildfire-outline';
 const CENTER_LAYER_ID = 'historical-wildfire-center';
 
-const fitCaseBounds = (map, wildfireCase) => {
-  if (!map || !wildfireCase?.bbox) return;
+const fitCaseBounds = (map, eventCase) => {
+  if (!map || !eventCase?.bbox) return;
 
   const canvas = map.getCanvas?.();
   const compact = (canvas?.clientWidth || 0) < 900;
@@ -26,8 +31,8 @@ const fitCaseBounds = (map, wildfireCase) => {
 
   map.fitBounds(
     [
-      [wildfireCase.bbox[0], wildfireCase.bbox[1]],
-      [wildfireCase.bbox[2], wildfireCase.bbox[3]],
+      [eventCase.bbox[0], eventCase.bbox[1]],
+      [eventCase.bbox[2], eventCase.bbox[3]],
     ],
     {
       padding,
@@ -38,19 +43,25 @@ const fitCaseBounds = (map, wildfireCase) => {
 };
 
 export const useHistoricalWildfireLayer = (mapInstance, isMapInitialized) => {
+  const styleVersion = useMapStyleStore((s) => s.styleVersion);
   const selectedCaseId = useHistoricalWildfireStore((state) => state.selectedCaseId);
+  const caseType = useHistoricalWildfireStore((state) => state.caseType);
   const layerVisible = useHistoricalWildfireStore((state) => state.layerVisible);
   const lastFocusedCaseIdRef = useRef(null);
 
-  const selectedCase = useMemo(
-    () => getHistoricalWildfireCase(selectedCaseId),
-    [selectedCaseId]
-  );
+  const selectedCase = useMemo(() => {
+    if (!selectedCaseId) return null;
+    return caseType === 'flood'
+      ? getHistoricalFloodCase(selectedCaseId)
+      : getHistoricalWildfireCase(selectedCaseId);
+  }, [selectedCaseId, caseType]);
 
-  const featureCollection = useMemo(
-    () => buildHistoricalWildfireFeatureCollection(selectedCase),
-    [selectedCase]
-  );
+  const featureCollection = useMemo(() => {
+    if (!selectedCase) return { type: 'FeatureCollection', features: [] };
+    return caseType === 'flood'
+      ? buildHistoricalFloodFeatureCollection(selectedCase)
+      : buildHistoricalWildfireFeatureCollection(selectedCase);
+  }, [selectedCase, caseType]);
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;
@@ -65,7 +76,7 @@ export const useHistoricalWildfireLayer = (mapInstance, isMapInitialized) => {
         filter: ['==', ['geometry-type'], 'Polygon'],
         layout: { visibility: 'none' },
         paint: {
-          'fill-color': ['get', 'color'],
+          'fill-color': ['coalesce', ['get', 'color'], '#f97316'],
           'fill-opacity': 0.28,
         },
       });
@@ -105,7 +116,7 @@ export const useHistoricalWildfireLayer = (mapInstance, isMapInitialized) => {
     }
 
     return () => removeSourceWithLayers(mapInstance, SOURCE_ID);
-  }, [featureCollection, isMapInitialized, mapInstance]);
+  }, [featureCollection, isMapInitialized, mapInstance, styleVersion]);
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized || !mapInstance.getSource(SOURCE_ID)) return;

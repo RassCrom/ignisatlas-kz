@@ -402,8 +402,8 @@ export const newDD = [
           {
             "id": "fuel_moisture",
             "label": "Fuel Moisture & Vegetation Dryness",
-            "label_ru": "Fuel Moisture & Vegetation Dryness",
-            "description": "Sentinel-2 SWIR-based NDWI/NDMI fuel moisture proxy for crop and forest dryness. Extremely dry areas are rendered bright red for high ignition risk.",
+            "label_ru": "Влажность топлива и сухость растительности",
+            "description": "Прокси влажности топлива на основе NDWI/NDMI по SWIR-каналам Sentinel-2. Крайне сухие зоны подсвечены ярко-красным как высокий риск возгорания.",
             "layerType": "Raster",
             "source": "ESA Sentinel-2 / Microsoft Planetary Computer",
             "isTemporal": true,
@@ -427,7 +427,7 @@ export const newDD = [
       },
       {
         "id": "drought",
-        "label_ru": "Засуха",
+        "label_ru": "Мониторинг засухи (в разработке, частично готов)",
         "isExpanded": true,
         "options": [
           {
@@ -470,14 +470,14 @@ export const newDD = [
       },
       {
         "id": "water_monitoring_group",
-        "label_ru": "Водные объекты",
+        "label_ru": "Мониторинг воды",
         "isExpanded": true,
         "options": [
           {
             "id": "water_bodies",
-            "label": "Water Bodies",
-            "label_ru": "Water Bodies",
-            "description": "GeoJSON visualization of Kazakhstan water bodies with inventory stats, class filters, area filters, and attribute popup details.",
+            "label": "Водные объекты",
+            "label_ru": "Водные объекты",
+            "description": "GeoJSON-слой водных объектов Казахстана с инвентарной статистикой, фильтрами классов, площади и всплывающими атрибутами.",
             "layerType": "Vector",
             "source": "Public GeoJSON",
             "isTemporal": false,
@@ -487,9 +487,9 @@ export const newDD = [
           },
           {
             "id": "satellite_water_monitoring",
-            "label": "Satellite Water Monitoring",
-            "label_ru": "Satellite Water Monitoring",
-            "description": "Planetary Computer monitoring for surface-water extent, shrinkage, turbidity, chlorophyll-a, and eutrophication indicators.",
+            "label": "Спутниковый мониторинг воды",
+            "label_ru": "Спутниковый мониторинг воды",
+            "description": "Мониторинг поверхностных вод через Planetary Computer: площадь, усыхание, мутность, хлорофилл-а и индикаторы эвтрофикации.",
             "layerType": "Raster",
             "source": "Microsoft Planetary Computer",
             "isTemporal": true,
@@ -501,14 +501,14 @@ export const newDD = [
       },
       {
         "id": "glacier_monitoring_group",
-        "label_ru": "Glaciers",
+        "label_ru": "Мониторинг ледников",
         "isExpanded": true,
         "options": [
           {
             "id": "glacier_inventory",
             "label": "Glacier Inventory",
-            "label_ru": "Glacier Inventory",
-            "description": "GeoJSON visualization of Kazakhstan glaciers with OSM inventory filters and attribute details.",
+            "label_ru": "Инвентаризация ледников",
+            "description": "GeoJSON-слой ледников Казахстана с фильтрами по инвентарю OSM и атрибутными деталями.",
             "layerType": "Vector",
             "source": "Public GeoJSON",
             "isTemporal": false,
@@ -519,8 +519,8 @@ export const newDD = [
           {
             "id": "satellite_glacier_monitoring",
             "label": "Satellite Glacier Monitoring",
-            "label_ru": "Satellite Glacier Monitoring",
-            "description": "Planetary Computer monitoring for snow and ice extent, melt moisture, debris contrast, and glacier context using Sentinel-2 indices.",
+            "label_ru": "Спутниковый мониторинг ледников",
+            "description": "Мониторинг снежного и ледового покрова через Planetary Computer: площадь, мокрый снег, каменистые ледники и контекст на основе индексов Sentinel-2.",
             "layerType": "Raster",
             "source": "Microsoft Planetary Computer",
             "isTemporal": true,
@@ -744,7 +744,7 @@ export const newDD = [
     "items": [
       {
         "id": "satellite",
-        "label_ru": "Sentinel mission",
+        "label_ru": "Миссия Sentinel",
         "isExpanded": true,
         "options": [
           {
@@ -775,7 +775,7 @@ export const newDD = [
       },
       {
         "id": "landsat_archive",
-        "label_ru": "Landsat mission",
+        "label_ru": "Миссия Landsat",
         "isExpanded": false,
         "options": [
           {
@@ -794,7 +794,7 @@ export const newDD = [
       },
       {
         "id": "modis_archive",
-        "label_ru": "MODIS mission",
+        "label_ru": "Миссия MODIS",
         "isExpanded": false,
         "options": [
           {
@@ -813,7 +813,7 @@ export const newDD = [
       },
       {
         "id": "atmosphere_archive",
-        "label_ru": "Atmosphere & Emissions",
+        "label_ru": "Атмосфера и выбросы",
         "isExpanded": false,
         "options": [
           {
@@ -1154,7 +1154,7 @@ export const newDD = [
     items: [
       {
         id: 'historical_wildfires_item',
-        label_ru: 'Исторические пожары',
+        label_ru: 'Исторические пожары (в разработке)',
         isExpanded: true,
         options: [
           {
@@ -1167,6 +1167,31 @@ export const newDD = [
             isTemporal: true,
             isDownloadable: false,
             tags: ['wildfire', 'history', 'case-study'],
+            status: 'active'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 10,
+    key: 'historical_floods',
+    items: [
+      {
+        id: 'historical_floods_item',
+        label_ru: 'Исторические паводки (в разработке)',
+        isExpanded: true,
+        options: [
+          {
+            id: 'historical_floods_controls',
+            label: 'Historical Floods',
+            label_ru: 'Исторические паводки',
+            description: 'Реальные кейсы крупных паводков Казахстана с зонами затопления и статистикой.',
+            layerType: null,
+            source: null,
+            isTemporal: true,
+            isDownloadable: false,
+            tags: ['flood', 'history', 'case-study'],
             status: 'active'
           }
         ]

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { toast } from 'react-toastify';
 import useWaterMonitoringStore from 'src/app/store/waterMonitoringStore';
+import { useMapStyleStore } from 'src/app/store/mapStyleStore';
 import {
   removeMapLayer,
   removeMapSource,
@@ -79,6 +80,7 @@ const buildWaterBodyFilter = (filters) => {
 };
 
 export const useWaterMonitoringLayers = (mapInstance, isMapInitialized) => {
+  const styleVersion = useMapStyleStore((s) => s.styleVersion);
   const visible = useWaterMonitoringStore((state) => state.visible);
   const opacity = useWaterMonitoringStore((state) => state.opacity);
   const selectedWaterBody = useWaterMonitoringStore((state) => state.selectedWaterBody);
@@ -181,7 +183,7 @@ export const useWaterMonitoringLayers = (mapInstance, isMapInitialized) => {
     }
 
     return () => removeSourceWithLayers(mapInstance, WATER_SOURCE_ID);
-  }, [isMapInitialized, mapInstance]);
+  }, [isMapInitialized, mapInstance, styleVersion]);
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;

@@ -2,15 +2,15 @@ import {
   BarChart3,
   CalendarDays,
   CheckCircle2,
+  Droplets,
   Eye,
   EyeOff,
-  Flame,
   Focus,
   Info,
   MapPin,
 } from 'lucide-react';
 import useHistoricalWildfireStore from 'src/app/store/historicalWildfireStore';
-import { HISTORICAL_WILDFIRE_CASES, getHistoricalWildfireCase } from 'src/utils/historicalWildfireCases';
+import { HISTORICAL_FLOOD_CASES, getHistoricalFloodCase } from 'src/utils/historicalFloodCases';
 import './FireControls/fireControls.scss';
 import styles from './HistoricalWildfiresControls.module.scss';
 
@@ -20,13 +20,13 @@ const MiniBars = ({ items }) => {
   const maxValue = Math.max(...items.map((item) => item.areaHa), 1);
 
   return (
-    <div className={styles.miniBars} aria-label="Динамика площади пожаров">
+    <div className={styles.miniBars} aria-label="Динамика площади затопления">
       {items.map((item) => (
         <div key={item.label} className={styles.miniBarColumn}>
           <div className={styles.miniBarTrack}>
             <span
               className={styles.miniBar}
-              style={{ height: `${Math.max(10, (item.areaHa / maxValue) * 58)}px` }}
+              style={{ height: `${Math.max(10, (item.areaHa / maxValue) * 58)}px`, background: '#60a5fa' }}
               title={`${item.label}: ${formatArea(item.areaHa)}`}
             />
           </div>
@@ -57,52 +57,52 @@ const LandCoverRows = ({ items }) => (
   </div>
 );
 
-const HistoricalWildfiresControls = () => {
+const HistoricalFloodsControls = () => {
   const selectedCaseId = useHistoricalWildfireStore((state) => state.selectedCaseId);
   const caseType = useHistoricalWildfireStore((state) => state.caseType);
   const layerVisible = useHistoricalWildfireStore((state) => state.layerVisible);
   const selectCase = useHistoricalWildfireStore((state) => state.selectCase);
   const toggleLayerVisible = useHistoricalWildfireStore((state) => state.toggleLayerVisible);
 
-  const maxArea = Math.max(...HISTORICAL_WILDFIRE_CASES.map((c) => c.burnedAreaHa));
-  const selectedCase = selectedCaseId && caseType === 'wildfire'
-    ? getHistoricalWildfireCase(selectedCaseId)
-    : HISTORICAL_WILDFIRE_CASES[0];
+  const maxArea = Math.max(...HISTORICAL_FLOOD_CASES.map((c) => c.affectedAreaHa));
+  const selectedCase = selectedCaseId && caseType === 'flood'
+    ? getHistoricalFloodCase(selectedCaseId)
+    : HISTORICAL_FLOOD_CASES[0];
 
   return (
     <div className="fire-controls">
       <div className="fire-controls__header">
         <div className="fire-controls__toggle">
           <div className="fire-controls__toggle-icon">
-            <Flame size={16} className="fire-controls__icon-active" />
+            <Droplets size={16} className="fire-controls__icon-active" style={{ color: '#60a5fa' }} />
           </div>
-          <span className="fire-controls__toggle-label">Исторические пожары</span>
+          <span className="fire-controls__toggle-label">Исторические паводки</span>
         </div>
       </div>
 
       <div className="fire-controls__content">
         <div className={styles.panel}>
           <section className={styles.intro}>
-            <h3><BarChart3 size={15} /> Реальные случаи пожаров</h3>
-            <p>Выберите прошедшее событие, чтобы сфокусировать карту и открыть карточку случая.</p>
+            <h3><BarChart3 size={15} /> Реальные случаи паводков</h3>
+            <p>Выберите паводковое событие, чтобы показать зону затопления и открыть карточку.</p>
           </section>
 
           <div className={styles.caseList}>
-            {HISTORICAL_WILDFIRE_CASES.map((eventCase) => {
-              const isActive = selectedCaseId === eventCase.id && caseType === 'wildfire';
-              const width = Math.max(8, (eventCase.burnedAreaHa / maxArea) * 100);
+            {HISTORICAL_FLOOD_CASES.map((eventCase) => {
+              const isActive = selectedCaseId === eventCase.id && caseType === 'flood';
+              const width = Math.max(8, (eventCase.affectedAreaHa / maxArea) * 100);
 
               return (
                 <button
                   key={eventCase.id}
                   type="button"
                   className={`${styles.caseCard} ${isActive ? styles.caseCardActive : ''}`}
-                  onClick={() => selectCase(eventCase.id, 'wildfire')}
+                  onClick={() => selectCase(eventCase.id, 'flood')}
                   aria-pressed={isActive}
                 >
                   <span className={styles.caseTop}>
                     <span className={styles.caseIcon} style={{ color: eventCase.color }}>
-                      <Flame size={15} />
+                      <Droplets size={15} />
                     </span>
                     <span className={styles.caseText}>
                       <strong>{eventCase.title}</strong>
@@ -112,7 +112,7 @@ const HistoricalWildfiresControls = () => {
                   </span>
                   <span className={styles.caseMeta}>
                     <span><CalendarDays size={12} /> {eventCase.period}</span>
-                    <span><MapPin size={12} /> {formatArea(eventCase.burnedAreaHa)}</span>
+                    <span><MapPin size={12} /> {formatArea(eventCase.affectedAreaHa)}</span>
                   </span>
                   <span className={styles.areaTrack} aria-hidden="true">
                     <span
@@ -153,7 +153,7 @@ const HistoricalWildfiresControls = () => {
               </div>
 
               <div className={styles.chartBlock}>
-                <div className={styles.blockTitle}><Focus size={13} /> Динамика площади пожаров</div>
+                <div className={styles.blockTitle}><Focus size={13} /> Динамика площади затопления</div>
                 <MiniBars items={selectedCase.timeline} />
               </div>
 
@@ -171,4 +171,4 @@ const HistoricalWildfiresControls = () => {
   );
 };
 
-export default HistoricalWildfiresControls;
+export default HistoricalFloodsControls;

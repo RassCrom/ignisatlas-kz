@@ -1,17 +1,18 @@
 import { memo, useRef } from "react";
-import { Flame, History, Layers, PencilRuler, Satellite, Sparkles, Wrench } from "lucide-react";
+import { Droplets, Globe2, History, Layers, PencilRuler, Satellite, Sparkles, Wrench } from "lucide-react";
 import useMenuStore from "src/app/store/store";
 import DropDown from "./DropDown/DropDown.jsx";
 import styles from "./Sidebar.module.scss";
 
 const TABS = [
-  { id: 2, icon: Flame,       tooltip: "Мониторинг природных явлений" },
-  { id: 3, icon: Satellite,   tooltip: "Космические снимки" },
-  { id: 9, icon: History,     tooltip: "Исторические пожары" },
-  { id: 1, icon: PencilRuler, tooltip: "Слои" },
-  { id: 7, icon: Layers,      tooltip: "Управление слоями" },
-  { id: 4, icon: Wrench,      tooltip: "Инструменты" },
-  { id: 8, icon: Sparkles,    tooltip: "Пресеты" },
+  { id: 2,  icon: Globe2,      tooltip: "Мониторинг природных явлений" },
+  { id: 3,  icon: Satellite,   tooltip: "Космические снимки" },
+  { id: 9,  icon: History,     tooltip: "Исторические пожары" },
+  { id: 10, icon: Droplets,    tooltip: "Исторические паводки" },
+  { id: 1,  icon: PencilRuler, tooltip: "Слои" },
+  { id: 7,  icon: Layers,      tooltip: "Управление слоями" },
+  { id: 4,  icon: Wrench,      tooltip: "Инструменты" },
+  { id: 8,  icon: Sparkles,    tooltip: "Пресеты" },
 ];
 
 const Sidebar = memo(() => {

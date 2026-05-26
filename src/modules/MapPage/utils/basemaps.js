@@ -27,12 +27,6 @@ export const basemapOptions = {
     tileSize: 256,
     attribution: 'Tiles (c) Google',
   },
-  openFreeMapLiberty: {
-    key: 'openFreeMapLiberty',
-    name: 'OpenFreeMap Liberty',
-    type: 'vector',
-    style: 'https://tiles.openfreemap.org/styles/liberty',
-  },
   openFreeMapBright: {
     key: 'openFreeMapBright',
     name: 'OpenFreeMap Bright',

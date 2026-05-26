@@ -205,6 +205,16 @@ const FireControls = () => {
     link.click();
   }, [fireLength, avgIntensity, avgConfidence, fireStartDate, fireEndDate, today]);
 
+  const handlePrintReport = useCallback(() => {
+    document.body.classList.add('fire-report-print');
+    const afterPrint = () => {
+      document.body.classList.remove('fire-report-print');
+      window.removeEventListener('afterprint', afterPrint);
+    };
+    window.addEventListener('afterprint', afterPrint);
+    window.print();
+  }, []);
+
   /* ── Derived stats ───────────────────────────────────── */
 
   const fireStats = useMemo(() => ({
@@ -241,7 +251,7 @@ const FireControls = () => {
 
   /* ── Activity summary side panel (portal) ────────────── */
 
-  const activityPanel = isExpanded && createPortal(
+  const activityPanel = fireLayerVisible && createPortal(
     <div className="fire-activity-panel">
       <div className="fire-activity-panel__header">
         <span className="fire-activity-panel__title">
@@ -557,7 +567,7 @@ const FireControls = () => {
 
       {/* ── Detailed stats modal (portal) ── */}
       {showStats && createPortal(
-        <div className="fire-stats-modal">
+        <div className="fire-stats-modal" id="fire-report-root">
           <div className="fire-stats-modal__backdrop" onClick={() => setShowStats(false)} />
           <div className="fire-stats-modal__content">
 
@@ -570,7 +580,10 @@ const FireControls = () => {
                 <span className="fire-stats-modal__date-range">
                   {fireStartDate} — {fireEndDate}
                 </span>
-                <button className="fire-stats-modal__close" onClick={() => setShowStats(false)}>
+                <span className="fire-stats-modal__generated fire-stats-modal__print-only">
+                  Сформировано: {new Date().toLocaleDateString('ru-RU')}
+                </span>
+                <button className="fire-stats-modal__close fire-stats-modal__no-print" onClick={() => setShowStats(false)} aria-label="Закрыть">
                   <X size={18} />
                 </button>
               </div>
@@ -588,7 +601,7 @@ const FireControls = () => {
               {/* ── Right: stats panels ── */}
               <div className="fire-stats-modal__right">
 
-                {/* Overview 4 cards */}
+                {/* Overview cards: 2×2 grid + 1 wide */}
                 <div className="fire-stats-modal__overview">
                   <div className="fire-stats-card">
                     <div className="fire-stats-card__icon fire-stats-card__icon--total">
@@ -652,6 +665,20 @@ const FireControls = () => {
                       </div>
                     </div>
                   </div>
+
+                  {fireStats.timeAnalysis.newFires24h > 0 && (
+                    <div className="fire-stats-card fire-stats-card--wide">
+                      <div className="fire-stats-card__icon fire-stats-card__icon--active">
+                        <Activity size={18} />
+                      </div>
+                      <div className="fire-stats-card__content">
+                        <div className="fire-stats-card__value" style={{ color: '#f87171' }}>
+                          +{fireStats.timeAnalysis.newFires24h}
+                        </div>
+                        <div className="fire-stats-card__label">Новых за последние сутки</div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Confidence distribution bars */}
@@ -688,7 +715,7 @@ const FireControls = () => {
                 <div className="fire-stats-section">
                   <h3 className="fire-stats-section__title">
                     <Activity size={15} />
-                    Источники обнаружения
+                    Источники обнаружения (спутники)
                   </h3>
                   <div className="fire-stats-bars">
                     {Object.entries(fireStats.satelliteDistribution)
@@ -717,7 +744,7 @@ const FireControls = () => {
                   <div className="fire-stats-section">
                     <h3 className="fire-stats-section__title">
                       <Target size={15} />
-                      Модели обнаружения
+                      Алгоритмы обнаружения
                     </h3>
                     <div className="fire-stats-bars">
                       {Object.entries(firesByModel).map(([model, count]) => {
@@ -725,7 +752,7 @@ const FireControls = () => {
                         const pct = fireStats.totalFires > 0 ? (c / fireStats.totalFires) * 100 : 0;
                         return (
                           <div key={model} className="fire-stats-bars__row">
-                            <div className="fire-stats-bars__label">{model}</div>
+                            <div className="fire-stats-bars__label">Алгоритм {model}</div>
                             <div className="fire-stats-bars__track">
                               <div
                                 className="fire-stats-bars__fill fire-stats-bars__fill--model"
@@ -740,13 +767,21 @@ const FireControls = () => {
                   </div>
                 )}
 
+                <div className="fire-stats-section fire-stats-modal__print-only fire-stats-section--note">
+                  <p>Данные предоставлены системой мониторинга NASA FIRMS. Горячие точки являются индикаторами возможных пожаров и требуют верификации на местности.</p>
+                </div>
+
               </div>
             </div>
 
-            <div className="fire-stats-modal__footer">
+            <div className="fire-stats-modal__footer fire-stats-modal__no-print">
+              <button className="fire-stats-modal__btn fire-stats-modal__btn--secondary" onClick={handlePrintReport}>
+                <Download size={16} />
+                PDF отчёт
+              </button>
               <button className="fire-stats-modal__btn fire-stats-modal__btn--secondary" onClick={handleExportData}>
                 <Download size={16} />
-                Экспорт
+                JSON
               </button>
               <button className="fire-stats-modal__btn fire-stats-modal__btn--primary" onClick={() => setShowStats(false)}>
                 Закрыть

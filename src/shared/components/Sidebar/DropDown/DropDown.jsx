@@ -43,6 +43,7 @@ const GlacierMonitoringControls = lazy(() => import("./Controls/GlacierMonitorin
 const LayersPanel = lazy(() => import("./Controls/LayersPanel"));
 const PresetsControls = lazy(() => import("./Controls/PresetsControls"));
 const HistoricalWildfiresControls = lazy(() => import("./Controls/HistoricalWildfiresControls"));
+const HistoricalFloodsControls = lazy(() => import("./Controls/HistoricalFloodsControls"));
 
 const MeasureDistanceTool = lazy(() => import("./ToolsControls/MeasureDistanceTool"));
 const MeasureAreaTool = lazy(() => import("./ToolsControls/MeasureAreaTool"));
@@ -118,6 +119,7 @@ const SELF_SUBSCRIBED = {
   api_links: ApiLinksTool,
   presets_controls: PresetsControls,
   historical_wildfires_controls: HistoricalWildfiresControls,
+  historical_floods_controls: HistoricalFloodsControls,
 };
 
 const DropDown = memo(({ openTabIndex }) => {

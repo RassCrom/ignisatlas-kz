@@ -19,7 +19,7 @@ import styles from './WindControls.module.scss';
 const formatSpeed = (value) => (Number.isFinite(value) ? `${value.toFixed(1)} m/s` : 'N/A');
 
 const formatTime = (iso) => {
-  if (!iso) return 'Not loaded';
+  if (!iso) return 'Не загружено';
   return new Date(iso).toLocaleString('ru-RU', {
     day: '2-digit',
     month: 'short',

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import usePeatlandsStore from 'src/app/store/peatlandsStore';
+import { useMapStyleStore } from 'src/app/store/mapStyleStore';
 import {
   createPopup,
   removeSourceWithLayers,
@@ -8,6 +9,7 @@ import {
 } from '../utils/maplibreHelpers';
 
 export const usePeatlandsLayer = (mapInstance, isMapInitialized) => {
+  const styleVersion = useMapStyleStore((s) => s.styleVersion);
   const popupRef = useRef(null);
   const popupInstanceRef = useRef(null);
   const [popupContent, setPopupContent] = useState(null);
@@ -46,7 +48,7 @@ export const usePeatlandsLayer = (mapInstance, isMapInitialized) => {
       });
     }
     return () => removeSourceWithLayers(mapInstance, 'peatlands-source');
-  }, [isMapInitialized, mapInstance]);
+  }, [isMapInitialized, mapInstance, styleVersion]);
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import useClimateZonesStore from 'src/app/store/climateZonesStore';
+import { useMapStyleStore } from 'src/app/store/mapStyleStore';
 import {
   createPopup,
   removeSourceWithLayers,
@@ -8,6 +9,7 @@ import {
 } from '../utils/maplibreHelpers';
 
 export const useClimateZonesLayer = (mapInstance, isMapInitialized) => {
+  const styleVersion = useMapStyleStore((s) => s.styleVersion);
   const popupRef = useRef(null);
   const popupInstanceRef = useRef(null);
   const [popupContent, setPopupContent] = useState(null);
@@ -36,7 +38,7 @@ export const useClimateZonesLayer = (mapInstance, isMapInitialized) => {
       });
     }
     return () => removeSourceWithLayers(mapInstance, 'climate-zones-source');
-  }, [isMapInitialized, mapInstance]);
+  }, [isMapInitialized, mapInstance, styleVersion]);
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;

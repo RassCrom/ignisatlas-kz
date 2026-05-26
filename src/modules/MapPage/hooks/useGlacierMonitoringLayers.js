@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import useGlacierMonitoringStore from 'src/app/store/glacierMonitoringStore';
+import { useMapStyleStore } from 'src/app/store/mapStyleStore';
 import {
   removeMapLayer,
   removeMapSource,
@@ -52,6 +53,7 @@ const buildGlacierFilter = (filters) => {
 };
 
 export const useGlacierMonitoringLayers = (mapInstance, isMapInitialized) => {
+  const styleVersion = useMapStyleStore((s) => s.styleVersion);
   const visible = useGlacierMonitoringStore((state) => state.visible);
   const opacity = useGlacierMonitoringStore((state) => state.opacity);
   const selectedGlacier = useGlacierMonitoringStore((state) => state.selectedGlacier);
@@ -132,7 +134,7 @@ export const useGlacierMonitoringLayers = (mapInstance, isMapInitialized) => {
     }
 
     return () => removeSourceWithLayers(mapInstance, GLACIER_SOURCE_ID);
-  }, [isMapInitialized, mapInstance]);
+  }, [isMapInitialized, mapInstance, styleVersion]);
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;

@@ -19,6 +19,7 @@ const MapFireControls = ({ firesByRegion }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
   const fireDataRef = useRef(firesByRegion);
+  const colorExpressionRef = useRef(null);
   const [hoveredRegion, setHoveredRegion] = useState(null);
   const fireData = firesByRegion;
 
@@ -64,6 +65,7 @@ const MapFireControls = ({ firesByRegion }) => {
       match.push(region, getColorForValue(count));
     });
     match.push('rgba(255,255,255,0.04)');
+    colorExpressionRef.current = match;
     return match;
   }, [fireData, getColorForValue]);
 
@@ -93,7 +95,7 @@ const MapFireControls = ({ firesByRegion }) => {
         type: 'fill',
         source: 'regions-source',
         paint: {
-          'fill-color': 'rgba(255,255,255,0.04)',
+          'fill-color': colorExpressionRef.current || 'rgba(255,255,255,0.04)',
           'fill-opacity': 1,
         },
       });
@@ -148,22 +150,22 @@ const MapFireControls = ({ firesByRegion }) => {
           <div className={styles.hoverBox}>
             <span className={styles.hoverBox__name}>{hoveredRegion.name}</span>
             <span className={styles.hoverBox__count}>{hoveredRegion.count}</span>
-            <span className={styles.hoverBox__label}>fires</span>
+            <span className={styles.hoverBox__label}>пожаров</span>
           </div>
         )}
 
         <div className={styles.colorLegend}>
           <div className={styles.gradientBar} />
           <div className={styles.gradientLabels}>
-            <span>Low</span>
-            <span>High</span>
+            <span>Мало</span>
+            <span>Много</span>
           </div>
         </div>
       </div>
 
       <div className={styles.legendSection}>
         <div className={styles.legend}>
-          <h4 className={styles.legendTitle}>Regions by fire count</h4>
+          <h4 className={styles.legendTitle}>Регионы по числу пожаров</h4>
           <div className={styles.legendItems}>
             {sortedRegions.map(([region, count], idx) => {
               const pct = totalFires > 0 ? (count / totalFires) * 100 : 0;

@@ -28,11 +28,11 @@ import './FireControls/fireControls.scss';
 import './LayersPanel.scss';
 
 const STATUS_FILTERS = [
-  { id: 'all', label: 'All' },
-  { id: 'visible', label: 'Visible' },
-  { id: 'hidden', label: 'Hidden' },
-  { id: 'raster', label: 'Raster' },
-  { id: 'vector', label: 'Vector' },
+  { id: 'all', label: 'Все' },
+  { id: 'visible', label: 'Видимые' },
+  { id: 'hidden', label: 'Скрытые' },
+  { id: 'raster', label: 'Растровые' },
+  { id: 'vector', label: 'Векторные' },
 ];
 
 function syncMapLayer(id, visible, opacity01) {
@@ -70,18 +70,18 @@ function LayerRow({ layer }) {
           type="button"
           className={`lm-row__eye${layer.visible ? ' lm-row__eye--on' : ''}`}
           onClick={layer.onToggle}
-          title={layer.visible ? 'Hide layer' : 'Show layer'}
-          aria-label={layer.visible ? `Hide ${layer.name}` : `Show ${layer.name}`}
+          title={layer.visible ? 'Скрыть слой' : 'Показать слой'}
+          aria-label={layer.visible ? `Скрыть ${layer.name}` : `Показать ${layer.name}`}
         >
           {layer.visible ? <Eye size={13} /> : <EyeOff size={13} />}
         </button>
         <span className="lm-row__name" title={layer.name}>{layer.name}</span>
-        <span className={`lm-badge lm-badge--${layer.type}`}>{layer.type}</span>
+        <span className={`lm-badge lm-badge--${layer.type}`}>{layer.type === 'raster' ? 'растр' : layer.type === 'vector' ? 'вектор' : layer.type}</span>
       </div>
       <div className="lm-row__bottom">
         <span className="lm-row__provider" title={layer.provider}>{layer.provider}</span>
         {layer.featureCount != null && (
-          <span className="lm-row__count">{layer.featureCount.toLocaleString()} features</span>
+          <span className="lm-row__count">{layer.featureCount.toLocaleString()} объектов</span>
         )}
         <div className="lm-row__opacity-wrap">
           <input
@@ -91,7 +91,7 @@ function LayerRow({ layer }) {
             value={pct}
             onChange={(event) => layer.onOpacity(Number(event.target.value) / 100)}
             className="lm-slider"
-            aria-label={`${layer.name} opacity`}
+            aria-label={`${layer.name} прозрачность`}
           />
           <span className="lm-row__opacity-val">{pct}%</span>
         </div>
@@ -250,7 +250,7 @@ const LayersPanel = () => {
     const baseLayers = [
       {
         id: 'fire-hotspots',
-        name: 'Fire Hotspots',
+        name: 'Горячие точки пожаров',
         type: 'vector',
         provider: 'NASA FIRMS / API',
         visible: fireVisible,
@@ -261,7 +261,7 @@ const LayersPanel = () => {
       },
       {
         id: 'country-boundaries',
-        name: 'Kazakhstan Boundary',
+        name: 'Граница Казахстана',
         type: 'vector',
         provider: 'OpenStreetMap / Local',
         visible: adminVis.country_boundaries ?? false,
@@ -271,7 +271,7 @@ const LayersPanel = () => {
       },
       {
         id: 'region-boundaries',
-        name: 'Regions',
+        name: 'Регионы',
         type: 'vector',
         provider: 'OpenStreetMap / Local',
         visible: adminVis.region_boundaries ?? false,
@@ -281,7 +281,7 @@ const LayersPanel = () => {
       },
       {
         id: 'district-boundaries',
-        name: 'Districts',
+        name: 'Районы',
         type: 'vector',
         provider: 'OpenStreetMap / Local',
         visible: adminVis.district_boundaries ?? false,
@@ -291,7 +291,7 @@ const LayersPanel = () => {
       },
       {
         id: 'settlements',
-        name: 'Settlements',
+        name: 'Населённые пункты',
         type: 'vector',
         provider: 'OpenStreetMap',
         visible: settVisible,
@@ -387,7 +387,7 @@ const LayersPanel = () => {
       },
       {
         id: 'water-bodies',
-        name: 'Kazakhstan Water Bodies',
+        name: 'Водные объекты Казахстана',
         type: 'vector',
         provider: 'Public GeoJSON',
         visible: waterBodiesVisible,
@@ -397,7 +397,7 @@ const LayersPanel = () => {
       },
       {
         id: 'glacier-inventory',
-        name: 'Kazakhstan Glaciers',
+        name: 'Ледники Казахстана',
         type: 'vector',
         provider: 'Public GeoJSON',
         visible: glacierInventoryVisible,
@@ -410,7 +410,7 @@ const LayersPanel = () => {
         id: 'protected-areas',
         name: 'Границы ООПТ',
         type: 'vector',
-        provider: 'Protected areas boundaries',
+        provider: 'Границы ООПТ',
         visible: protectedAreasVisible,
         opacity01: protectedAreasOpacity,
         onToggle: toggleProtectedAreas,
@@ -420,7 +420,7 @@ const LayersPanel = () => {
         id: 'climate-zones',
         name: 'Климатические зоны',
         type: 'vector',
-        provider: 'Climate zones',
+        provider: 'Климатические зоны',
         visible: climateZonesVisible,
         opacity01: climateZonesOpacity,
         onToggle: toggleClimateZones,
@@ -430,7 +430,7 @@ const LayersPanel = () => {
         id: 'peatlands',
         name: 'Торфяники',
         type: 'vector',
-        provider: 'Peatlands',
+        provider: 'Торфяники',
         visible: peatlandsVisible,
         opacity01: peatlandsOpacity,
         onToggle: togglePeatlands,
@@ -526,12 +526,12 @@ const LayersPanel = () => {
     ];
 
     return [
-      { id: 'base', title: 'Base Layers', layers: baseLayers },
-      { id: 'emergency', title: 'Emergency Objects', layers: emergencyLayers },
-      { id: 'land-cover', title: 'Land Cover', layers: landCoverLayers },
-      { id: 'thematic', title: 'Relief & Thematic Layers', layers: thematicLayers },
-      { id: 'fire-analysis', title: 'Fire Analysis', layers: fireAnalysisLayers },
-      { id: 'satellite', title: 'Satellite & API Layers', layers: satelliteLayers },
+      { id: 'base', title: 'Базовые слои', layers: baseLayers },
+      { id: 'emergency', title: 'Объекты ЧС', layers: emergencyLayers },
+      { id: 'land-cover', title: 'Покров земли', layers: landCoverLayers },
+      { id: 'thematic', title: 'Рельеф и тематические', layers: thematicLayers },
+      { id: 'fire-analysis', title: 'Анализ пожаров', layers: fireAnalysisLayers },
+      { id: 'satellite', title: 'Спутниковые данные', layers: satelliteLayers },
     ].filter((section) => section.layers.length > 0);
   }, [
     adminOpa,
@@ -649,9 +649,9 @@ const LayersPanel = () => {
           <div className="fire-controls__toggle-icon">
             <Layers size={15} className="fire-controls__icon-active" />
           </div>
-          <span className="fire-controls__toggle-label">Layer Management</span>
+          <span className="fire-controls__toggle-label">Управление слоями</span>
           {visibleCount > 0 && (
-            <span className="lm-count-badge">{visibleCount} visible</span>
+            <span className="lm-count-badge">{visibleCount} видимых</span>
           )}
         </div>
       </div>
@@ -664,20 +664,20 @@ const LayersPanel = () => {
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search layers"
+              placeholder="Поиск слоёв"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery('')}
-                aria-label="Clear layer search"
+                aria-label="Очистить поиск"
               >
                 <X size={12} />
               </button>
             )}
           </label>
 
-          <div className="lm-filter-tabs" role="group" aria-label="Layer filters">
+          <div className="lm-filter-tabs" role="group" aria-label="Фильтры слоёв">
             {STATUS_FILTERS.map((item) => (
               <button
                 key={item.id}
@@ -691,8 +691,8 @@ const LayersPanel = () => {
           </div>
 
           <div className="lm-summary">
-            <span>{filteredCount} shown</span>
-            <span>{allLayers.length} total</span>
+            <span>{filteredCount} показано</span>
+            <span>{allLayers.length} всего</span>
           </div>
         </div>
 
@@ -707,16 +707,16 @@ const LayersPanel = () => {
 
         {filteredSections.length === 0 && (
           <div className="lm-empty">
-            No layers match the current search.
-            <br />Try a layer name, provider, or type.
+            Нет совпадений по текущему поиску.
+            <br />Попробуйте название, источник или тип слоя.
           </div>
         )}
 
         {!hasSearch && dynamicCount <= 0 && (
           <div className="lm-empty">
-            No dynamic layers added yet.
-            <br />Use the other tabs to add land cover,
-            <br />fire analysis, or satellite imagery.
+            Динамические слои не добавлены.
+            <br />Используйте другие вкладки для добавления
+            <br />покрова земли, анализа пожаров или спутниковых снимков.
           </div>
         )}
       </div>

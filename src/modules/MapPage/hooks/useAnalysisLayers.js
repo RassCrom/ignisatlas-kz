@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import useAnalysisStore from 'src/app/store/analysisStore';
 import useAdminBoundaryStore from 'src/app/store/adminBoundaryStore';
 import { useLayersStore } from 'src/app/store/layersStore';
+import { useMapStyleStore } from 'src/app/store/mapStyleStore';
 import {
   addOrUpdateGeoJsonSource,
   removeSourceWithLayers,
@@ -67,6 +68,7 @@ export const useAnalysisLayers = (mapInstance, isMapInitialized) => {
   const adminVis = useAdminBoundaryStore((s) => s.layerVisibility);
   const adminOpacity = useAdminBoundaryStore((s) => s.layerOpacity);
   const emergencyLayers = useLayersStore((s) => s.layers);
+  const styleVersion = useMapStyleStore((s) => s.styleVersion);
   const emergencyLayerConfigsRef = useRef(useLayersStore.getState().layers);
   const emergencySourceIds = useMemo(
     () => emergencyLayerConfigsRef.current.map((layer) => `${layer.id}-source`),
@@ -143,7 +145,7 @@ export const useAnalysisLayers = (mapInstance, isMapInitialized) => {
         ...emergencySourceIds,
       ].forEach((sourceId) => removeSourceWithLayers(mapInstance, sourceId));
     };
-  }, [emergencySourceIds, mapInstance, isMapInitialized]);
+  }, [emergencySourceIds, mapInstance, isMapInitialized, styleVersion]);
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;

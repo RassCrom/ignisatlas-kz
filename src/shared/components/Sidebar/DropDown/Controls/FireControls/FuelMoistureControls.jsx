@@ -118,8 +118,8 @@ const FuelMoistureControls = () => {
   const legendGradient = isStressIndex
     ? 'linear-gradient(to right, #ffffcc, #fed976, #fd8d3c, #e31a1c, #800026)'
     : 'linear-gradient(to right, #b2182b, #ef8a62, #fddbc7, #d1e5f0, #67a9cf, #2166ac)';
-  const legendLeftLabel = isStressIndex ? 'Moist' : 'Extremely dry';
-  const legendRightLabel = isStressIndex ? 'Extremely dry' : 'Moist';
+  const legendLeftLabel = isStressIndex ? 'Влажно' : 'Крайне сухо';
+  const legendRightLabel = isStressIndex ? 'Крайне сухо' : 'Влажно';
   const sortedResults = useMemo(
     () => sortResults(searchResults, sortBy, sortOrder),
     [searchResults, sortBy, sortOrder]
@@ -217,7 +217,7 @@ const FuelMoistureControls = () => {
               ? <Eye size={16} className="fire-controls__icon-active" />
               : <EyeOff size={16} className="fire-controls__icon-inactive" />}
           </div>
-          <span className="fire-controls__toggle-label">Fuel Moisture & Dryness</span>
+          <span className="fire-controls__toggle-label">Влажность топлива</span>
         </div>
         <button
           className={`fire-controls__expand-btn ${isExpanded ? 'fire-controls__expand-btn--expanded' : ''}`}
@@ -260,7 +260,7 @@ const FuelMoistureControls = () => {
               <div className={styles.searchSection}>
                 <div>
                   <div className={styles.sectionTitle}>
-                    <Droplets size={12} /> Moisture index
+                    <Droplets size={12} /> Индекс влажности
                   </div>
                   <div className={styles.missionSelector}>
                     <select
@@ -588,7 +588,7 @@ const FuelMoistureControls = () => {
                               <button
                                 className={`${styles.layerActionBtn} ${layer.visible ? styles['layerActionBtn--active'] : ''}`}
                                 onClick={() => toggleLayerVisibility(layer.id)}
-                                title={layer.visible ? 'Hide layer' : 'Show layer'}
+                                title={layer.visible ? 'Скрыть слой' : 'Показать слой'}
                               >
                                 {layer.visible ? <Eye size={13} /> : <EyeOff size={13} />}
                               </button>

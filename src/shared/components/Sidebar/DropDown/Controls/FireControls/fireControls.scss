@@ -1494,6 +1494,132 @@
   }
 }
 
+/* ── Wide stats card ─────────────────────────────────────── */
+.fire-stats-card--wide {
+  grid-column: 1 / -1;
+  border-color: rgba(239, 68, 68, 0.15);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+/* ── Section note (print-only disclaimer) ───────────────── */
+.fire-stats-section--note {
+  border-top: 1px solid rgba(136, 139, 224, 0.08);
+  padding-top: 12px;
+
+  p {
+    font-size: 11px;
+    color: rgba(217, 218, 245, 0.35);
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+/* ── Print helpers ───────────────────────────────────────── */
+.fire-stats-modal__print-only {
+  display: none;
+}
+
+.fire-stats-modal__generated {
+  font-size: 11px;
+  color: rgba(217, 218, 245, 0.35);
+}
+
+/* ── Print styles ────────────────────────────────────────── */
+@media print {
+  body.fire-report-print * {
+    visibility: hidden;
+  }
+
+  body.fire-report-print #fire-report-root,
+  body.fire-report-print #fire-report-root * {
+    visibility: visible;
+  }
+
+  body.fire-report-print #fire-report-root {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: white;
+  }
+
+  body.fire-report-print .fire-stats-modal__backdrop {
+    display: none;
+  }
+
+  body.fire-report-print .fire-stats-modal__content {
+    position: relative;
+    background: white;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: none;
+    color: #111;
+    animation: none;
+  }
+
+  body.fire-report-print .fire-stats-modal__header {
+    border-bottom: 1px solid #ddd;
+  }
+
+  body.fire-report-print .fire-stats-modal__title,
+  body.fire-report-print .fire-stats-section__title,
+  body.fire-report-print .fire-stats-card__value,
+  body.fire-report-print .fire-stats-card__label,
+  body.fire-report-print .fire-stats-bars__label,
+  body.fire-report-print .fire-stats-bars__count {
+    color: #111 !important;
+  }
+
+  body.fire-report-print .fire-stats-modal__date-range {
+    color: #555;
+  }
+
+  body.fire-report-print .fire-stats-modal__no-print {
+    display: none !important;
+  }
+
+  body.fire-report-print .fire-stats-modal__print-only {
+    display: block !important;
+  }
+
+  body.fire-report-print .fire-stats-section--note p {
+    color: #666;
+  }
+
+  body.fire-report-print .fire-stats-bars__track {
+    background: #eee;
+  }
+
+  body.fire-report-print .fire-stats-card {
+    border: 1px solid #ddd;
+    background: #fafafa;
+  }
+
+  body.fire-report-print .fire-stats-section {
+    page-break-inside: avoid;
+  }
+
+  body.fire-report-print .fire-stats-modal__left {
+    display: none;
+  }
+
+  body.fire-report-print .fire-stats-modal__right {
+    flex: none;
+    width: 100%;
+    overflow: visible;
+  }
+
+  body.fire-report-print .fire-stats-modal__columns {
+    overflow: visible;
+  }
+}
+
 /* Animations */
 @keyframes flicker {
   0%,

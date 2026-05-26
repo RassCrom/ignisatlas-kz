@@ -281,7 +281,7 @@ const AtmosphereExplorer = () => {
                                 type="button"
                                 className={`${styles.layerActionBtn} ${layer.visible ? styles['layerActionBtn--active'] : ''}`}
                                 onClick={() => store.toggleLayerVisibility(layer.id)}
-                                title={layer.visible ? 'Hide layer' : 'Show layer'}
+                                title={layer.visible ? 'Скрыть слой' : 'Показать слой'}
                               >
                                 {layer.visible ? <Eye size={12} /> : <EyeOff size={12} />}
                               </button>
