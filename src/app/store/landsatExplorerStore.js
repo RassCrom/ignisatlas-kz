@@ -1,10 +1,13 @@
 import { create } from 'zustand';
+import { getDefaultDateRange } from 'src/shared/utils/dateDefaults';
+
+const DEFAULT_DATE_RANGE = getDefaultDateRange();
 
 const useLandsatExplorerStore = create((set, get) => ({
   // ── Mission & Filter State ───────────────────────────────
   selectedMission: 'all', // 'all' | 'landsat-4' | 'landsat-5' | 'landsat-7' | 'landsat-8' | 'landsat-9'
-  startDate: '',
-  endDate: '',
+  startDate: DEFAULT_DATE_RANGE.startDate,
+  endDate: DEFAULT_DATE_RANGE.endDate,
   cloudCoverage: 30,
   selectedBands: 'true-color',
 

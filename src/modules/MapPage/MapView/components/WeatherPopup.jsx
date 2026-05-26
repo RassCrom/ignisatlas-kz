@@ -14,7 +14,7 @@ import {
 
 import styles from './WeatherPopup.module.scss';
 
-const OWM_KEY = '59b43714fd1eb5528d8cab44041c7067';
+const OWM_KEY = import.meta.env.VITE_OWM_KEY;
 
 const WIND_DIRS = ['С', 'СВ', 'В', 'ЮВ', 'Ю', 'ЮЗ', 'З', 'СЗ'];
 const windDir = (deg) => WIND_DIRS[Math.round(deg / 45) % 8];

@@ -18,8 +18,13 @@ const getRegionNameExpression = ['coalesce', ['get', 'name'], ['get', 'name_igma
 const MapFireControls = ({ firesByRegion }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
+  const fireDataRef = useRef(firesByRegion);
   const [hoveredRegion, setHoveredRegion] = useState(null);
   const fireData = firesByRegion;
+
+  useEffect(() => {
+    fireDataRef.current = fireData;
+  }, [fireData]);
 
   const getColorForValue = useCallback((value) => {
     const values = Object.values(fireData);
@@ -88,7 +93,7 @@ const MapFireControls = ({ firesByRegion }) => {
         type: 'fill',
         source: 'regions-source',
         paint: {
-          'fill-color': colorExpression,
+          'fill-color': 'rgba(255,255,255,0.04)',
           'fill-opacity': 1,
         },
       });
@@ -109,7 +114,7 @@ const MapFireControls = ({ firesByRegion }) => {
       if (feature) {
         map.getCanvas().style.cursor = 'pointer';
         const regionName = feature.properties?.name || feature.properties?.name_igmass;
-        setHoveredRegion({ name: regionName, count: fireData[regionName] || 0 });
+        setHoveredRegion({ name: regionName, count: fireDataRef.current[regionName] || 0 });
       } else {
         map.getCanvas().style.cursor = '';
         setHoveredRegion(null);

@@ -3,10 +3,10 @@ import { motion, useInView, useMotionValue, useTransform, animate } from 'framer
 import styles from './DataCoverage.module.scss';
 
 const stats = [
-  { value: 1000000,  suffix: '+', label: 'точек пожаров в архиве' },
-  { value: 2001,  suffix: '',  label: 'начало наблюдений' },
-  { value: 2024,  suffix: '',  label: 'последнее обновление' },
-  { value: 23,    suffix: '',  label: 'года истории данных' },
+  { value: 4,     suffix: '',  label: 'направления мониторинга' },
+  { value: 2001,  suffix: '',  label: 'начало архива наблюдений' },
+  { value: 25,    suffix: '+', label: 'лет исторических данных' },
+  { value: 5,     suffix: '',  label: 'спутниковых платформ' },
 ];
 
 const StatCounter = ({ value, suffix, label, inView }) => {
@@ -59,7 +59,7 @@ const DataCoverage = () => {
             <h4 className={styles.data__subtitle} aria-hidden="true">ДАННЫЕ</h4>
             <h2 className={styles.data__title}>Данные и покрытие</h2>
             <p className={styles.data__lead}>
-              Геопортал работает на данных NASA FIRMS — одной из наиболее полных открытых баз спутниковых наблюдений пожаров в мире.
+              Платформа использует открытые спутниковые данные NASA, ESA и Microsoft — от тепловых аномалий до многоспектральных снимков поверхности Земли.
             </p>
           </header>
 
@@ -78,6 +78,8 @@ const DataCoverage = () => {
             >
               <motion.span className={styles.sensor} variants={pillVariants}>MODIS</motion.span>
               <motion.span className={styles.sensor} variants={pillVariants}>VIIRS</motion.span>
+              <motion.span className={styles.sensor} variants={pillVariants}>Sentinel-2</motion.span>
+              <motion.span className={styles.sensor} variants={pillVariants}>Landsat</motion.span>
               <motion.span className={styles.sensor__sep} variants={pillVariants} aria-hidden="true">·</motion.span>
               <motion.span className={styles.coverage} variants={pillVariants}>
                 Вся территория Казахстана

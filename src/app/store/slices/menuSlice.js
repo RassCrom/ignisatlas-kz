@@ -2,6 +2,7 @@ export const createMenuSlice = (set) => ({
   // default values
   isMenuOpen: false,
   openTabIndex: null,
+  expandedItems: {},
 
   setTabIndex: (tabIndex) => {
     set(() => ({
@@ -11,6 +12,11 @@ export const createMenuSlice = (set) => ({
   toggleMenu: () => {
     set((state) => ({
       isMenuOpen: !state.isMenuOpen,
+    }))
+  },
+  toggleExpandedItem: (id) => {
+    set((state) => ({
+      expandedItems: { ...state.expandedItems, [id]: !state.expandedItems[id] },
     }))
   },
 });

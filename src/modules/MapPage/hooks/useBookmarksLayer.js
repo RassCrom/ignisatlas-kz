@@ -25,7 +25,10 @@ export const useBookmarksLayer = (mapInstance, isMapInitialized) => {
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;
-    addOrUpdateGeoJsonSource(mapInstance, 'bookmarks-source', data);
+    addOrUpdateGeoJsonSource(mapInstance, 'bookmarks-source', {
+      type: 'FeatureCollection',
+      features: [],
+    });
     if (!mapInstance.getLayer('bookmarks-layer')) {
       mapInstance.addLayer({
         id: 'bookmarks-layer',

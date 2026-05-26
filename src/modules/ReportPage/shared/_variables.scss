@@ -5,13 +5,15 @@ $bg-card-hover: rgba(30, 30, 60, 0.6);
 $text-primary: #D9DAF5;
 $text-secondary: rgba(217, 218, 245, 0.6);
 $text-muted: rgba(217, 218, 245, 0.4);
-$accent-pink: #ec4899;
+$accent-fire: #E84025;
+$accent-amber: #FF8C42;
 $accent-blue: #4787E3;
 $accent-orange: #f97316;
 $accent-green: #34d399;
 $accent-purple: #a78bfa;
 $border-subtle: rgba(255, 255, 255, 0.05);
-$border-glow: rgba(236, 72, 153, 0.15);
+$border-glow: rgba(232, 64, 37, 0.15);
+$gradient-fire: linear-gradient(135deg, #E84025 0%, #FF8C42 100%);
 
 // Typography
 $font-display: 'DM Sans', -apple-system, sans-serif;
@@ -29,7 +31,7 @@ $radius-lg: 20px;
 
 // Shadows
 $shadow-card: 0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-$shadow-glow-pink: 0 8px 24px rgba(236, 72, 153, 0.35);
+$shadow-glow-fire: 0 8px 24px rgba(232, 64, 37, 0.35);
 
 // Transitions
 $ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);

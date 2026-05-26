@@ -1,107 +1,218 @@
-@use '../../styles/particles' as p;
+// ─── Keyframes ──────────────────────────────────────────────────────────────
 
-@keyframes logo-glow {
-    0%, 100% { filter: drop-shadow(0 0 12px rgba(236, 72, 153, 0.35)); }
-    50%       { filter: drop-shadow(0 0 28px rgba(136, 139, 224, 0.55)); }
+@keyframes ring-pulse {
+    0%   { transform: translate(-50%, -50%) scale(0.55); opacity: 0.55; }
+    100% { transform: translate(-50%, -50%) scale(1.8);  opacity: 0; }
 }
 
-@keyframes message-fade {
-    0%, 100% { opacity: 0.45; }
-    50%       { opacity: 0.65; }
+@keyframes sweep-rotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
 }
+
+@keyframes dot-breathe {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.6); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 0.4; }
+    50%       { opacity: 0.9; }
+}
+
+// ─── Root ───────────────────────────────────────────────────────────────────
 
 .loading {
     position: fixed;
     inset: 0;
-    background-color: var(--color-bg-primary);
+    background: #07081A;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 2.5rem;
     z-index: 9999;
     overflow: hidden;
+
+    // Subtle grid background
+    background-image:
+        linear-gradient(rgba(14, 165, 233, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
 }
 
-// ─── Particles ──────────────────────────────────────────────────────────────
+// ─── Satellite scan scene ────────────────────────────────────────────────────
 
-.particles {
-    @include p.container;
+.scene {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    animation: fade-in 0.6s ease-out both;
 }
 
-.particle {
-    @include p.particle(#4787E3, #ec4899, 2.4s);
+// Pulsing rings — emanate from centre
+.ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    border: 1px solid rgba(14, 165, 233, 0.5);
+    animation: ring-pulse 2.4s cubic-bezier(0.2, 0, 0.8, 1) infinite;
+}
 
-    // 10 particles — spread 15%–84% horizontally, rise from lower-center area
-    @for $i from 1 through 10 {
-        &:nth-child(#{$i}) {
-            left:               (15 + ($i - 1) * 8)   * 1%;
-            width:              (3  + ($i % 3))        * 1px;
-            height:             (3  + ($i % 3))        * 1px;
-            bottom:             (8  + ($i % 4) * 3)    * 1%;
-            animation-delay:    (($i - 1) * 0.13)      * 1s;
-            animation-duration: (2.2 + ($i % 3) * 0.35) * 1s;
-        }
+.ring1 { width: 120px; height: 120px; animation-delay: 0s; }
+.ring2 { width: 120px; height: 120px; animation-delay: 0.8s; }
+.ring3 { width: 120px; height: 120px; animation-delay: 1.6s; }
+
+// Observation target frame
+.target {
+    position: absolute;
+    inset: 20px;
+    border-radius: 4px;
+}
+
+// Corner brackets — L-shaped
+.corner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+}
+
+.cornerTL {
+    top: 0; left: 0;
+    border-top: 1.5px solid #0ea5e9;
+    border-left: 1.5px solid #0ea5e9;
+}
+.cornerTR {
+    top: 0; right: 0;
+    border-top: 1.5px solid #0ea5e9;
+    border-right: 1.5px solid #0ea5e9;
+}
+.cornerBL {
+    bottom: 0; left: 0;
+    border-bottom: 1.5px solid #0ea5e9;
+    border-left: 1.5px solid #0ea5e9;
+}
+.cornerBR {
+    bottom: 0; right: 0;
+    border-bottom: 1.5px solid #0ea5e9;
+    border-right: 1.5px solid #0ea5e9;
+}
+
+// Crosshair lines
+.cross {
+    position: absolute;
+    background: rgba(14, 165, 233, 0.2);
+}
+.crossH {
+    top: 50%;
+    left: 8%;
+    right: 8%;
+    height: 1px;
+    transform: translateY(-50%);
+}
+.crossV {
+    left: 50%;
+    top: 8%;
+    bottom: 8%;
+    width: 1px;
+    transform: translateX(-50%);
+}
+
+// Radar sweep
+.sweep {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 1px;
+    transform-origin: 0 50%;
+    animation: sweep-rotate 2.4s linear infinite;
+    background: linear-gradient(90deg, rgba(52, 211, 153, 0.9), transparent);
+
+    // Conic glow following the sweep
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 0;
+        width: 300%;
+        height: 300%;
+        transform: translate(0, -50%) rotate(0deg);
+        background: conic-gradient(from 180deg, rgba(52, 211, 153, 0.12), transparent 90deg);
+        transform-origin: 100% 50%;
     }
 }
 
-// ─── Center content ─────────────────────────────────────────────────────────
+// Centre acquisition dot
+.dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 8px 2px rgba(52, 211, 153, 0.5);
+    animation: dot-breathe 2s ease-in-out infinite;
+}
+
+// Coordinate labels
+.coord {
+    position: absolute;
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 9px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: rgba(14, 165, 233, 0.5);
+    white-space: nowrap;
+    animation: blink 3s ease-in-out infinite;
+}
+.coordTop   { top: 0; left: 50%; transform: translateX(-50%); }
+.coordRight { right: 0; top: 50%; transform: translateY(-50%) rotate(90deg); transform-origin: right center; }
+
+// ─── Text block ─────────────────────────────────────────────────────────────
 
 .content {
-    position: relative;
-    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.625rem;
+    gap: 0.25rem;
+    animation: fade-in 0.7s 0.2s ease-out both;
     text-align: center;
 }
 
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    animation: logo-glow 2.8s ease-in-out infinite;
-}
-
-.logo__icon {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, #4787E3, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    // Lucide SVG inherits color via currentColor — override via filter instead
-    filter: drop-shadow(0 0 8px rgba(136, 139, 224, 0.4));
-    color: #888BE0;
-}
-
-.logo__name {
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-weight: 700;
-    font-size: clamp(1.6rem, 4vw, 2.2rem);
-    letter-spacing: -0.03em;
-    background: linear-gradient(135deg, #ec4899 0%, #888BE0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.runes {
+    margin: 0;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: rgba(217, 218, 245, 0.2);
 }
 
 .brand {
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 400;
-    letter-spacing: 0.12em;
-    color: rgba(255, 255, 255, 0.7);
     margin: 0;
-    text-transform: uppercase;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #0ea5e9 0%, #34d399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .message {
-    font-size: 0.75rem;
+    margin: 0.25rem 0 0;
+    font-size: 0.7rem;
     letter-spacing: 0.1em;
-    color: rgba(217, 218, 245, 0.4);
-    margin: 0.5rem 0 0;
-    animation: message-fade 2s ease-in-out infinite;
+    color: rgba(217, 218, 245, 0.35);
+    animation: blink 2.4s ease-in-out infinite;
+    text-transform: uppercase;
 }
 
 // ─── Progress bar ────────────────────────────────────────────────────────────
@@ -112,12 +223,19 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: rgba(255, 255, 255, 0.07);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .progress__fill {
     height: 100%;
-    background: linear-gradient(90deg, #4787E3, #ec4899);
+    background: linear-gradient(90deg, #0ea5e9, #34d399);
     transition: width 0.3s ease;
-    border-radius: 0 1px 1px 0;
+    box-shadow: 0 0 8px rgba(14, 165, 233, 0.6);
+}
+
+// ─── Reduced motion ──────────────────────────────────────────────────────────
+
+@media (prefers-reduced-motion: reduce) {
+    .ring, .sweep, .dot, .message { animation: none; }
+    .sweep { opacity: 0.3; transform: rotate(45deg); }
 }

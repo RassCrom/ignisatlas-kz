@@ -1,10 +1,16 @@
 import { create } from 'zustand';
+import { getCurrentDate, getDefaultDateRange } from 'src/shared/utils/dateDefaults';
+import { ATMOSPHERE_VISUAL_LAYERS } from 'src/utils/atmosphereSearchService';
+
+const DEFAULT_DATE_RANGE = getDefaultDateRange();
+const DEFAULT_VISUAL_LAYER = ATMOSPHERE_VISUAL_LAYERS[0]?.id;
 
 const useAtmosphereStore = create((set, get) => ({
   // ── Product & Filter State ───────────────────────────────
-  selectedProduct: 'ch4', // 'ch4' | 'co' | 'no2' | 'so2' | 'o3' | 'aer-ai' | 'aer-lh'
-  startDate: '',
-  endDate: '',
+  selectedProduct: DEFAULT_VISUAL_LAYER,
+  startDate: DEFAULT_DATE_RANGE.startDate,
+  endDate: DEFAULT_DATE_RANGE.endDate,
+  selectedDate: getCurrentDate(),
   cloudCoverage: 100, // Important for optical data, less for others
   selectedVariable: 'default',
 
@@ -35,6 +41,7 @@ const useAtmosphereStore = create((set, get) => ({
   setSelectedProduct: (product) => set({ selectedProduct: product }),
   setStartDate: (date) => set({ startDate: date }),
   setEndDate: (date) => set({ endDate: date }),
+  setSelectedDate: (date) => set({ selectedDate: date }),
   setCloudCoverage: (value) => set({ cloudCoverage: value }),
   setSelectedVariable: (variable) => set({ selectedVariable: variable }),
 

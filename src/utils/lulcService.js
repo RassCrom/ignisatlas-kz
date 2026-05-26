@@ -1,20 +1,28 @@
 import axios from 'axios';
 import { KAZAKHSTAN_EXTENT_GEO } from '../modules/MapPage/utils/mapConstants';
+import { cachedRequest, createCacheKey } from './requestCache';
 
 const PC_MOSAIC_REGISTER = 'https://planetarycomputer.microsoft.com/api/data/v1/mosaic/register';
 const COLLECTION = 'io-lulc-annual-v02';
 
 const KZ_BBOX = KAZAKHSTAN_EXTENT_GEO;
 
-export async function fetchLulcTileUrl(yearInput) {
+export async function fetchLulcTileUrl(yearInput, { signal } = {}) {
   const year = Number(yearInput);
   const datetime = `${year}-01-01T00:00:00Z/${year + 1}-01-01T00:00:00Z`;
 
-  const { data: reg } = await axios.post(PC_MOSAIC_REGISTER, {
-    collections: [COLLECTION],
-    datetime,
-    bbox: KZ_BBOX,
-  });
+  const reg = await cachedRequest(
+    createCacheKey('pc-mosaic', COLLECTION, datetime, KZ_BBOX),
+    async () => {
+      const { data } = await axios.post(PC_MOSAIC_REGISTER, {
+        collections: [COLLECTION],
+        datetime,
+        bbox: KZ_BBOX,
+      }, { signal });
+      return data;
+    },
+    { ttlMs: 60 * 60 * 1000, signal }
+  );
 
   const searchid = reg.searchid;
   if (!searchid) throw new Error(`Failed to register LULC mosaic for year ${year}`);

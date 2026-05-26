@@ -5,10 +5,13 @@ import {
   CheckCircle2,
   Flame,
   Layers,
-  Map,
+  Leaf,
+  PanelTop,
   RotateCcw,
   Satellite,
   Sparkles,
+  Thermometer,
+  Waves,
 } from 'lucide-react';
 
 import useAdminBoundaryStore from 'src/app/store/adminBoundaryStore';
@@ -47,8 +50,159 @@ const flyDefault = () => {
   map.flyTo({ ...DEFAULT_POSITION, duration: 550 });
 };
 
+const applyWindowConfidenceFilter = (value) => {
+  if (typeof window === 'undefined') return;
+  window.fireLayerInstance?.filterByConfidence(value);
+};
+
+const PRESET_TABS = [
+  { id: 'operations',  label: 'Пожары',      icon: Flame },
+  { id: 'environment', label: 'Природа',      icon: Leaf },
+  { id: 'response',    label: 'Реагирование', icon: Building2 },
+  { id: 'workspace',   label: 'Рабочая',      icon: PanelTop },
+];
+
+const PRESETS = [
+  {
+    id: 'fire-monitoring',
+    tabId: 'operations',
+    title: 'Пожарный мониторинг',
+    description: 'Горячие точки за последние 7 дней, фильтр достоверности от 30%, границы областей.',
+    meta: 'FIRMS, фильтры, регионы',
+    badge: 'Оперативно',
+    icon: Flame,
+    actionId: 'fireMonitoring',
+  },
+  {
+    id: 'risk-overview',
+    tabId: 'operations',
+    title: 'Оценка пожарного риска',
+    description: 'Включает слой риска на текущую дату вместе с горячими точками и областными границами.',
+    meta: 'Риск, hotspots, обзор',
+    badge: 'Анализ',
+    icon: AlertTriangle,
+    actionId: 'riskOverview',
+  },
+  {
+    id: 'emergency-infrastructure',
+    tabId: 'response',
+    title: 'Инфраструктура реагирования',
+    description: 'Пожарные части, гидранты, больницы, спасательные службы, авиация и пункты сбора.',
+    meta: 'КЧС объекты, регионы',
+    badge: 'Слои',
+    icon: Building2,
+    actionId: 'emergencyInfrastructure',
+  },
+  {
+    id: 'satellite-workspace',
+    tabId: 'workspace',
+    title: 'Космоснимки и AOI',
+    description: 'Переход к снимкам с включенными базовыми границами для быстрого выбора AOI.',
+    meta: 'Sentinel, Landsat, MODIS',
+    badge: 'Снимки',
+    icon: Satellite,
+    actionId: 'satelliteWorkspace',
+  },
+  {
+    id: 'clean-map',
+    tabId: 'workspace',
+    title: 'Чистая карта',
+    description: 'Скрывает пожарные точки, риск, инфраструктуру и административные границы.',
+    meta: 'Быстрый сброс вида',
+    badge: 'Reset',
+    icon: RotateCcw,
+    actionId: 'cleanMap',
+    danger: true,
+  },
+  {
+    id: 'water-monitoring',
+    tabId: 'environment',
+    title: 'Водный мониторинг',
+    description: 'Включает слой водных объектов Казахстана и спутниковый мониторинг поверхностных вод.',
+    meta: 'MNDWI, NDWI, водоёмы',
+    badge: 'Вода',
+    icon: Waves,
+    actionId: 'waterMonitoring',
+  },
+  {
+    id: 'drought-overview',
+    tabId: 'environment',
+    title: 'Мониторинг засухи',
+    description: 'Слои засушливости (NDVI, SPI, PDSI) и прогноз засухи для территории Казахстана.',
+    meta: 'Засуха, индексы, NDVI',
+    badge: 'Засуха',
+    icon: Thermometer,
+    actionId: 'droughtOverview',
+  },
+  {
+    id: 'peatlands-overview',
+    tabId: 'environment',
+    title: 'Торфяники и заповедники',
+    description: 'Показывает слои торфяных болот и особо охраняемых природных территорий Казахстана.',
+    meta: 'ООПТ, торфяники',
+    badge: 'Экология',
+    icon: Leaf,
+    actionId: 'peatlandsOverview',
+  },
+];
+
+/* ── Tab pill ─────────────────────────────────────────────── */
+const PresetTabs = ({ activeTabId, onChange }) => (
+  <div className={styles.tabs} role="tablist" aria-label="Категории пресетов">
+    {PRESET_TABS.map(({ id, label, icon: Icon }) => (
+      <button
+        key={id}
+        type="button"
+        id={`preset-tab-${id}`}
+        className={`${styles.tab} ${activeTabId === id ? styles.tabActive : ''}`}
+        onClick={() => onChange(id)}
+        role="tab"
+        aria-selected={activeTabId === id}
+        aria-controls={`preset-panel-${id}`}
+      >
+        <Icon size={13} />
+        <span>{label}</span>
+      </button>
+    ))}
+  </div>
+);
+
+/* ── Mission card ─────────────────────────────────────────── */
+const PresetCard = ({ preset, isActive, onApply }) => {
+  const { title, description, badge, icon: Icon, danger } = preset;
+
+  return (
+    <article
+      className={`${styles.card} ${isActive ? styles.cardActive : ''} ${danger ? styles.cardDanger : ''}`}
+    >
+      <div className={styles.cardPattern} aria-hidden="true" />
+
+      <span className={`${styles.badge} ${danger ? styles.badgeDanger : ''}`}>{badge}</span>
+
+      <div className={`${styles.cardIcon} ${danger ? styles.cardIconDanger : ''}`}>
+        <div className={`${styles.iconGlow} ${danger ? styles.iconGlowDanger : ''}`} aria-hidden="true" />
+        <Icon size={16} />
+      </div>
+
+      <h4 className={styles.title}>{title}</h4>
+      <p className={styles.description}>{description}</p>
+
+      <button
+        type="button"
+        className={`${styles.applyBtn} ${danger ? styles.applyBtnDanger : ''}`}
+        onClick={() => onApply(preset)}
+      >
+        <Layers size={12} />
+        Применить
+      </button>
+    </article>
+  );
+};
+
+/* ── Main component ───────────────────────────────────────── */
 const PresetsControls = () => {
-  const [lastApplied, setLastApplied] = useState('');
+  const [activeTabId, setActiveTabId] = useState(PRESET_TABS[0].id);
+  const [lastApplied, setLastApplied] = useState(null);
   const setTabIndex = useMenuStore((state) => state.setTabIndex);
 
   const fireLayerVisible = useFireStore((state) => state.fireLayerVisible);
@@ -86,15 +240,15 @@ const PresetsControls = () => {
   };
 
   const applyFireMonitoring = () => {
+    resetFilters();
     setFireStartDate(getDaysAgo(7));
     setFireEndDate(formatDate(new Date()));
     setConfidenceFilter(30);
-    resetFilters();
+    applyWindowConfidenceFilter(30);
     ensureFireLayer();
     ensureBoundaries({ regions: true });
     setDateHasChanged();
     fitKazakhstan();
-    setLastApplied('Пожарный мониторинг');
   };
 
   const applyEmergencyInfrastructure = () => {
@@ -108,7 +262,6 @@ const PresetsControls = () => {
     ], true);
     ensureBoundaries({ regions: true });
     fitKazakhstan();
-    setLastApplied('Инфраструктура реагирования');
   };
 
   const applyRiskOverview = () => {
@@ -120,18 +273,18 @@ const PresetsControls = () => {
     ensureFireLayer();
     ensureBoundaries({ regions: true });
     fitKazakhstan();
-    setLastApplied('Оценка пожарного риска');
   };
 
   const applySatelliteWorkspace = () => {
     ensureBoundaries({ country: true, regions: true });
     setTabIndex(3);
     fitKazakhstan();
-    setLastApplied('Космоснимки и AOI');
   };
 
   const applyCleanMap = () => {
     if (fireLayerVisible) setFireLayerVisible();
+    setConfidenceFilter(0);
+    applyWindowConfidenceFilter(0);
     setRiskVisible(false);
     setInfrastructureVisibility(layers.map((layer) => layer.id), false);
     if (adminVisibility.country_boundaries) changeFirst();
@@ -139,57 +292,47 @@ const PresetsControls = () => {
     if (adminVisibility.district_boundaries) changeThird();
     resetFilters();
     flyDefault();
-    setLastApplied('Чистая карта');
   };
 
-  const presets = [
-    {
-      id: 'fire-monitoring',
-      title: 'Пожарный мониторинг',
-      description: 'Горячие точки за последние 7 дней, фильтр достоверности от 30%, границы областей.',
-      meta: 'FIRMS, фильтры, регионы',
-      badge: 'Оперативно',
-      icon: Flame,
-      action: applyFireMonitoring,
-    },
-    {
-      id: 'emergency-infrastructure',
-      title: 'Инфраструктура реагирования',
-      description: 'Пожарные части, гидранты, больницы, спасательные службы, авиация и пункты сбора.',
-      meta: 'КЧС объекты, регионы',
-      badge: 'Слои',
-      icon: Building2,
-      action: applyEmergencyInfrastructure,
-    },
-    {
-      id: 'risk-overview',
-      title: 'Оценка пожарного риска',
-      description: 'Включает слой риска на текущую дату вместе с горячими точками и областными границами.',
-      meta: 'Риск, hotspots, обзор',
-      badge: 'Анализ',
-      icon: AlertTriangle,
-      action: applyRiskOverview,
-    },
-    {
-      id: 'satellite-workspace',
-      title: 'Космоснимки и AOI',
-      description: 'Переход к снимкам с включенными базовыми границами для быстрого выбора AOI.',
-      meta: 'Sentinel, Landsat, MODIS',
-      badge: 'Снимки',
-      icon: Satellite,
-      action: applySatelliteWorkspace,
-    },
-    {
-      id: 'clean-map',
-      title: 'Чистая карта',
-      description: 'Скрывает пожарные точки, риск, инфраструктуру и административные границы.',
-      meta: 'Быстрый сброс вида',
-      badge: 'Reset',
-      icon: RotateCcw,
-      action: applyCleanMap,
-      danger: true,
-    },
-  ];
+  const applyWaterMonitoring = () => {
+    setInfrastructureVisibility(['water_bodies', 'glacier_inventory'], true);
+    ensureBoundaries({ regions: true });
+    fitKazakhstan();
+    setTabIndex(2);
+  };
+
+  const applyDroughtOverview = () => {
+    setInfrastructureVisibility(['drought_indices', 'drought_forecast'], true);
+    ensureBoundaries({ regions: true });
+    fitKazakhstan();
+    setTabIndex(2);
+  };
+
+  const applyPeatlandsOverview = () => {
+    setInfrastructureVisibility(['peatlands', 'protected_area_boundaries'], true);
+    ensureBoundaries({ country: true });
+    fitKazakhstan();
+    setTabIndex(1);
+  };
+
+  const actions = {
+    fireMonitoring: applyFireMonitoring,
+    emergencyInfrastructure: applyEmergencyInfrastructure,
+    riskOverview: applyRiskOverview,
+    satelliteWorkspace: applySatelliteWorkspace,
+    cleanMap: applyCleanMap,
+    waterMonitoring: applyWaterMonitoring,
+    droughtOverview: applyDroughtOverview,
+    peatlandsOverview: applyPeatlandsOverview,
+  };
+
+  const activeTab = PRESET_TABS.find((tab) => tab.id === activeTabId) || PRESET_TABS[0];
+  const activePresets = PRESETS.filter((preset) => preset.tabId === activeTab.id);
+
+  const handleApplyPreset = (preset) => {
+    actions[preset.actionId]?.();
+    setLastApplied({ id: preset.id, title: preset.title });
+  };
 
   return (
     <div className="fire-controls">
@@ -199,56 +342,34 @@ const PresetsControls = () => {
             <Sparkles size={16} className="fire-controls__icon-active" />
           </div>
           <span className="fire-controls__toggle-label">Пресеты</span>
+          <span className={styles.headerCount}>{PRESETS.length}</span>
         </div>
       </div>
 
       <div className="fire-controls__content">
         <div className={styles.presets}>
-          <div className={styles.intro}>
-            <h3 className={styles.introTitle}>
-              <Map size={15} />
-              Быстрые сценарии карты
-            </h3>
-            <p className={styles.introText}>
-              Пресеты включают уже существующие слои, фильтры и обзор карты для частых рабочих сценариев.
-            </p>
-          </div>
+          <PresetTabs activeTabId={activeTab.id} onChange={setActiveTabId} />
 
-          <div className={styles.grid}>
-            {presets.map(({ id, title, description, meta, badge, icon: Icon, action, danger }) => (
-              <div key={id} className={styles.card}>
-                <div className={styles.cardTop}>
-                  <div className={styles.icon}>
-                    <Icon size={16} />
-                  </div>
-                  <div>
-                    <div className={styles.titleRow}>
-                      <h4 className={styles.title}>{title}</h4>
-                      <span className={styles.badge}>{badge}</span>
-                    </div>
-                    <p className={styles.description}>{description}</p>
-                  </div>
-                </div>
-
-                <div className={styles.actions}>
-                  <span className={styles.meta}>{meta}</span>
-                  <button
-                    type="button"
-                    className={`${styles.button} ${danger ? styles.buttonDanger : ''}`}
-                    onClick={action}
-                  >
-                    <Layers size={13} />
-                    Применить
-                  </button>
-                </div>
-              </div>
+          <div
+            id={`preset-panel-${activeTab.id}`}
+            className={styles.grid}
+            role="tabpanel"
+            aria-labelledby={`preset-tab-${activeTab.id}`}
+          >
+            {activePresets.map((preset) => (
+              <PresetCard
+                key={preset.id}
+                preset={preset}
+                isActive={lastApplied?.id === preset.id}
+                onApply={handleApplyPreset}
+              />
             ))}
           </div>
 
           {lastApplied && (
-            <div className={styles.status}>
-              <CheckCircle2 size={14} />
-              Применен пресет: {lastApplied}
+            <div className={styles.status} role="status" aria-live="polite">
+              <CheckCircle2 size={13} />
+              {lastApplied.title}
             </div>
           )}
         </div>

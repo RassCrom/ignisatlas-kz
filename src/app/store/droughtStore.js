@@ -1,6 +1,7 @@
 import { create } from 'zustand';
+import { getCurrentMonth } from 'src/shared/utils/dateDefaults';
 
-const currentMonth = new Date().toISOString().slice(0, 7);
+const currentMonth = getCurrentMonth();
 
 const useDroughtStore = create((set) => ({
   visible: false,

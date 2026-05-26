@@ -2,7 +2,33 @@
   "permissions": {
     "allow": [
       "PowerShell(Get-ChildItem -Path \"d:\\\\projects\\\\job\\\\ion\\\\fire_kz\\\\fires-kz\" -Force | Select-Object Name, @{Name=\"Type\";Expression={if\\($_.PSIsContainer\\){\"Directory\"}else{\"File\"}}} | Format-Table -AutoSize)",
-      "Bash(yarn build *)"
+      "Bash(yarn build *)",
+      "Bash(grep -E \"\\\\.\\(svg|png|jpg|jpeg\\)$\")",
+      "Bash(npm run *)",
+      "Bash(dir /s /b *.pmtiles)",
+      "Bash(Get-ChildItem -Path \"D:\\\\projects\\\\job\\\\ion\\\\fire_kz\\\\fires-kz\" -Filter \"*.pmtiles\" -Recurse -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object FullName)",
+      "Bash(npm install *)",
+      "Read(//c/Users/karasu/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/5d02128d-1d65-4e7f-a93f-da46372a5d17/9cb2cae7-54da-4168-ade8-b6563fe98c93/skills/**)",
+      "Bash(python scripts/search.py \"geoportal satellite map monitoring dark minimal loading screen\" --design-system -p \"Tabiat Küzeti\")",
+      "Bash(python \"C:/Users/karasu/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/5d02128d-1d65-4e7f-a93f-da46372a5d17/9cb2cae7-54da-4168-ade8-b6563fe98c93/skills/ui-ux-pro-max/scripts/search.py\" \"geoportal satellite map monitoring dark minimal loading screen\" --design-system -p \"Tabiat Küzeti\")",
+      "Bash(sort -t'|' -k2 -rn)",
+      "Bash(awk -F'│' '{print $1, $2}')",
+      "Bash(sort -k3 -rn)",
+      "Bash(node -e \"require\\('motion/react'\\)\")",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const p=JSON.parse\\(d\\); console.log\\('exports:', JSON.stringify\\(Object.keys\\(p.exports||{}\\), null, 2\\).slice\\(0,500\\)\\); console.log\\('deps:', JSON.stringify\\(p.dependencies||{}\\)\\)\")",
+      "PowerShell($pkg = Get-Content \"D:\\\\projects\\\\job\\\\ion\\\\fire_kz\\\\fires-kz\\\\node_modules\\\\framer-motion\\\\package.json\" | ConvertFrom-Json; Write-Host \"Dependencies:\"; $pkg.dependencies | ConvertTo-Json; Write-Host \"Exports keys:\"; \\($pkg.exports | Get-Member -MemberType NoteProperty\\).Name | Select-Object -First 20)",
+      "Bash(npx vite *)",
+      "Bash(Get-ChildItem -Path \"D:\\\\projects\\\\job\\\\ion\\\\fire_kz\\\\fires-kz\" -Recurse -Depth 2)",
+      "Bash(Select-Object -First 30)",
+      "Bash(python skills/ui-ux-pro-max/scripts/search.py \"satellite monitoring dashboard dark mission control geoportal\" --design-system -p \"Tabiat Küzeti Presets\")",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"satellite monitoring dashboard dark mission control geoportal\" --design-system -p \"Tabiat Küzeti Presets\")",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"dark panel card mission control compact dense\" --domain style)",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"animation accessibility panel tabs\" --domain ux -n 4)",
+      "Bash(Remove-Item \"D:\\\\projects\\\\job\\\\ion\\\\fire_kz\\\\fires-kz\\\\src\\\\shared\\\\components\\\\Sidebar\\\\DropDown\\\\Controls\\\\FloodMonitoringControls.jsx\" -Force)",
+      "Bash(Remove-Item \"D:\\\\projects\\\\job\\\\ion\\\\fire_kz\\\\fires-kz\\\\src\\\\shared\\\\components\\\\Sidebar\\\\DropDown\\\\Controls\\\\FloodMonitoringControls.module.scss\" -Force)",
+      "Bash(dir \"D:\\\\projects\\\\job\\\\ion\\\\fire_kz\\\\fires-kz\\\\public\")",
+      "Bash(xxd \"/d/projects/job/ion/fire_kz/fires-kz/public/layers/water_bodies.pmtiles\")"
     ]
   }
 }

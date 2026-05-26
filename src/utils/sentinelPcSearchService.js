@@ -1,3 +1,5 @@
+import { cachedRequest, createCacheKey, fetchJson } from './requestCache';
+
 const PC_STAC      = 'https://planetarycomputer.microsoft.com/api/stac/v1/search';
 const PC_TILE_BASE = 'https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad';
 const CDSE_STAC    = 'https://stac.dataspace.copernicus.eu/v1/search';
@@ -149,7 +151,7 @@ function transformCdseS3Feature(feature) {
 
 // ── Low-level collection search helpers ──────────────────────────────────────
 
-async function searchPcCollection(collection, { startDate, endDate, bbox, cloudCoverage, limit }) {
+async function searchPcCollection(collection, { startDate, endDate, bbox, cloudCoverage, limit, signal }) {
   const url = new URL(PC_STAC);
   url.searchParams.set('collections', collection);
   url.searchParams.set('limit', String(limit));
@@ -168,22 +170,15 @@ async function searchPcCollection(collection, { startDate, endDate, bbox, cloudC
     url.searchParams.set('filter-lang', 'cql2-text');
   }
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
-  try {
-    const response = await fetch(url.toString(), { signal: controller.signal });
-    if (!response.ok) {
-      const text = await response.text().catch(() => '');
-      throw new Error(`HTTP ${response.status}: ${response.statusText} ${text.slice(0, 200)}`);
-    }
-    const data = await response.json();
-    return data.features || [];
-  } finally {
-    clearTimeout(timeout);
-  }
+  const data = await cachedRequest(
+    createCacheKey('sentinel-pc-search', collection, url.toString()),
+    () => fetchJson(url.toString(), { signal }),
+    { signal }
+  );
+  return data.features || [];
 }
 
-async function searchCdseCollections(collections, { startDate, endDate, bbox, limit }) {
+async function searchCdseCollections(collections, { startDate, endDate, bbox, limit, signal }) {
   const url = new URL(CDSE_STAC);
   url.searchParams.set('collections', collections.join(','));
   url.searchParams.set('limit', String(limit));
@@ -196,19 +191,12 @@ async function searchCdseCollections(collections, { startDate, endDate, bbox, li
     url.searchParams.set('bbox', bbox.join(','));
   }
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
-  try {
-    const response = await fetch(url.toString(), { signal: controller.signal });
-    if (!response.ok) {
-      const text = await response.text().catch(() => '');
-      throw new Error(`HTTP ${response.status}: ${response.statusText} ${text.slice(0, 200)}`);
-    }
-    const data = await response.json();
-    return data.features || [];
-  } finally {
-    clearTimeout(timeout);
-  }
+  const data = await cachedRequest(
+    createCacheKey('sentinel-cdse-search', collections, url.toString()),
+    () => fetchJson(url.toString(), { signal }),
+    { signal }
+  );
+  return data.features || [];
 }
 
 // ── Main search function ──────────────────────────────────────────────────────
@@ -220,6 +208,7 @@ export async function searchSentinelPc({
   bbox,
   cloudCoverage = 30,
   maxRecords = 20,
+  signal,
 }) {
   if (!startDate || !endDate) throw new Error('Select start and end dates');
 
@@ -236,7 +225,7 @@ export async function searchSentinelPc({
     ? Math.max(5, Math.ceil(maxRecords / missions.length))
     : maxRecords;
 
-  const args = { startDate, endDate, bbox, cloudCoverage, limit: perMission };
+  const args = { startDate, endDate, bbox, cloudCoverage, limit: perMission, signal };
 
   const tasks = missions.map(async (m) => {
     switch (m) {

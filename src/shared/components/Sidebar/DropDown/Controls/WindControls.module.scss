@@ -1,0 +1,138 @@
+.hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(136, 139, 224, 0.1);
+  border-radius: 0.65rem;
+  background: rgba(9, 10, 36, 0.55);
+
+  strong {
+    display: block;
+    margin-top: 0.15rem;
+    color: rgba(217, 218, 245, 0.92);
+    font-size: 0.86rem;
+    line-height: 1.25;
+  }
+
+  p {
+    margin: 0.35rem 0 0;
+    color: rgba(217, 218, 245, 0.48);
+    font-size: 0.7rem;
+    line-height: 1.4;
+  }
+}
+
+.refreshButton {
+  min-height: 2rem;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid rgba(136, 139, 224, 0.18);
+  border-radius: 0.5rem;
+  background: rgba(136, 139, 224, 0.1);
+  color: rgba(217, 218, 245, 0.86);
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 700;
+
+  &:hover:not(:disabled) {
+    border-color: rgba(52, 211, 153, 0.32);
+    background: rgba(52, 211, 153, 0.1);
+    color: rgba(52, 211, 153, 0.95);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(52, 211, 153, 0.95);
+    outline-offset: 2px;
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.selectedGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.55rem;
+    border: 1px solid rgba(136, 139, 224, 0.08);
+    border-radius: 0.5rem;
+    background: rgba(136, 139, 224, 0.045);
+    color: rgba(217, 218, 245, 0.66);
+    font-size: 0.68rem;
+    line-height: 1.35;
+  }
+
+  svg {
+    color: rgba(136, 139, 224, 0.82);
+  }
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.42rem;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgba(217, 218, 245, 0.52);
+    font-size: 0.66rem;
+  }
+
+  i {
+    width: 0.7rem;
+    height: 0.7rem;
+    flex: 0 0 auto;
+    border-radius: 999px;
+  }
+}
+
+.low {
+  background: #38bdf8;
+}
+
+.medium {
+  background: #facc15;
+}
+
+.high {
+  background: #f97316;
+}
+
+.extreme {
+  background: #ef4444;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

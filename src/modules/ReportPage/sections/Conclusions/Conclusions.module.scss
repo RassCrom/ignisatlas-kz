@@ -23,7 +23,7 @@
   font-family: $font-mono;
   font-size: 28px;
   font-weight: 700;
-  color: rgba(236, 72, 153, 0.4);
+  color: rgba(232, 64, 37, 0.5);
   line-height: 1;
   flex-shrink: 0;
 }
@@ -45,9 +45,9 @@
   margin-top: 48px;
   text-align: center;
   padding: 32px 24px;
-  background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(71, 135, 227, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(232, 64, 37, 0.08) 0%, rgba(255, 140, 66, 0.06) 100%);
   border-radius: $radius-lg;
-  border: 1px solid $border-subtle;
+  border: 1px solid rgba(232, 64, 37, 0.12);
 }
 
 .sources {

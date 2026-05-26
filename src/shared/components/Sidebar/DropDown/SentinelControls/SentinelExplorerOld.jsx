@@ -9,6 +9,7 @@ import {
 import useSentinelExplorerOldStore from 'src/app/store/sentinelExplorerOldStore';
 import useAoiStore from 'src/app/store/aoiStore';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
+import { getCurrentDate } from 'src/shared/utils/dateDefaults';
 import { createSentinelLayer } from 'src/utils/sentinelUtils';
 import {
   searchSentinel,
@@ -331,7 +332,7 @@ const SentinelExplorerOld = () => {
                       type="date"
                       value={store.startDate}
                       onChange={(e) => store.setStartDate(e.target.value)}
-                      max={store.endDate || new Date().toISOString().split('T')[0]}
+                      max={store.endDate || getCurrentDate()}
                       className={styles.dateInput}
                     />
                   </div>
@@ -342,7 +343,7 @@ const SentinelExplorerOld = () => {
                       value={store.endDate}
                       onChange={(e) => store.setEndDate(e.target.value)}
                       min={store.startDate}
-                      max={new Date().toISOString().split('T')[0]}
+                      max={getCurrentDate()}
                       className={styles.dateInput}
                     />
                   </div>

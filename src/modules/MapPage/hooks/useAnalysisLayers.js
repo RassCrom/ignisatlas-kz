@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import useAnalysisStore from 'src/app/store/analysisStore';
 import useAdminBoundaryStore from 'src/app/store/adminBoundaryStore';
 import { useLayersStore } from 'src/app/store/layersStore';
@@ -67,6 +67,11 @@ export const useAnalysisLayers = (mapInstance, isMapInitialized) => {
   const adminVis = useAdminBoundaryStore((s) => s.layerVisibility);
   const adminOpacity = useAdminBoundaryStore((s) => s.layerOpacity);
   const emergencyLayers = useLayersStore((s) => s.layers);
+  const emergencyLayerConfigsRef = useRef(useLayersStore.getState().layers);
+  const emergencySourceIds = useMemo(
+    () => emergencyLayerConfigsRef.current.map((layer) => `${layer.id}-source`),
+    []
+  );
 
   const analysisFeatureCollection = useMemo(() => ({
     type: 'FeatureCollection',
@@ -89,20 +94,22 @@ export const useAnalysisLayers = (mapInstance, isMapInitialized) => {
       'fill-opacity': 1,
     }, true);
 
-    [
+    const boundaryIds = [
       ['country_boundaries', '1'],
       ['region_boundaries', '2'],
       ['district_boundaries', '3'],
-    ].forEach(([id, level]) => {
+    ];
+
+    boundaryIds.forEach(([id, level]) => {
       addGeoJsonUrl(mapInstance, `${id}-source`, `/layers/KAZ_OSM_BORDER_LVL${level}.geojson`);
       addLineLayer(mapInstance, id, `${id}-source`, {
         'line-color': '#4999E8',
         'line-width': 1,
-        'line-opacity': adminOpacity[id] ?? 1,
-      }, adminVis[id] ?? false);
+        'line-opacity': 1,
+      });
     });
 
-    emergencyLayers.forEach((cfg) => {
+    emergencyLayerConfigsRef.current.forEach((cfg) => {
       addGeoJsonUrl(mapInstance, `${cfg.id}-source`, `/layers/kchs/${cfg.geojsonFile}`);
       addCircleLayer(mapInstance, cfg.id, `${cfg.id}-source`, {
         'circle-color': emergencyColors[cfg.id] || '#f8fafc',
@@ -110,10 +117,13 @@ export const useAnalysisLayers = (mapInstance, isMapInitialized) => {
         'circle-stroke-color': '#fff',
         'circle-stroke-width': 1,
         'circle-opacity': 1,
-      }, cfg.visible);
+      });
     });
 
-    addOrUpdateGeoJsonSource(mapInstance, 'analysis-polygons-source', analysisFeatureCollection);
+    addOrUpdateGeoJsonSource(mapInstance, 'analysis-polygons-source', {
+      type: 'FeatureCollection',
+      features: [],
+    });
     addFillLayer(mapInstance, 'analysis-polygons-fill', 'analysis-polygons-source', {
       'fill-color': 'rgba(136, 139, 224, 0.15)',
       'fill-opacity': 1,
@@ -130,10 +140,10 @@ export const useAnalysisLayers = (mapInstance, isMapInitialized) => {
         'region_boundaries-source',
         'district_boundaries-source',
         'analysis-polygons-source',
-        ...emergencyLayers.map((layer) => `${layer.id}-source`),
+        ...emergencySourceIds,
       ].forEach((sourceId) => removeSourceWithLayers(mapInstance, sourceId));
     };
-  }, [mapInstance, isMapInitialized]);
+  }, [emergencySourceIds, mapInstance, isMapInitialized]);
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;
@@ -153,5 +163,12 @@ export const useAnalysisLayers = (mapInstance, isMapInitialized) => {
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;
     emergencyLayers.forEach((layer) => setLayerVisibility(mapInstance, layer.id, layer.visible));
+  }, [emergencyLayers, isMapInitialized, mapInstance]);
+
+  useEffect(() => {
+    if (!mapInstance || !isMapInitialized) return;
+    emergencyLayers.forEach((layer) => {
+      setLayerOpacity(mapInstance, layer.id, layer.opacity ?? 1, 'circle');
+    });
   }, [emergencyLayers, isMapInitialized, mapInstance]);
 };

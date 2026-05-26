@@ -1,4 +1,5 @@
 import { formatModisDate } from './modisSearchService';
+import { cachedRequest, createCacheKey, fetchJson } from './requestCache';
 
 const PC_STAC_SEARCH = 'https://planetarycomputer.microsoft.com/api/stac/v1/search';
 const PC_TILE_BASE = 'https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad';
@@ -100,6 +101,7 @@ export async function searchBurnedAreas({
   month,
   bbox,
   maxRecords = 40,
+  signal,
 }) {
   if (!month) throw new Error('Select a month');
 
@@ -110,26 +112,17 @@ export async function searchBurnedAreas({
   url.searchParams.set('datetime', `${startDate}T00:00:00Z/${endDate}T23:59:59Z`);
   if (bbox?.length === 4) url.searchParams.set('bbox', bbox.join(','));
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
-
-  try {
-    const response = await fetch(url.toString(), { signal: controller.signal });
-    if (!response.ok) {
-      const text = await response.text().catch(() => '');
-      throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
-    }
-
-    const data = await response.json();
-    const features = (data.features || []).map(transformBurnedAreaFeature);
-    return {
-      features,
-      totalResults: data.numberReturned || features.length,
-      numberMatched: data.numberMatched || null,
-    };
-  } finally {
-    clearTimeout(timeout);
-  }
+  const data = await cachedRequest(
+    createCacheKey('burned-area-search', url.toString()),
+    () => fetchJson(url.toString(), { signal }),
+    { signal }
+  );
+  const features = (data.features || []).map(transformBurnedAreaFeature);
+  return {
+    features,
+    totalResults: data.numberReturned || features.length,
+    numberMatched: data.numberMatched || null,
+  };
 }
 
 export { formatModisDate as formatBurnedAreaDate };

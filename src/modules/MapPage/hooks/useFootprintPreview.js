@@ -17,7 +17,10 @@ export const useFootprintPreview = (mapInstance, isMapInitialized) => {
 
   useEffect(() => {
     if (!mapInstance || !isMapInitialized) return;
-    addOrUpdateGeoJsonSource(mapInstance, 'footprint-preview-source', data);
+    addOrUpdateGeoJsonSource(mapInstance, 'footprint-preview-source', {
+      type: 'FeatureCollection',
+      features: [],
+    });
     if (!mapInstance.getLayer('footprint-preview-fill')) {
       mapInstance.addLayer({
         id: 'footprint-preview-fill',

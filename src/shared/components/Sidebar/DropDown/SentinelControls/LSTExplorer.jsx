@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import {
   Search, Database, Layers, Calendar, MapPin,
   AlertCircle, Trash2, Eye, EyeOff, Info, ChevronUp,
@@ -10,7 +10,9 @@ import {
 import { KAZAKHSTAN_EXTENT_GEO } from '../../../../../modules/MapPage/utils/mapConstants';
 import useLstStore from 'src/app/store/lstStore';
 import useAoiStore from 'src/app/store/aoiStore';
+import { isAbortError, useAbortableTask } from 'src/shared/hooks/useAbortableTask';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
+import { getCurrentDate } from 'src/shared/utils/dateDefaults';
 import {
   LST_PRODUCTS,
   LST_RANGE_C,
@@ -31,7 +33,7 @@ const KZ_GEOJSON = {
   ]],
 };
 
-const today = new Date().toISOString().split('T')[0];
+const today = getCurrentDate();
 
 function sortResults(results, sortBy, sortOrder) {
   return [...results].sort((a, b) => {
@@ -90,6 +92,8 @@ const LSTExplorer = () => {
   const [expandedId, setExpandedId] = useState(null);
   const [thumbErrors, setThumbErrors] = useState({});
   const [isExpanded, setIsExpanded] = useState(false);
+  const searchTask = useAbortableTask();
+  const searchSeqRef = useRef(0);
 
   const sortedResults = useMemo(
     () => sortResults(store.searchResults, store.sortBy, store.sortOrder),
@@ -97,18 +101,23 @@ const LSTExplorer = () => {
   );
 
   const handleSearch = useCallback(async () => {
+    const searchSeq = searchSeqRef.current + 1;
+    searchSeqRef.current = searchSeq;
     store.setIsLoading(true);
     store.setError(null);
     store.clearSearch();
     store.setActiveTab('results');
 
     try {
-      const { features, totalResults } = await searchLst({
+      const { features, totalResults } = await searchTask.run((signal) => searchLst({
         product: store.selectedProduct,
         date: store.date,
         bbox: aoi.aoiBbox,
         maxRecords: store.pageSize,
-      });
+        signal,
+      }));
+
+      if (searchSeq !== searchSeqRef.current) return;
 
       store.setSearchResults(features, totalResults);
 
@@ -116,12 +125,14 @@ const LSTExplorer = () => {
         store.setError('Снимки не найдены. Попробуйте изменить фильтры.');
       }
     } catch (err) {
+      if (isAbortError(err)) return;
+      if (searchSeq !== searchSeqRef.current) return;
       store.setError(err.message);
       store.setActiveTab('search');
     } finally {
-      store.setIsLoading(false);
+      if (searchSeq === searchSeqRef.current) store.setIsLoading(false);
     }
-  }, [store, aoi]);
+  }, [store, aoi, searchTask]);
 
   const handleAddToMap = useCallback((result) => {
     const layerId = `lst_${result.id}_${Date.now()}`;

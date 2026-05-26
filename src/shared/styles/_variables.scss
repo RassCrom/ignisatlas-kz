@@ -33,18 +33,25 @@ $icon-main-size-map: 21px;
 
   --transition-smooth: 0.25s ease;
 
-  // IgnisAtlas fire palette
-  --color-fire-ember:      #E84025;
-  --color-fire-amber:      #FF8C42;
-  --color-fire-ember-dim:  rgba(232, 64, 37, 0.15);
-  --color-fire-amber-dim:  rgba(255, 140, 66, 0.12);
-  --gradient-fire:         linear-gradient(135deg, #E84025 0%, #FF8C42 100%);
+  // TulparMaps — environmental monitoring palette
+  --color-env-sky:         #0EA5E9;
+  --color-env-earth:       #34D399;
+  --color-env-sky-dim:     rgba(14, 165, 233, 0.15);
+  --color-env-earth-dim:   rgba(52, 211, 153, 0.12);
+  --gradient-env:          linear-gradient(135deg, #0EA5E9 0%, #34D399 100%);
+
+  /* backward-compat aliases — used across landing SCSS */
+  --color-fire-ember:      #0EA5E9;
+  --color-fire-amber:      #34D399;
+  --color-fire-ember-dim:  rgba(14, 165, 233, 0.15);
+  --color-fire-amber-dim:  rgba(52, 211, 153, 0.12);
+  --gradient-fire:         linear-gradient(135deg, #0EA5E9 0%, #34D399 100%);
   --color-surface-card:    rgba(12, 13, 30, 0.85);
-  --color-border-subtle:   rgba(232, 64, 37, 0.12);
+  --color-border-subtle:   rgba(14, 165, 233, 0.12);
   --color-text-muted:      rgba(217, 218, 245, 0.5);
   --color-text-dim:        rgba(217, 218, 245, 0.35);
-  --color-pill-bg:         rgba(232, 64, 37, 0.08);
-  --color-pill-border:     rgba(232, 64, 37, 0.22);
-  --color-pill-text:       rgba(255, 140, 66, 0.9);
+  --color-pill-bg:         rgba(14, 165, 233, 0.08);
+  --color-pill-border:     rgba(14, 165, 233, 0.22);
+  --color-pill-text:       #34D399;
   --transition-spring:     0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }

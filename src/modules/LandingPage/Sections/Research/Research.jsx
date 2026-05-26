@@ -37,7 +37,7 @@ const Research = () => {
           <h4 className={styles.research__subtitle} aria-hidden="true">ИССЛЕДОВАНИЯ</h4>
           <h2 className={styles.research__title}>Исследования</h2>
           <p className={styles.research__lead}>
-            Аналитические материалы на основе данных IgnisAtlas.
+            Аналитические материалы на основе данных Tabiat Küzeti.
           </p>
         </motion.header>
 

@@ -1,25 +1,27 @@
+import { motion } from 'framer-motion';
 import styles from './Button.module.scss';
 
-const Button = ({ 
-  children, 
-  href, 
-  variant = 'primary', // 'primary' or 'secondary'
-  ...props 
+const Button = ({
+  children,
+  href,
+  variant = 'primary',
+  disabled,
+  ...props
 }) => {
-  const buttonClass = `${styles.hero__btn} ${styles[`hero__btn--${variant}`]}`;
+  const className = `${styles.hero__btn} ${styles[`hero__btn--${variant}`]}`;
 
   if (href) {
     return (
-      <a href={href} className={buttonClass} {...props}>
+      <motion.a href={href} className={className} {...props}>
         {children}
-      </a>
+      </motion.a>
     );
   }
 
   return (
-    <button className={buttonClass} {...props}>
+    <motion.button className={className} disabled={disabled} {...props}>
       {children}
-    </button>
+    </motion.button>
   );
 };
 

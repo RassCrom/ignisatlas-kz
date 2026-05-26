@@ -1,0 +1,337 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.intro,
+.dashboardPreview,
+.caseCard {
+  border: 1px solid rgba(136, 139, 224, 0.1);
+  border-radius: 0.65rem;
+  background: rgba(9, 10, 36, 0.55);
+}
+
+.intro {
+  padding: 0.8rem;
+
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0 0 0.35rem;
+    color: rgba(217, 218, 245, 0.9);
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    color: rgba(217, 218, 245, 0.52);
+    font-size: 0.74rem;
+    line-height: 1.45;
+  }
+}
+
+.caseList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.caseCard {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.72rem;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    border-color: rgba(136, 139, 224, 0.2);
+    background: rgba(136, 139, 224, 0.06);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(52, 211, 153, 0.95);
+    outline-offset: 2px;
+  }
+}
+
+.caseCardActive {
+  border-color: rgba(52, 211, 153, 0.24);
+  background: rgba(52, 211, 153, 0.06);
+}
+
+.caseTop {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  align-items: flex-start;
+}
+
+.caseIcon {
+  width: 1.8rem;
+  height: 1.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(136, 139, 224, 0.12);
+  border-radius: 0.5rem;
+  background: rgba(136, 139, 224, 0.08);
+}
+
+.caseText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  strong {
+    color: rgba(217, 218, 245, 0.88);
+    font-size: 0.8rem;
+    line-height: 1.25;
+  }
+
+  span {
+    color: rgba(217, 218, 245, 0.48);
+    font-size: 0.68rem;
+    line-height: 1.35;
+  }
+}
+
+.activeIcon {
+  color: rgba(52, 211, 153, 0.9);
+}
+
+.caseMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.65rem;
+  color: rgba(217, 218, 245, 0.42);
+  font-size: 0.66rem;
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+}
+
+.areaTrack {
+  height: 0.35rem;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(136, 139, 224, 0.1);
+}
+
+.areaFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.dashboardPreview {
+  padding: 0.75rem;
+}
+
+.previewHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-bottom: 0.65rem;
+
+  h4 {
+    margin: 0.15rem 0 0;
+    color: rgba(217, 218, 245, 0.9);
+    font-size: 0.82rem;
+    line-height: 1.25;
+  }
+}
+
+.kicker {
+  color: rgba(52, 211, 153, 0.75);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.iconButton {
+  width: 1.9rem;
+  height: 1.9rem;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(136, 139, 224, 0.14);
+  border-radius: 0.5rem;
+  background: rgba(136, 139, 224, 0.08);
+  color: rgba(217, 218, 245, 0.76);
+  cursor: pointer;
+
+  &:hover {
+    border-color: rgba(52, 211, 153, 0.28);
+    background: rgba(52, 211, 153, 0.08);
+    color: rgba(52, 211, 153, 0.92);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(52, 211, 153, 0.95);
+    outline-offset: 2px;
+  }
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.stat {
+  min-width: 0;
+  padding: 0.55rem;
+  border: 1px solid rgba(136, 139, 224, 0.09);
+  border-radius: 0.5rem;
+  background: rgba(136, 139, 224, 0.05);
+
+  span {
+    display: block;
+    color: rgba(217, 218, 245, 0.4);
+    font-size: 0.62rem;
+    line-height: 1.3;
+  }
+
+  strong {
+    display: block;
+    margin-top: 0.15rem;
+    color: rgba(217, 218, 245, 0.9);
+    font-size: 0.78rem;
+    line-height: 1.25;
+  }
+}
+
+.chartBlock {
+  margin-top: 0.7rem;
+}
+
+.blockTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.45rem;
+  color: rgba(217, 218, 245, 0.56);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.miniBars {
+  height: 5rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.55rem;
+  padding: 0.45rem 0.2rem 0;
+}
+
+.miniBarColumn {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: rgba(217, 218, 245, 0.38);
+  font-size: 0.58rem;
+}
+
+.miniBarTrack {
+  height: 3.65rem;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 0.4rem;
+  background: rgba(136, 139, 224, 0.06);
+}
+
+.miniBar {
+  width: 58%;
+  min-width: 0.75rem;
+  border-radius: 999px 999px 0.2rem 0.2rem;
+  background: linear-gradient(180deg, rgba(248, 113, 113, 0.95), rgba(249, 115, 22, 0.7));
+}
+
+.landCoverRows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.42rem;
+}
+
+.landCoverRow {
+  display: grid;
+  grid-template-columns: minmax(5.3rem, 0.9fr) minmax(0, 1fr) 2.2rem;
+  gap: 0.45rem;
+  align-items: center;
+  color: rgba(217, 218, 245, 0.5);
+  font-size: 0.65rem;
+
+  strong {
+    color: rgba(217, 218, 245, 0.78);
+    font-size: 0.64rem;
+    text-align: right;
+  }
+}
+
+.landCoverLabel {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.landCoverDot {
+  width: 0.45rem;
+  height: 0.45rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+
+.landCoverTrack {
+  height: 0.35rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(136, 139, 224, 0.1);
+}
+
+.landCoverFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.note {
+  margin-top: 0.7rem;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid rgba(136, 139, 224, 0.1);
+  border-radius: 0.5rem;
+  background: rgba(136, 139, 224, 0.05);
+  color: rgba(217, 218, 245, 0.4);
+  font-size: 0.64rem;
+  line-height: 1.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caseCard {
+    transition: none;
+
+    &:hover {
+      transform: none;
+    }
+  }
+}

@@ -1,4 +1,3 @@
-import Button from "../shared/Button/Button";
 import styles from "./Footer.module.scss";
 
 const Footer = () => {
@@ -19,12 +18,13 @@ const Footer = () => {
             <a
               href="/"
               className={styles.footer__logo}
-              aria-label="IgnisAtlas — на главную"
+              aria-label="Tabiat Küzeti — на главную"
             >
-              <span className={styles.logo__text}>IgnisAtlas</span>
+              <span className={styles.logo__runes} aria-hidden="true">𐰔𐰐 𐱅𐰘𐰜𐰓</span>
+              <span className={styles.logo__text}>Tabiat Küzeti</span>
             </a>
             <p className={styles.footer__tagline}>
-              Спутниковый мониторинг лесных пожаров в Казахстане
+              Спутниковый мониторинг окружающей среды в Казахстане
             </p>
           </div>
 
@@ -44,29 +44,9 @@ const Footer = () => {
           </nav>
         </div>
 
-        <div className={styles.footer__cta}>
-          <div className={styles.cta__content}>
-            <h3 className={styles.cta__title}>
-              Откройте IgnisAtlas прямо сейчас
-            </h3>
-            <p className={styles.cta__description}>
-              Интерактивная карта, архив с 2001 года, данные MODIS и VIIRS — всё
-              бесплатно
-            </p>
-          </div>
-          <Button
-            href="/map"
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="primary"
-          >
-            Открыть геопортал
-          </Button>
-        </div>
-
         <div className={styles.footer__bottom}>
           <p className={styles.copyright}>
-            © {currentYear} IgnisAtlas. Открытый проект.
+            © {currentYear} Tabiat Küzeti. Открытый проект.
           </p>
           <div className={styles.legal__links}>
             <span className={styles.legal__note}>

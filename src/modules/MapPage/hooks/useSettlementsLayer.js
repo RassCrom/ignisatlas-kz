@@ -27,13 +27,13 @@ export const useSettlementsLayer = (mapInstance, isMapInitialized) => {
         id: 'settlements-layer',
         type: 'circle',
         source: 'settlements-source',
-        layout: { visibility: visible ? 'visible' : 'none' },
+        layout: { visibility: 'none' },
         paint: {
           'circle-color': ['case', ['==', ['get', 'fclass'], 'national_capital'], '#facc15', '#111827'],
           'circle-radius': ['match', ['get', 'fclass'], 'national_capital', 8, 'city', 5.5, 'town', 4.5, 'village', 3.5, 2.5],
           'circle-stroke-color': '#fff',
           'circle-stroke-width': 1.2,
-          'circle-opacity': opacity,
+          'circle-opacity': 1,
         },
       });
     }

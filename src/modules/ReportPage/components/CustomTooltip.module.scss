@@ -1,29 +1,48 @@
 @use '../shared/variables' as *;
 
 .tooltip {
-  background: rgba(10, 10, 30, 0.95);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: rgba(7, 8, 26, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 2px solid $accent-fire;
+  border-radius: 10px;
   padding: 12px 16px;
   color: $text-primary;
   font-size: 13px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  font-family: $font-display;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(232, 64, 37, 0.08);
+  min-width: 160px;
 }
 
 .label {
   font-weight: 700;
-  margin-bottom: 6px;
-  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid $border-subtle;
 }
 
 .row {
   display: flex;
-  gap: 12px;
+  align-items: center;
+  gap: 10px;
   justify-content: space-between;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .value {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 14px;
+  color: $text-primary;
+  font-family: $font-mono;
 }

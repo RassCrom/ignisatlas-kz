@@ -19,7 +19,7 @@
     letter-spacing: 0.68rem;
     text-transform: uppercase;
     color: transparent;
-    -webkit-text-stroke: 0.5px rgba(232, 64, 37, 0.35);
+    -webkit-text-stroke: 0.5px rgba(14, 165, 233, 0.35);
     margin: 0 0 0.75rem;
     user-select: none;
 }
@@ -65,7 +65,7 @@
 
     &:hover {
         background: var(--color-fire-ember-dim);
-        box-shadow: 0 4px 16px rgba(232, 64, 37, 0.15);
+        box-shadow: 0 4px 16px rgba(14, 165, 233, 0.15);
     }
 }
 

@@ -1,10 +1,13 @@
+import { getDefaultDateRange } from 'src/shared/utils/dateDefaults';
+
 // Constants
 export const ICON_SIZE = 16;
+const DEFAULT_DATE_RANGE = getDefaultDateRange();
 
 export const DEFAULT_SATELLITE_INPUTS = {
   collection: "COPERNICUS/S2_SR",
-  startDate: "2019-06-23",
-  endDate: "2019-06-30",
+  startDate: DEFAULT_DATE_RANGE.startDate,
+  endDate: DEFAULT_DATE_RANGE.endDate,
   bands: "B4,B3,B2",
   west: "71.21797",
   south: "50.85761",

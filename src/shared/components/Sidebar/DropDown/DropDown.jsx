@@ -8,6 +8,7 @@ import { newDD } from "./DropDownData";
 import useFireStore from "src/app/store/fireStore";
 import useAdminBoundaryStore from "src/app/store/adminBoundaryStore";
 import { useLayersStore } from "../../../../app/store/layersStore";
+import useMenuStore from "src/app/store/store";
 
 import styles from "./DropDown.module.scss";
 
@@ -24,6 +25,7 @@ const LSTExplorer = lazy(() => import("./SentinelControls/LSTExplorer"));
 const FireRisk = lazy(() => import("./Controls/FireControls/FireRisk"));
 const FireModelling = lazy(() => import("./Controls/FireControls/FireModelling"));
 const BurnedAreaControls = lazy(() => import("./Controls/FireControls/BurnedAreaControls"));
+const FuelMoistureControls = lazy(() => import("./Controls/FireControls/FuelMoistureControls"));
 
 const LulcControls = lazy(() => import("./Controls/LulcControls"));
 const LulcPcControls = lazy(() => import("./Controls/LulcPcControls"));
@@ -35,8 +37,12 @@ const PeatlandsControls = lazy(() => import("./Controls/PeatlandsControls"));
 const DroughtMonitoring = lazy(() => import("./Controls/DroughtMonitoring"));
 const DroughtForecast = lazy(() => import("./Controls/DroughtForecast"));
 const DroughtIndices = lazy(() => import("./Controls/DroughtIndices"));
+const WindControls = lazy(() => import("./Controls/WindControls"));
+const WaterMonitoringControls = lazy(() => import("./Controls/WaterMonitoringControls"));
+const GlacierMonitoringControls = lazy(() => import("./Controls/GlacierMonitoringControls"));
 const LayersPanel = lazy(() => import("./Controls/LayersPanel"));
 const PresetsControls = lazy(() => import("./Controls/PresetsControls"));
+const HistoricalWildfiresControls = lazy(() => import("./Controls/HistoricalWildfiresControls"));
 
 const MeasureDistanceTool = lazy(() => import("./ToolsControls/MeasureDistanceTool"));
 const MeasureAreaTool = lazy(() => import("./ToolsControls/MeasureAreaTool"));
@@ -75,6 +81,7 @@ const SELF_SUBSCRIBED = {
   fire_risk: FireRisk,
   fire_modelling: FireModelling,
   burned_areas_modis: BurnedAreaControls,
+  fuel_moisture: FuelMoistureControls,
   lst_explorer: LSTExplorer,
   lulc: LulcControls,
   lulc_pc: LulcPcControls,
@@ -98,6 +105,11 @@ const SELF_SUBSCRIBED = {
   drought_indices: DroughtMonitoring,
   drought_forecast: DroughtForecast,
   drought_imagery: DroughtIndices,
+  water_bodies: WaterMonitoringControls,
+  satellite_water_monitoring: WaterMonitoringControls,
+  glacier_inventory: GlacierMonitoringControls,
+  satellite_glacier_monitoring: GlacierMonitoringControls,
+  wind_conditions: WindControls,
   identify_pixel: IdentifyPixelTool,
   feature_info: FeatureInfoTool,
   download_data: DownloadDataTool,
@@ -105,14 +117,16 @@ const SELF_SUBSCRIBED = {
   export_geojson: ExportGeojsonTool,
   api_links: ApiLinksTool,
   presets_controls: PresetsControls,
+  historical_wildfires_controls: HistoricalWildfiresControls,
 };
 
 const DropDown = memo(({ openTabIndex }) => {
   /* ── Store subscriptions ─────────────────────────────────── */
   const {
     toggleStates, toggleOption,
-    expandedItems, toggleExpandedItem,
   } = useFireStore();
+  const expandedItems = useMenuStore((state) => state.expandedItems);
+  const toggleExpandedItem = useMenuStore((state) => state.toggleExpandedItem);
 
   const {
     layerOpacity,
@@ -195,7 +209,7 @@ const DropDown = memo(({ openTabIndex }) => {
     <div className={styles.dropdown}>
 
       {currentSection.items.map((item) => {
-        const isExpanded = expandedItems[item.id] ?? item.isExpanded ?? false;
+        const isExpanded = expandedItems[item.id] ?? false;
 
         return (
           <div key={item.id} className={styles.dropdown__item}>

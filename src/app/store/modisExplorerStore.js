@@ -1,10 +1,13 @@
 import { create } from 'zustand';
+import { getDefaultDateRange } from 'src/shared/utils/dateDefaults';
+
+const DEFAULT_DATE_RANGE = getDefaultDateRange();
 
 const useModisExplorerStore = create((set, get) => ({
   // ── Product & Filter State ───────────────────────────────
   selectedProduct: 'all', // 'all' | 'modis-14A1-061' | 'modis-14A2-061' | 'modis-09A1-061' | 'modis-43A4-061'
-  startDate: '',
-  endDate: '',
+  startDate: DEFAULT_DATE_RANGE.startDate,
+  endDate: DEFAULT_DATE_RANGE.endDate,
   cloudCoverage: 100, // MODIS fire anomalies often have missing or 100% cloud cover listed, better to start at 100
   selectedBands: 'default',
 

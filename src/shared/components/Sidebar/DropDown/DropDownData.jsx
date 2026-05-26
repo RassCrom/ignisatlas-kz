@@ -398,6 +398,30 @@ export const newDD = [
             "isDownloadable": false,
             "tags": ["temperature", "lst", "thermal"],
             "status": "active"
+          },
+          {
+            "id": "fuel_moisture",
+            "label": "Fuel Moisture & Vegetation Dryness",
+            "label_ru": "Fuel Moisture & Vegetation Dryness",
+            "description": "Sentinel-2 SWIR-based NDWI/NDMI fuel moisture proxy for crop and forest dryness. Extremely dry areas are rendered bright red for high ignition risk.",
+            "layerType": "Raster",
+            "source": "ESA Sentinel-2 / Microsoft Planetary Computer",
+            "isTemporal": true,
+            "isDownloadable": false,
+            "tags": ["fire", "fuel-moisture", "vegetation-dryness", "ndwi", "ndmi", "sentinel-2"],
+            "status": "active"
+          },
+          {
+            "id": "wind_conditions",
+            "label": "Wind Conditions",
+            "label_ru": "Ветер",
+            "description": "Текущая скорость, порывы и направление ветра по точкам на территории Казахстана через Open-Meteo Forecast API.",
+            "layerType": "Vector",
+            "source": "Open-Meteo Forecast API",
+            "isTemporal": true,
+            "isDownloadable": false,
+            "tags": ["weather", "wind", "forecast", "open-meteo"],
+            "status": "active"
           }
         ]
       },
@@ -442,6 +466,68 @@ export const newDD = [
             "tags": ["drought", "indices", "satellite", "planetary-computer"],
             "status": "active"
           },
+        ]
+      },
+      {
+        "id": "water_monitoring_group",
+        "label_ru": "Водные объекты",
+        "isExpanded": true,
+        "options": [
+          {
+            "id": "water_bodies",
+            "label": "Water Bodies",
+            "label_ru": "Water Bodies",
+            "description": "GeoJSON visualization of Kazakhstan water bodies with inventory stats, class filters, area filters, and attribute popup details.",
+            "layerType": "Vector",
+            "source": "Public GeoJSON",
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["water", "reservoir", "lake", "geojson"],
+            "status": "active"
+          },
+          {
+            "id": "satellite_water_monitoring",
+            "label": "Satellite Water Monitoring",
+            "label_ru": "Satellite Water Monitoring",
+            "description": "Planetary Computer monitoring for surface-water extent, shrinkage, turbidity, chlorophyll-a, and eutrophication indicators.",
+            "layerType": "Raster",
+            "source": "Microsoft Planetary Computer",
+            "isTemporal": true,
+            "isDownloadable": false,
+            "tags": ["water", "reservoir", "mndwi", "chlorophyll", "sentinel-2", "sentinel-3"],
+            "status": "active"
+          },
+        ]
+      },
+      {
+        "id": "glacier_monitoring_group",
+        "label_ru": "Glaciers",
+        "isExpanded": true,
+        "options": [
+          {
+            "id": "glacier_inventory",
+            "label": "Glacier Inventory",
+            "label_ru": "Glacier Inventory",
+            "description": "GeoJSON visualization of Kazakhstan glaciers with OSM inventory filters and attribute details.",
+            "layerType": "Vector",
+            "source": "Public GeoJSON",
+            "isTemporal": false,
+            "isDownloadable": false,
+            "tags": ["glacier", "cryosphere", "snow", "geojson"],
+            "status": "active"
+          },
+          {
+            "id": "satellite_glacier_monitoring",
+            "label": "Satellite Glacier Monitoring",
+            "label_ru": "Satellite Glacier Monitoring",
+            "description": "Planetary Computer monitoring for snow and ice extent, melt moisture, debris contrast, and glacier context using Sentinel-2 indices.",
+            "layerType": "Raster",
+            "source": "Microsoft Planetary Computer",
+            "isTemporal": true,
+            "isDownloadable": false,
+            "tags": ["glacier", "snow", "ice", "ndsi", "ndmi", "sentinel-2"],
+            "status": "active"
+          }
         ]
       },
       // {
@@ -1056,6 +1142,31 @@ export const newDD = [
             isTemporal: false,
             isDownloadable: false,
             tags: ['presets', 'map', 'workflow'],
+            status: 'active'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 9,
+    key: 'historical_wildfires',
+    items: [
+      {
+        id: 'historical_wildfires_item',
+        label_ru: 'Исторические пожары',
+        isExpanded: true,
+        options: [
+          {
+            id: 'historical_wildfires_controls',
+            label: 'Historical Wildfires',
+            label_ru: 'Исторические пожары',
+            description: 'Реальные кейсы прошлых природных пожаров с фокусом карты, AOI и доступной статистикой.',
+            layerType: null,
+            source: null,
+            isTemporal: true,
+            isDownloadable: false,
+            tags: ['wildfire', 'history', 'case-study'],
             status: 'active'
           }
         ]

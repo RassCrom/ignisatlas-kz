@@ -25,6 +25,7 @@ import {
 import './fireControls.scss';
 import MapFireControls from './MapFireControls/MapFireControls';
 import LinearDateChooser from './LinearDateChooser';
+import { formatLocalDate, getCurrentDate, getMonthsAgoDate } from 'src/shared/utils/dateDefaults';
 
 const MAX_DAYS = 31;
 
@@ -74,8 +75,8 @@ const FireControls = () => {
     setConfidenceFilterTimeout,
   } = useFireStore();
 
-  const today = new Date().toISOString().split('T')[0];
-  const lastWeek = new Date(Date.now() - 7 * 864e5).toISOString().split('T')[0];
+  const today = getCurrentDate();
+  const defaultStartDate = getMonthsAgoDate(1);
 
   /* ── Helpers ─────────────────────────────────────────── */
 
@@ -83,7 +84,7 @@ const FireControls = () => {
     if (!fireStartDate) return today;
     const max = new Date(fireStartDate);
     max.setDate(max.getDate() + MAX_DAYS);
-    return (max < new Date(today) ? max : new Date(today)).toISOString().split('T')[0];
+    return formatLocalDate(max < new Date(today) ? max : new Date(today));
   }, [fireStartDate, today]);
 
   const getRiskColor = (level) => {
@@ -143,10 +144,10 @@ const FireControls = () => {
   }, [setDateHasChanged, setFireLayerVisible, fireLayerVisible]);
 
   const handleQuickPreset = useCallback((days) => {
-    const endStr = new Date().toISOString().split('T')[0];
+    const endStr = getCurrentDate();
     const startStr = days === 0
       ? endStr
-      : new Date(Date.now() - days * 864e5).toISOString().split('T')[0];
+      : formatLocalDate(new Date(Date.now() - days * 864e5));
     setFireStartDate(startStr);
     setFireEndDate(endStr);
     setHasDateChanges(true);
@@ -353,7 +354,7 @@ const FireControls = () => {
               <div className="fire-controls__date-inputs">
                 <input
                   type="date"
-                  value={fireStartDate || lastWeek}
+                  value={fireStartDate || defaultStartDate}
                   onChange={handleStartDateChange}
                   max={today}
                   className="fire-controls__date-input"
@@ -363,7 +364,7 @@ const FireControls = () => {
                   type="date"
                   value={fireEndDate || today}
                   onChange={handleEndDateChange}
-                  min={fireStartDate || lastWeek}
+                  min={fireStartDate || defaultStartDate}
                   max={getMaxEndDate()}
                   className="fire-controls__date-input"
                 />

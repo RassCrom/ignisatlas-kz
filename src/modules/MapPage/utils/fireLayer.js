@@ -42,9 +42,9 @@ const normalizeFeature = (feature, index) => {
 
 const featureKey = (feature) => JSON.stringify(feature.geometry?.coordinates || []);
 
-const fetchFireFeatures = async (date1, date2) => {
+const fetchFireFeatures = async (date1, date2, signal) => {
   const url = `https://api.igmass.kz/fire/firebetweendate?date1=${date1}&date2=${date2}`;
-  const response = await axios.get(url);
+  const response = await axios.get(url, { signal });
   return (response.data?.features || []).map(normalizeFeature);
 };
 
@@ -95,6 +95,7 @@ export const createFireLayer = (setFireLength, updateFireStatistics) => {
   let originalFeatures = [];
   let filteredFeatures = [];
   let currentFilters = [];
+  let activeLoadController = null;
 
   const getCollection = () => ({
     type: 'FeatureCollection',
@@ -276,14 +277,19 @@ export const createFireLayer = (setFireLength, updateFireStatistics) => {
     },
 
     async loadFireData(date1, date2) {
+      activeLoadController?.abort();
+      activeLoadController = new AbortController();
+      const signal = activeLoadController.signal;
+
       try {
         toast.info('🔥 Loading fire points...');
         let effectiveStartDate = date1;
         let features;
 
         try {
-          features = await fetchFireFeatures(date1, date2);
+          features = await fetchFireFeatures(date1, date2, signal);
         } catch (error) {
+          if (signal.aborted || error.code === 'ERR_CANCELED') return filteredFeatures.length;
           const status = error.response?.status;
           if (status < 500) throw error;
 
@@ -293,7 +299,7 @@ export const createFireLayer = (setFireLength, updateFireStatistics) => {
           console.warn(`Fire data unavailable for ${date1} - ${date2}; loading latest available date ${fallbackDate}.`, error);
           toast.warn(`Selected fire date is unavailable. Loading ${fallbackDate}.`);
           effectiveStartDate = fallbackDate;
-          features = await fetchFireFeatures(fallbackDate, fallbackDate);
+          features = await fetchFireFeatures(fallbackDate, fallbackDate, signal);
         }
 
         let newFiresCount = 0;
@@ -301,7 +307,7 @@ export const createFireLayer = (setFireLength, updateFireStatistics) => {
 
         if (previousDate) {
           try {
-            const previousFeatures = await fetchFireFeatures(previousDate, previousDate);
+            const previousFeatures = await fetchFireFeatures(previousDate, previousDate, signal);
             const previousKeys = new Set(previousFeatures.map(featureKey));
             newFiresCount = features.filter((feature) => !previousKeys.has(featureKey(feature))).length;
           } catch (error) {
@@ -317,6 +323,7 @@ export const createFireLayer = (setFireLength, updateFireStatistics) => {
         toast.success(`✅ Loaded ${features.length} fire point${features.length === 1 ? '' : 's'}`);
         return features.length;
       } catch (error) {
+        if (signal.aborted || error.code === 'ERR_CANCELED') return filteredFeatures.length;
         originalFeatures = [];
         filteredFeatures = [];
         syncSource();
@@ -325,6 +332,10 @@ export const createFireLayer = (setFireLength, updateFireStatistics) => {
         const status = error.response?.status;
         toast.error(status ? `Failed to load fire data (${status}).` : 'Failed to load fire data.');
         return 0;
+      } finally {
+        if (activeLoadController?.signal === signal) {
+          activeLoadController = null;
+        }
       }
     },
 

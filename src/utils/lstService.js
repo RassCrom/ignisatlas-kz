@@ -1,4 +1,5 @@
 import { formatModisDate } from './modisSearchService';
+import { cachedRequest, createCacheKey, fetchJson } from './requestCache';
 
 const PC_STAC_SEARCH = 'https://planetarycomputer.microsoft.com/api/stac/v1/search';
 const PC_TILE_BASE = 'https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad';
@@ -40,44 +41,37 @@ const SEARCH_WINDOW = {
   'landsat-c2-l2':  28,
 };
 
-async function searchModisLst({ product, startDate, endDate, bbox, maxRecords }) {
+async function searchModisLst({ product, startDate, endDate, bbox, maxRecords, signal }) {
   const url = new URL(PC_STAC_SEARCH);
   url.searchParams.set('collections', product);
   url.searchParams.set('limit', String(maxRecords));
   url.searchParams.set('datetime', `${startDate}T00:00:00Z/${endDate}T23:59:59Z`);
   if (bbox?.length === 4) url.searchParams.set('bbox', bbox.join(','));
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
-  try {
-    const response = await fetch(url.toString(), { signal: controller.signal });
-    if (!response.ok) {
-      const text = await response.text().catch(() => '');
-      throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
-    }
-    const data = await response.json();
-    const features = (data.features || []).map((f) => {
-      const props = f.properties || {};
-      return {
-        id:              f.id,
-        name:            f.id,
-        mission:         props.platform || 'MODIS',
-        collection:      f.collection,
-        acquisitionDate: props.datetime || props.start_datetime,
-        cloudCover:      props['eo:cloud_cover'] ?? null,
-        geometry:        f.geometry,
-        bbox:            f.bbox || null,
-        thumbnailUrl:    f.assets?.rendered_preview?.href || null,
-        sceneId:         props['modis:tile-id'] || f.id,
-      };
-    });
-    return { features, totalResults: data.numberReturned || features.length };
-  } finally {
-    clearTimeout(timeout);
-  }
+  const data = await cachedRequest(
+    createCacheKey('lst-modis-search', url.toString()),
+    () => fetchJson(url.toString(), { signal }),
+    { signal }
+  );
+  const features = (data.features || []).map((f) => {
+    const props = f.properties || {};
+    return {
+      id:              f.id,
+      name:            f.id,
+      mission:         props.platform || 'MODIS',
+      collection:      f.collection,
+      acquisitionDate: props.datetime || props.start_datetime,
+      cloudCover:      props['eo:cloud_cover'] ?? null,
+      geometry:        f.geometry,
+      bbox:            f.bbox || null,
+      thumbnailUrl:    f.assets?.rendered_preview?.href || null,
+      sceneId:         props['modis:tile-id'] || f.id,
+    };
+  });
+  return { features, totalResults: data.numberReturned || features.length };
 }
 
-export async function searchLst({ product, date, bbox, maxRecords = 20 }) {
+export async function searchLst({ product, date, bbox, maxRecords = 20, signal }) {
   const windowDays = SEARCH_WINDOW[product] ?? 10;
   const end   = new Date(date);
   const start = new Date(date);
@@ -87,13 +81,13 @@ export async function searchLst({ product, date, bbox, maxRecords = 20 }) {
   const endDate   = end.toISOString().split('T')[0];
 
   if (product !== 'landsat-c2-l2') {
-    return searchModisLst({ product, startDate, endDate, bbox, maxRecords });
+    return searchModisLst({ product, startDate, endDate, bbox, maxRecords, signal });
   }
 
-  return searchLandsatLst({ startDate, endDate, bbox, maxRecords });
+  return searchLandsatLst({ startDate, endDate, bbox, maxRecords, signal });
 }
 
-async function searchLandsatLst({ startDate, endDate, bbox, maxRecords }) {
+async function searchLandsatLst({ startDate, endDate, bbox, maxRecords, signal }) {
   const url = new URL(PC_STAC_SEARCH);
   url.searchParams.append('collections', 'landsat-c2-l2');
   url.searchParams.set('limit', String(maxRecords));
@@ -103,34 +97,27 @@ async function searchLandsatLst({ startDate, endDate, bbox, maxRecords }) {
   url.searchParams.set('filter', "platform IN ('landsat-8','landsat-9')");
   url.searchParams.set('filter-lang', 'cql2-text');
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
-  try {
-    const response = await fetch(url.toString(), { signal: controller.signal });
-    if (!response.ok) {
-      const text = await response.text().catch(() => '');
-      throw new Error(`HTTP ${response.status}: ${text.slice(0, 200)}`);
-    }
-    const data = await response.json();
-    const features = (data.features || []).map((f) => {
-      const props = f.properties || {};
-      return {
-        id:              f.id,
-        name:            f.id,
-        mission:         props.platform || 'Landsat',
-        collection:      f.collection,
-        acquisitionDate: props.datetime || props.start_datetime,
-        cloudCover:      props['eo:cloud_cover'] ?? null,
-        geometry:        f.geometry,
-        bbox:            f.bbox || null,
-        thumbnailUrl:    f.assets?.rendered_preview?.href || null,
-        sceneId:         props['landsat:scene_id'] || f.id,
-      };
-    });
-    return { features, totalResults: data.numberReturned || features.length };
-  } finally {
-    clearTimeout(timeout);
-  }
+  const data = await cachedRequest(
+    createCacheKey('lst-landsat-search', url.toString()),
+    () => fetchJson(url.toString(), { signal }),
+    { signal }
+  );
+  const features = (data.features || []).map((f) => {
+    const props = f.properties || {};
+    return {
+      id:              f.id,
+      name:            f.id,
+      mission:         props.platform || 'Landsat',
+      collection:      f.collection,
+      acquisitionDate: props.datetime || props.start_datetime,
+      cloudCover:      props['eo:cloud_cover'] ?? null,
+      geometry:        f.geometry,
+      bbox:            f.bbox || null,
+      thumbnailUrl:    f.assets?.rendered_preview?.href || null,
+      sceneId:         props['landsat:scene_id'] || f.id,
+    };
+  });
+  return { features, totalResults: data.numberReturned || features.length };
 }
 
 export { formatModisDate as formatLstDate };

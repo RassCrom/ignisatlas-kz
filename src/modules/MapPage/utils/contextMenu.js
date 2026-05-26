@@ -21,11 +21,30 @@ const ICONS = {
   bookmark: svg('<path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/>', '#f59e0b'),
 };
 
+/**
+ * Parse a trusted static SVG string into a live DOM node.
+ * DOMParser with image/svg+xml produces an inert document — any <script>
+ * elements inside are NOT executed, even after adoptNode().
+ */
+const parseSvg = (svgString) => {
+  const doc = new DOMParser().parseFromString(svgString, 'image/svg+xml');
+  return document.adoptNode(doc.documentElement);
+};
+
 const menuItem = (icon, label, onClick) => {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'context-menu-item';
-  button.innerHTML = `${icon}<span>${label}</span>`;
+
+  // Icon — always a static SVG from the svg() helper above, parsed safely.
+  button.appendChild(parseSvg(icon));
+
+  // Label — textContent guarantees no HTML injection even if a caller ever
+  // passes a user-supplied string (e.g. a bookmark name).
+  const labelSpan = document.createElement('span');
+  labelSpan.textContent = label;
+  button.appendChild(labelSpan);
+
   button.addEventListener('click', onClick);
   return button;
 };

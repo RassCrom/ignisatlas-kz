@@ -15,7 +15,7 @@ const NotFoundPage = () => {
         <p className={styles.code}>404</p>
         <h1 className={styles.title}>Территория не найдена</h1>
         <p className={styles.desc}>
-          Похоже, эти координаты не существуют на карте IgnisAtlas.
+          Похоже, эти координаты не существуют на карте Tabiat Küzeti.
         </p>
 
         <div className={styles.actions}>

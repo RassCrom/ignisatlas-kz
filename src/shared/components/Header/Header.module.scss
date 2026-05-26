@@ -77,6 +77,40 @@
                     mix-blend-mode: screen;
                 }
             }
+
+            .header-logo__text {
+                padding-left: .5rem;
+                padding-top: .2rem;
+                color: $bg-color;
+                font-weight: 600;
+            }
+
+            .header-logo__textblock {
+                padding-left: 0.45rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0;
+                line-height: 1;
+            }
+
+            .header-logo__runes {
+                font-size: 0.52rem;
+                letter-spacing: 0.1em;
+                color: rgba(217, 218, 245, 0.25);
+                display: block;
+            }
+
+            .header-logo__name {
+                font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+                font-weight: 700;
+                font-size: 0.9rem;
+                letter-spacing: -0.02em;
+                background: linear-gradient(135deg, #0ea5e9 0%, #34d399 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                display: block;
+            }
         }
 
         .header-info {
@@ -104,4 +138,196 @@
             }
         }
     }
+}
+
+/* ── CSS tooltips (replaces Tippy.js) ───────────────── */
+
+[data-tooltip] {
+    position: relative;
+
+    &::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: calc(100% + 8px);
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 0.2rem 0.5rem;
+        background: rgba(9, 10, 36, 0.95);
+        border: 1px solid rgba(136, 139, 224, 0.2);
+        border-radius: 6px;
+        font-size: 0.7rem;
+        color: rgba(217, 218, 245, 0.9);
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+        z-index: 100;
+    }
+
+    &:hover::after {
+        opacity: 1;
+    }
+}
+
+/* ── Help modal ──────────────────────────────────────── */
+
+.helpOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(7, 8, 26, 0.65);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 9vh 1rem 2rem;
+    overflow-y: auto;
+}
+
+.helpModal {
+    width: 100%;
+    max-width: 700px;
+    background: rgba(9, 10, 36, 0.96);
+    border: 1px solid rgba(136, 139, 224, 0.14);
+    border-radius: 16px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+}
+
+.helpHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(136, 139, 224, 0.08);
+}
+
+.helpTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(217, 218, 245, 0.9);
+    font-weight: 700;
+    font-size: 0.95rem;
+
+    svg {
+        color: rgba(136, 139, 224, 0.8);
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.helpClose {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    background: transparent;
+    border: 1px solid rgba(136, 139, 224, 0.12);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    svg {
+        color: rgba(217, 218, 245, 0.5);
+        width: 16px;
+        height: 16px;
+    }
+
+    &:hover {
+        background: rgba(136, 139, 224, 0.1);
+
+        svg {
+            color: rgba(217, 218, 245, 0.9);
+        }
+    }
+}
+
+.helpBody {
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.helpIntro {
+    color: rgba(217, 218, 245, 0.6);
+    font-size: 0.82rem;
+    line-height: 1.5;
+    margin: 0 0 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.helpRunes {
+    color: rgba(217, 218, 245, 0.25);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+}
+
+.helpGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+
+    @media (max-width: 500px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.helpSection {
+    padding: 0.7rem 0.8rem;
+    border: 1px solid rgba(136, 139, 224, 0.1);
+    border-radius: 10px;
+    background: rgba(136, 139, 224, 0.04);
+}
+
+.helpSectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgba(217, 218, 245, 0.85);
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+
+    svg {
+        color: rgba(52, 211, 153, 0.7);
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
+    }
+}
+
+.helpList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.22rem;
+
+    li {
+        color: rgba(217, 218, 245, 0.52);
+        font-size: 0.7rem;
+        line-height: 1.4;
+        padding-left: 0.6rem;
+        position: relative;
+
+        &::before {
+            content: '·';
+            position: absolute;
+            left: 0;
+            color: rgba(136, 139, 224, 0.4);
+        }
+    }
+}
+
+.helpFooter {
+    margin-top: 0.9rem;
+    color: rgba(217, 218, 245, 0.28);
+    font-size: 0.65rem;
+    text-align: center;
+    border-top: 1px solid rgba(136, 139, 224, 0.07);
+    padding-top: 0.7rem;
 }

@@ -6,6 +6,22 @@
   padding: 28px 24px;
   box-shadow: $shadow-card;
   margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(232, 64, 37, 0.5) 40%,
+      rgba(255, 140, 66, 0.4) 70%,
+      transparent 100%);
+  }
 }
 
 .title {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Layers, Trash2, X } from 'lucide-react';
-import * as turf from '@turf/turf';
+import { intersect, featureCollection, feature, area } from '@turf/turf';
 import { showToast } from 'src/shared/utils/showToast';
 import useAnalysisStore from 'src/app/store/analysisStore';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
@@ -138,9 +138,9 @@ const IntersectTool = () => {
     }
 
     try {
-      const result = turf.intersect(turf.featureCollection([
-        turf.feature(geojsonA),
-        turf.feature(geojsonB),
+      const result = intersect(featureCollection([
+        feature(geojsonA),
+        feature(geojsonB),
       ]));
 
       if (!result) {
@@ -150,7 +150,7 @@ const IntersectTool = () => {
 
       ensureLayers(map);
       setSourceData(map, SOURCES.result, result);
-      const areaM2 = turf.area(result);
+      const areaM2 = area(result);
       setIntersectionArea(areaM2 > 1e6 ? `${(areaM2 / 1e6).toFixed(2)} km2` : `${areaM2.toFixed(0)} m2`);
     } catch (e) {
       setError(e.message || 'Intersection failed.');

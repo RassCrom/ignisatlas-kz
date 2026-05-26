@@ -10,7 +10,7 @@
 .subtitle { @include section-subtitle; }
 
 .insight {
-  background: rgba(236, 72, 153, 0.08);
+  background: rgba(232, 64, 37, 0.06);
   border-radius: $radius-md;
   padding: 20px 24px;
   border: 1px solid $border-glow;
@@ -19,6 +19,6 @@
   line-height: 1.7;
 
   strong {
-    color: $accent-pink;
+    color: $accent-amber;
   }
 }

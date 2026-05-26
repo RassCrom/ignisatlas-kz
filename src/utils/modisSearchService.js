@@ -4,6 +4,8 @@
  * Rendering via PC TiTiler tile server (XYZ tiles from COGs).
  */
 
+import { cachedRequest, createCacheKey, fetchJson } from './requestCache';
+
 const PC_STAC_SEARCH = 'https://planetarycomputer.microsoft.com/api/stac/v1/search';
 const PC_TILE_BASE   = 'https://planetarycomputer.microsoft.com/api/data/v1/item/tiles/WebMercatorQuad';
 
@@ -155,6 +157,7 @@ export async function searchModis({
   bbox,
   cloudCoverage = 100, // Important, MODIS composites don't strictly filter well by cloud cover
   maxRecords = 20,
+  signal,
 }) {
   if (!startDate || !endDate) {
     throw new Error('Please select start and end dates');
@@ -198,25 +201,17 @@ export async function searchModis({
     url.searchParams.set('filter-lang', 'cql2-text');
   }
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
-
-  try {
-    const response = await fetch(url.toString(), { signal: controller.signal });
-    if (!response.ok) {
-      const text = await response.text().catch(() => '');
-      throw new Error(`HTTP ${response.status}: ${response.statusText} ${text.slice(0, 200)}`);
-    }
-    const data = await response.json();
-    const features = (data.features || []).map(transformFeature);
-    return {
-      features,
-      totalResults: data.numberReturned || features.length,
-      numberMatched: data.numberMatched || null,
-    };
-  } finally {
-    clearTimeout(timeout);
-  }
+  const data = await cachedRequest(
+    createCacheKey('modis-search', url.toString()),
+    () => fetchJson(url.toString(), { signal }),
+    { signal }
+  );
+  const features = (data.features || []).map(transformFeature);
+  return {
+    features,
+    totalResults: data.numberReturned || features.length,
+    numberMatched: data.numberMatched || null,
+  };
 }
 
 // ── Sort helpers ─────────────────────────────────────────────────────────

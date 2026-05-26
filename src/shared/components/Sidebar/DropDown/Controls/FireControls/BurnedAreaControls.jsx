@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
   ArrowDown,
@@ -23,6 +23,8 @@ import {
 
 import useAoiStore from 'src/app/store/aoiStore';
 import useBurnedAreaStore from 'src/app/store/burnedAreaStore';
+import { isAbortError, useAbortableTask } from 'src/shared/hooks/useAbortableTask';
+import { getCurrentMonth } from 'src/shared/utils/dateDefaults';
 import { KAZAKHSTAN_EXTENT_GEO } from 'src/modules/MapPage/utils/mapConstants';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import {
@@ -45,7 +47,7 @@ const KZ_GEOJSON = {
   ]],
 };
 
-const maxMonth = new Date().toISOString().slice(0, 7);
+const maxMonth = getCurrentMonth();
 
 const sortResults = (results, sortBy, sortOrder) => {
   const sorted = [...results].sort((a, b) => {
@@ -109,6 +111,8 @@ const BurnedAreaControls = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
   const [thumbErrors, setThumbErrors] = useState({});
+  const searchTask = useAbortableTask();
+  const searchSeqRef = useRef(0);
 
   const selectedDataset = getBurnedAreaDataset(store.selectedDataset);
   const sortedResults = useMemo(
@@ -117,29 +121,36 @@ const BurnedAreaControls = () => {
   );
 
   const handleSearch = useCallback(async () => {
+    const searchSeq = searchSeqRef.current + 1;
+    searchSeqRef.current = searchSeq;
     store.setIsLoading(true);
     store.setError(null);
     store.clearSearch();
     store.setActiveTab('results');
 
     try {
-      const { features, totalResults } = await searchBurnedAreas({
+      const { features, totalResults } = await searchTask.run((signal) => searchBurnedAreas({
         month: store.month,
         bbox: aoi.aoiBbox || KZ_BBOX,
         maxRecords: store.pageSize,
-      });
+        signal,
+      }));
+
+      if (searchSeq !== searchSeqRef.current) return;
 
       store.setSearchResults(features, totalResults);
       if (features.length === 0) {
         store.setError('Снимки не найдены. Выберите другой месяц или область.');
       }
     } catch (err) {
+      if (isAbortError(err)) return;
+      if (searchSeq !== searchSeqRef.current) return;
       store.setError(err.message);
       store.setActiveTab('search');
     } finally {
-      store.setIsLoading(false);
+      if (searchSeq === searchSeqRef.current) store.setIsLoading(false);
     }
-  }, [aoi.aoiBbox, store]);
+  }, [aoi.aoiBbox, store, searchTask]);
 
   const handleAddToMap = useCallback((result) => {
     const layerId = `burned_area_${result.id}_${store.selectedDataset}_${Date.now()}`;

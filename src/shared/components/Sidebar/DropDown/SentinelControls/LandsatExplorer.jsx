@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import {
   Search, Database, Layers, Calendar, Cloud, MapPin,
   AlertCircle, Trash2, Eye, EyeOff, Info, ChevronUp,
@@ -8,7 +8,9 @@ import {
 
 import useLandsatExplorerStore from 'src/app/store/landsatExplorerStore';
 import useAoiStore from 'src/app/store/aoiStore';
+import { isAbortError, useAbortableTask } from 'src/shared/hooks/useAbortableTask';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
+import { getCurrentDate } from 'src/shared/utils/dateDefaults';
 import {
   searchLandsat,
   buildTileUrl,
@@ -81,6 +83,8 @@ const LandsatExplorer = () => {
   const [expandedId, setExpandedId] = useState(null);
   const [thumbErrors, setThumbErrors] = useState({});
   const [isExpanded, setIsExpanded] = useState(false);
+  const searchTask = useAbortableTask();
+  const searchSeqRef = useRef(0);
 
   // ── Derived state ──────────────────────────────────────────────────────
 
@@ -92,20 +96,25 @@ const LandsatExplorer = () => {
   // ── Handlers ──────────────────────────────────────────────────────────
 
   const handleSearch = useCallback(async () => {
+    const searchSeq = searchSeqRef.current + 1;
+    searchSeqRef.current = searchSeq;
     store.setIsLoading(true);
     store.setError(null);
     store.clearSearch();
     store.setActiveTab('results');
 
     try {
-      const { features, totalResults, errors } = await searchLandsat({
+      const { features, totalResults, errors } = await searchTask.run((signal) => searchLandsat({
         mission: store.selectedMission,
         startDate: store.startDate,
         endDate: store.endDate,
         bbox: aoi.aoiBbox,
         cloudCoverage: store.cloudCoverage,
         maxRecords: store.pageSize,
-      });
+        signal,
+      }));
+
+      if (searchSeq !== searchSeqRef.current) return;
 
       store.setSearchResults(features, totalResults);
 
@@ -117,12 +126,14 @@ const LandsatExplorer = () => {
         console.warn('Partial search errors:', errors);
       }
     } catch (err) {
+      if (isAbortError(err)) return;
+      if (searchSeq !== searchSeqRef.current) return;
       store.setError(err.message);
       store.setActiveTab('search');
     } finally {
-      store.setIsLoading(false);
+      if (searchSeq === searchSeqRef.current) store.setIsLoading(false);
     }
-  }, [store, aoi]);
+  }, [store, aoi, searchTask]);
 
   const handleAddToMap = useCallback((result) => {
     const bands = store.selectedBands;
@@ -305,7 +316,7 @@ const LandsatExplorer = () => {
                       type="date"
                       value={store.startDate}
                       onChange={(e) => store.setStartDate(e.target.value)}
-                      max={store.endDate || new Date().toISOString().split('T')[0]}
+                      max={store.endDate || getCurrentDate()}
                       className={styles.dateInput}
                     />
                   </div>
@@ -318,7 +329,7 @@ const LandsatExplorer = () => {
                       value={store.endDate}
                       onChange={(e) => store.setEndDate(e.target.value)}
                       min={store.startDate}
-                      max={new Date().toISOString().split('T')[0]}
+                      max={getCurrentDate()}
                       className={styles.dateInput}
                     />
                   </div>

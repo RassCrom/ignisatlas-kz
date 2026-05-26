@@ -1,9 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
-import { applyBasemap, createInitialStyle, DEFAULT_BASEMAP_KEY } from '../utils/basemaps.js';
+import { Protocol } from 'pmtiles';
+import {
+  applyBasemap,
+  createInitialStyle,
+  DEFAULT_BASEMAP_KEY,
+  shouldReloadBasemapStyle,
+} from '../utils/basemaps.js';
 import { getMapStateFromHash, updateMapStateInHash } from '../utils/mapState.js';
 import { createContextMenu } from '../utils/contextMenu.js';
 import { handleFullScreenChange } from '../utils/fullScreen.js';
+
+const PRESERVE_DRAWING_BUFFER = import.meta.env.VITE_MAP_PRESERVE_DRAWING_BUFFER === 'true';
+let pmtilesRegistered = false;
 
 export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) => {
   const mapInstance = useRef(null);
@@ -14,6 +23,13 @@ export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) =
   useEffect(() => {
     if (!mapRef.current || mapInstance.current) return;
 
+    // Register PMTiles protocol once (idempotent — safe to call multiple times)
+    if (!pmtilesRegistered) {
+      const protocol = new Protocol();
+      maplibregl.addProtocol('pmtiles', protocol.tile);
+      pmtilesRegistered = true;
+    }
+
     const { zoom, center, bearing } = getMapStateFromHash();
     const map = new maplibregl.Map({
       container: mapRef.current,
@@ -23,7 +39,7 @@ export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) =
       bearing,
       pitch: 0,
       attributionControl: false,
-      preserveDrawingBuffer: true,
+      preserveDrawingBuffer: PRESERVE_DRAWING_BUFFER,
     });
 
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-right');
@@ -69,15 +85,23 @@ export const useMapInitialization = (mapRef, basemapKey = DEFAULT_BASEMAP_KEY) =
 
     if (activeBasemapRef.current === basemapKey) return;
 
-    setIsMapInitialized(false);
+    const requiresStyleReload = shouldReloadBasemapStyle(basemapKey, activeBasemapRef.current);
 
     const handleStyleLoad = () => {
       activeBasemapRef.current = basemapKey;
       setIsMapInitialized(true);
     };
 
-    map.once('style.load', handleStyleLoad);
-    applyBasemap(map, basemapKey);
+    if (requiresStyleReload) {
+      setIsMapInitialized(false);
+      map.once('style.load', handleStyleLoad);
+    }
+
+    applyBasemap(map, basemapKey, activeBasemapRef.current);
+
+    if (requiresStyleReload) return;
+
+    activeBasemapRef.current = basemapKey;
   }, [basemapKey, isMapInitialized]);
 
   return { mapInstance: mapInstance.current, isMapInitialized };

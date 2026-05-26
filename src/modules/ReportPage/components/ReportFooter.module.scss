@@ -1,0 +1,147 @@
+@use '../shared/variables' as *;
+
+.footer {
+  margin-top: 60px;
+  padding: 4rem 24px 2.5rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(5, 6, 18, 0.98) 100%);
+  border-top: 1px solid $border-subtle;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 24px;
+    right: 24px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(232, 64, 37, 0.4) 30%,
+      rgba(255, 140, 66, 0.35) 70%,
+      transparent 100%
+    );
+  }
+}
+
+.container {
+  max-width: $container-max;
+  margin: 0 auto;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid $border-subtle;
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.brand {
+  max-width: 340px;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  margin-bottom: 0.875rem;
+  transition: opacity 0.25s ease;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.logoImg {
+  height: 26px;
+  width: auto;
+  display: block;
+}
+
+.logoText {
+  font-family: $font-display;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, $accent-fire 0%, $accent-amber 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  color: $text-muted;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 0;
+  font-family: $font-display;
+}
+
+.nav {
+  flex-shrink: 0;
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 2px;
+  max-width: 380px;
+  justify-content: flex-end;
+
+  @media (max-width: 768px) {
+    justify-content: flex-start;
+  }
+}
+
+.navLink {
+  display: block;
+  color: $text-muted;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-family: $font-display;
+  padding: 5px 12px;
+  border-radius: $radius-sm;
+  transition: color 0.2s ease, background 0.2s ease;
+
+  &:hover {
+    color: $text-secondary;
+    background: $bg-card;
+  }
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2rem;
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.copyright {
+  color: $text-muted;
+  font-size: 0.8rem;
+  font-family: $font-display;
+  margin: 0;
+}
+
+.sources {
+  color: rgba(217, 218, 245, 0.28);
+  font-size: 0.78rem;
+  font-family: $font-display;
+  letter-spacing: 0.01em;
+}

@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
-import { Eye, EyeOff, Layers } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { Eye, EyeOff, Layers, Search, X } from 'lucide-react';
 
 import useAdminBoundaryStore from 'src/app/store/adminBoundaryStore';
 import { useLayersStore } from 'src/app/store/layersStore';
@@ -15,18 +15,34 @@ import useSentinelExplorerOldStore from 'src/app/store/sentinelExplorerOldStore'
 import useModisExplorerStore from 'src/app/store/modisExplorerStore';
 import useAtmosphereStore from 'src/app/store/atmosphereStore';
 import useLstStore from 'src/app/store/lstStore';
+import useFuelMoistureStore from 'src/app/store/fuelMoistureStore';
+import useWaterMonitoringStore from 'src/app/store/waterMonitoringStore';
+import useGlacierMonitoringStore from 'src/app/store/glacierMonitoringStore';
+import useDemStore from 'src/app/store/demStore';
+import useProtectedAreasStore from 'src/app/store/protectedAreasStore';
+import useClimateZonesStore from 'src/app/store/climateZonesStore';
+import usePeatlandsStore from 'src/app/store/peatlandsStore';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 
 import './FireControls/fireControls.scss';
 import './LayersPanel.scss';
 
-// Used for explorer tile layers that are added directly from sidebar tools.
+const STATUS_FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: 'visible', label: 'Visible' },
+  { id: 'hidden', label: 'Hidden' },
+  { id: 'raster', label: 'Raster' },
+  { id: 'vector', label: 'Vector' },
+];
+
 function syncMapLayer(id, visible, opacity01) {
   const map = getMapInstance();
   if (!map?.getLayer(id)) return;
+
   if (visible !== undefined) {
     map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
   }
+
   if (opacity01 !== undefined) {
     const layerType = map.getLayer(id)?.type;
     const paintProperty = layerType === 'fill'
@@ -44,26 +60,28 @@ function syncMapLayers(ids = [], visible, opacity01) {
   ids.forEach((id) => syncMapLayer(id, visible, opacity01));
 }
 
-// ─── Shared row ─────────────────────────────────────────────────────────────
-function LayerRow({ name, type, provider, visible, opacity01, onToggle, onOpacity, featureCount }) {
-  const pct = Math.round((opacity01 ?? 1) * 100);
+function LayerRow({ layer }) {
+  const pct = Math.round((layer.opacity01 ?? 1) * 100);
+
   return (
     <div className="lm-row">
       <div className="lm-row__top">
         <button
-          className={`lm-row__eye${visible ? ' lm-row__eye--on' : ''}`}
-          onClick={onToggle}
-          title={visible ? 'Hide layer' : 'Show layer'}
+          type="button"
+          className={`lm-row__eye${layer.visible ? ' lm-row__eye--on' : ''}`}
+          onClick={layer.onToggle}
+          title={layer.visible ? 'Hide layer' : 'Show layer'}
+          aria-label={layer.visible ? `Hide ${layer.name}` : `Show ${layer.name}`}
         >
-          {visible ? <Eye size={13} /> : <EyeOff size={13} />}
+          {layer.visible ? <Eye size={13} /> : <EyeOff size={13} />}
         </button>
-        <span className="lm-row__name" title={name}>{name}</span>
-        <span className={`lm-badge lm-badge--${type}`}>{type}</span>
+        <span className="lm-row__name" title={layer.name}>{layer.name}</span>
+        <span className={`lm-badge lm-badge--${layer.type}`}>{layer.type}</span>
       </div>
       <div className="lm-row__bottom">
-        <span className="lm-row__provider">{provider}</span>
-        {featureCount != null && (
-          <span className="lm-row__count">{featureCount.toLocaleString()} features</span>
+        <span className="lm-row__provider" title={layer.provider}>{layer.provider}</span>
+        {layer.featureCount != null && (
+          <span className="lm-row__count">{layer.featureCount.toLocaleString()} features</span>
         )}
         <div className="lm-row__opacity-wrap">
           <input
@@ -71,8 +89,9 @@ function LayerRow({ name, type, provider, visible, opacity01, onToggle, onOpacit
             min="0"
             max="100"
             value={pct}
-            onChange={(e) => onOpacity(Number(e.target.value) / 100)}
+            onChange={(event) => layer.onOpacity(Number(event.target.value) / 100)}
             className="lm-slider"
+            aria-label={`${layer.name} opacity`}
           />
           <span className="lm-row__opacity-val">{pct}%</span>
         </div>
@@ -81,13 +100,32 @@ function LayerRow({ name, type, provider, visible, opacity01, onToggle, onOpacit
   );
 }
 
-function SectionTitle({ children }) {
-  return <div className="lm-section__title">{children}</div>;
+function SectionTitle({ title, count }) {
+  return (
+    <div className="lm-section__title">
+      <span>{title}</span>
+      <span className="lm-section__count">{count}</span>
+    </div>
+  );
 }
 
-// ─── Panel ──────────────────────────────────────────────────────────────────
+const fmt = (iso) => (iso ? iso.slice(0, 10) : '-');
+
+const searchableText = (layer, sectionTitle) =>
+  `${sectionTitle} ${layer.name} ${layer.provider} ${layer.type}`.toLowerCase();
+
+const filterLayer = (layer, sectionTitle, query, filter) => {
+  if (filter === 'visible' && !layer.visible) return false;
+  if (filter === 'hidden' && layer.visible) return false;
+  if ((filter === 'raster' || filter === 'vector') && layer.type !== filter) return false;
+  if (!query) return true;
+  return searchableText(layer, sectionTitle).includes(query);
+};
+
 const LayersPanel = () => {
-  // Admin boundaries (opacity 0–1)
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState('all');
+
   const adminVis = useAdminBoundaryStore((s) => s.layerVisibility);
   const adminOpa = useAdminBoundaryStore((s) => s.layerOpacity);
   const changeFirst = useAdminBoundaryStore((s) => s.changeFirst);
@@ -95,25 +133,21 @@ const LayersPanel = () => {
   const changeThird = useAdminBoundaryStore((s) => s.changeThird);
   const changeAdminOpacity = useAdminBoundaryStore((s) => s.changeOpacity);
 
-  // Emergency / KCHS vector layers
   const kchsLayers = useLayersStore((s) => s.layers);
   const updateKchs = useLayersStore((s) => s.updateLayer);
   const changeKchsVis = useLayersStore((s) => s.changeVisibility);
 
-  // Settlements (opacity 0–1)
   const settVisible = useSettlementsStore((s) => s.visible);
   const settOpacity = useSettlementsStore((s) => s.opacity);
   const toggleSett = useSettlementsStore((s) => s.toggleVisible);
   const setSettOpacity = useSettlementsStore((s) => s.setOpacity);
 
-  // Fire hotspots (opacity 0–100)
   const fireVisible = useFireStore((s) => s.fireLayerVisible);
   const fireOpacity = useFireStore((s) => s.fireOpacity);
   const setFireVisible = useFireStore((s) => s.setFireLayerVisible);
   const setFireOpacity = useFireStore((s) => s.setFireOpacity);
   const fireLength = useFireStore((s) => s.fireLength);
 
-  // LULC Planetary Computer (opacity 0–1)
   const lulcPcAdded = useLulcPcStore((s) => s.isAdded);
   const lulcPcVisible = useLulcPcStore((s) => s.visible);
   const lulcPcOpacity = useLulcPcStore((s) => s.opacity);
@@ -121,23 +155,19 @@ const LayersPanel = () => {
   const toggleLulcPc = useLulcPcStore((s) => s.toggleVisible);
   const setLulcPcOpacity = useLulcPcStore((s) => s.setOpacity);
 
-  // LULC legacy (opacity 0–1)
   const lulcAdded = useLulcStore((s) => s.isAdded);
   const lulcVisible = useLulcStore((s) => s.visible);
   const lulcOpacity = useLulcStore((s) => s.opacity);
   const toggleLulc = useLulcStore((s) => s.toggleVisible);
   const setLulcOpacity = useLulcStore((s) => s.setOpacity);
 
-  // Risk map (opacity 0–1)
   const riskDates = useRiskMapStore((s) => s.riskDates);
   const updateRiskVis = useRiskMapStore((s) => s.updateDateVisibility);
   const updateRiskOpa = useRiskMapStore((s) => s.updateDateOpacity);
 
-  // Fire modelling (opacity 0–1, OL layer instance stored in fm.layer)
   const fmLayers = useFireModellingStore((s) => s.fireModellingLayers);
   const updateFm = useFireModellingStore((s) => s.updateFireModellingLayer);
 
-  // Explorer stores — activeLayers[].opacity is 0–100 int
   const landsatLayers = useLandsatExplorerStore((s) => s.activeLayers);
   const toggleLandsat = useLandsatExplorerStore((s) => s.toggleLayerVisibility);
   const updateLandsatOpa = useLandsatExplorerStore((s) => s.updateLayerOpacity);
@@ -162,309 +192,533 @@ const LayersPanel = () => {
   const toggleLst = useLstStore((s) => s.toggleLayerVisibility);
   const updateLstOpa = useLstStore((s) => s.updateLayerOpacity);
 
-  // Build handlers for a single explorer tile layer (needs store + direct map sync)
+  const fuelMoistureLayers = useFuelMoistureStore((s) => s.activeLayers);
+  const toggleFuelMoisture = useFuelMoistureStore((s) => s.toggleLayerVisibility);
+  const updateFuelMoistureOpa = useFuelMoistureStore((s) => s.updateLayerOpacity);
+
+  const waterBodiesVisible = useWaterMonitoringStore((s) => s.visible);
+  const waterBodiesOpacity = useWaterMonitoringStore((s) => s.opacity);
+  const toggleWaterBodies = useWaterMonitoringStore((s) => s.toggleVisible);
+  const setWaterBodiesOpacity = useWaterMonitoringStore((s) => s.setOpacity);
+  const waterMonitoringLayers = useWaterMonitoringStore((s) => s.activeLayers);
+  const toggleWaterMonitoring = useWaterMonitoringStore((s) => s.toggleLayerVisibility);
+  const updateWaterMonitoringOpa = useWaterMonitoringStore((s) => s.updateLayerOpacity);
+
+  const glacierInventoryVisible = useGlacierMonitoringStore((s) => s.visible);
+  const glacierInventoryOpacity = useGlacierMonitoringStore((s) => s.opacity);
+  const toggleGlacierInventory = useGlacierMonitoringStore((s) => s.toggleVisible);
+  const setGlacierInventoryOpacity = useGlacierMonitoringStore((s) => s.setOpacity);
+  const glacierMonitoringLayers = useGlacierMonitoringStore((s) => s.activeLayers);
+  const toggleGlacierMonitoring = useGlacierMonitoringStore((s) => s.toggleLayerVisibility);
+  const updateGlacierMonitoringOpa = useGlacierMonitoringStore((s) => s.updateLayerOpacity);
+
+  const demAdded = useDemStore((s) => s.isAdded);
+  const demVisible = useDemStore((s) => s.visible);
+  const demOpacity = useDemStore((s) => s.opacity);
+  const demRenderer = useDemStore((s) => s.renderer);
+  const toggleDem = useDemStore((s) => s.toggleVisible);
+  const setDemOpacity = useDemStore((s) => s.setOpacity);
+
+  const protectedAreasVisible = useProtectedAreasStore((s) => s.visible);
+  const protectedAreasOpacity = useProtectedAreasStore((s) => s.opacity);
+  const toggleProtectedAreas = useProtectedAreasStore((s) => s.toggleVisible);
+  const setProtectedAreasOpacity = useProtectedAreasStore((s) => s.setOpacity);
+
+  const climateZonesVisible = useClimateZonesStore((s) => s.visible);
+  const climateZonesOpacity = useClimateZonesStore((s) => s.opacity);
+  const toggleClimateZones = useClimateZonesStore((s) => s.toggleVisible);
+  const setClimateZonesOpacity = useClimateZonesStore((s) => s.setOpacity);
+
+  const peatlandsVisible = usePeatlandsStore((s) => s.visible);
+  const peatlandsOpacity = usePeatlandsStore((s) => s.opacity);
+  const togglePeatlands = usePeatlandsStore((s) => s.toggleVisible);
+  const setPeatlandsOpacity = usePeatlandsStore((s) => s.setOpacity);
+
   const makeExplorerHandlers = useCallback((layer, toggleFn, updateOpaFn) => ({
     onToggle: () => {
       const next = !layer.visible;
       toggleFn(layer.id);
       syncMapLayer(layer.layerId || layer.id, next, undefined);
     },
-    onOpacity: (v01) => {
-      updateOpaFn(layer.id, Math.round(v01 * 100));
-      syncMapLayer(layer.layerId || layer.id, undefined, v01);
+    onOpacity: (opacity01) => {
+      updateOpaFn(layer.id, Math.round(opacity01 * 100));
+      syncMapLayer(layer.layerId || layer.id, undefined, opacity01);
     },
   }), []);
 
-  // Active layer count for the header badge
-  const totalVisible =
-    Object.values(adminVis).filter(Boolean).length +
-    kchsLayers.filter((l) => l.visible).length +
-    (settVisible ? 1 : 0) +
-    (fireVisible ? 1 : 0) +
-    (lulcPcAdded && lulcPcVisible ? 1 : 0) +
-    (lulcAdded && lulcVisible ? 1 : 0) +
-    riskDates.filter((r) => r.isVisible).length +
-    Object.values(fmLayers).filter((l) => l.visible ?? true).length +
-    [landsatLayers, sentinelLayers, sentinelOldLayers, modisLayers, atmosphereLayers, lstLayers]
-      .reduce((sum, arr) => sum + arr.filter((l) => l.visible).length, 0);
+  const sections = useMemo(() => {
+    const baseLayers = [
+      {
+        id: 'fire-hotspots',
+        name: 'Fire Hotspots',
+        type: 'vector',
+        provider: 'NASA FIRMS / API',
+        visible: fireVisible,
+        opacity01: fireOpacity / 100,
+        featureCount: fireLength > 0 ? fireLength : null,
+        onToggle: setFireVisible,
+        onOpacity: (opacity01) => setFireOpacity(Math.round(opacity01 * 100)),
+      },
+      {
+        id: 'country-boundaries',
+        name: 'Kazakhstan Boundary',
+        type: 'vector',
+        provider: 'OpenStreetMap / Local',
+        visible: adminVis.country_boundaries ?? false,
+        opacity01: adminOpa.country_boundaries ?? 1,
+        onToggle: changeFirst,
+        onOpacity: (opacity01) => changeAdminOpacity('country_boundaries', opacity01),
+      },
+      {
+        id: 'region-boundaries',
+        name: 'Regions',
+        type: 'vector',
+        provider: 'OpenStreetMap / Local',
+        visible: adminVis.region_boundaries ?? false,
+        opacity01: adminOpa.region_boundaries ?? 1,
+        onToggle: changeSecond,
+        onOpacity: (opacity01) => changeAdminOpacity('region_boundaries', opacity01),
+      },
+      {
+        id: 'district-boundaries',
+        name: 'Districts',
+        type: 'vector',
+        provider: 'OpenStreetMap / Local',
+        visible: adminVis.district_boundaries ?? false,
+        opacity01: adminOpa.district_boundaries ?? 1,
+        onToggle: changeThird,
+        onOpacity: (opacity01) => changeAdminOpacity('district_boundaries', opacity01),
+      },
+      {
+        id: 'settlements',
+        name: 'Settlements',
+        type: 'vector',
+        provider: 'OpenStreetMap',
+        visible: settVisible,
+        opacity01: settOpacity,
+        onToggle: toggleSett,
+        onOpacity: setSettOpacity,
+      },
+    ];
 
-  const hasDynamicLayers =
-    lulcPcAdded || lulcAdded ||
-    riskDates.length > 0 ||
-    Object.keys(fmLayers).length > 0 ||
-    landsatLayers.length > 0 || sentinelLayers.length > 0 || sentinelOldLayers.length > 0 ||
-    modisLayers.length > 0 || atmosphereLayers.length > 0 || lstLayers.length > 0;
+    const emergencyLayers = kchsLayers.map((layer) => ({
+      id: `kchs-${layer.id}`,
+      name: layer.layerName,
+      type: 'vector',
+      provider: 'Local GeoJSON',
+      visible: layer.visible,
+      opacity01: layer.opacity ?? 1,
+      onToggle: () => changeKchsVis(layer.id),
+      onOpacity: (opacity01) => updateKchs(layer.id, { opacity: opacity01 }),
+    }));
 
-  const hasExplorerLayers =
-    landsatLayers.length > 0 || sentinelLayers.length > 0 || sentinelOldLayers.length > 0 ||
-    modisLayers.length > 0 || atmosphereLayers.length > 0 || lstLayers.length > 0;
+    const landCoverLayers = [
+      lulcPcAdded && {
+        id: 'lulc-pc',
+        name: `ESRI LULC 10m - ${lulcPcYear}`,
+        type: 'raster',
+        provider: 'Planetary Computer / Sentinel-2',
+        visible: lulcPcVisible,
+        opacity01: lulcPcOpacity,
+        onToggle: toggleLulcPc,
+        onOpacity: setLulcPcOpacity,
+      },
+      lulcAdded && {
+        id: 'lulc-legacy',
+        name: 'ESRI Land Cover legacy',
+        type: 'raster',
+        provider: 'ArcGIS ImageServer',
+        visible: lulcVisible,
+        opacity01: lulcOpacity,
+        onToggle: toggleLulc,
+        onOpacity: setLulcOpacity,
+      },
+    ].filter(Boolean);
 
-  const fmt = (iso) => (iso ? iso.slice(0, 10) : '—');
+    const fireAnalysisLayers = [
+      ...riskDates.map((riskDate) => ({
+        id: `risk-${riskDate.id}`,
+        name: `Fire Risk - ${riskDate.date}`,
+        type: 'raster',
+        provider: 'Local / API',
+        visible: riskDate.isVisible,
+        opacity01: riskDate.opacity ?? 1,
+        onToggle: () => updateRiskVis(riskDate.id, !riskDate.isVisible),
+        onOpacity: (opacity01) => updateRiskOpa(riskDate.id, opacity01),
+      })),
+      ...Object.values(fmLayers).map((layer) => ({
+        id: `fire-model-${layer.id}`,
+        name: `Fire Model - ${fmt(layer.addedAt)}`,
+        type: 'raster',
+        provider: 'Local / API',
+        visible: layer.visible ?? true,
+        opacity01: layer.opacity ?? 1,
+        onToggle: () => {
+          const next = !(layer.visible ?? true);
+          updateFm(layer.id, { visible: next });
+          syncMapLayers(layer.layerIds, next, undefined);
+        },
+        onOpacity: (opacity01) => {
+          updateFm(layer.id, { opacity: opacity01 });
+          syncMapLayers(layer.layerIds, undefined, opacity01);
+        },
+      })),
+      ...fuelMoistureLayers.map((layer) => ({
+        id: `fuel-moisture-${layer.id}`,
+        name: `${layer.indexLabel || 'NDMI'} Fuel Dryness - ${fmt(layer.acquisitionDate)}`,
+        type: 'raster',
+        provider: 'Planetary Computer / Sentinel-2',
+        visible: layer.visible,
+        opacity01: (layer.opacity ?? 82) / 100,
+        ...makeExplorerHandlers(layer, toggleFuelMoisture, updateFuelMoistureOpa),
+      })),
+    ];
+
+    const thematicLayers = [
+      demAdded && {
+        id: 'dem-relief',
+        name: `Relief - ${demRenderer}`,
+        type: 'raster',
+        provider: 'Planetary Computer / Copernicus DEM',
+        visible: demVisible,
+        opacity01: demOpacity,
+        onToggle: toggleDem,
+        onOpacity: setDemOpacity,
+      },
+      {
+        id: 'water-bodies',
+        name: 'Kazakhstan Water Bodies',
+        type: 'vector',
+        provider: 'Public GeoJSON',
+        visible: waterBodiesVisible,
+        opacity01: waterBodiesOpacity,
+        onToggle: toggleWaterBodies,
+        onOpacity: setWaterBodiesOpacity,
+      },
+      {
+        id: 'glacier-inventory',
+        name: 'Kazakhstan Glaciers',
+        type: 'vector',
+        provider: 'Public GeoJSON',
+        visible: glacierInventoryVisible,
+        opacity01: glacierInventoryOpacity,
+        featureCount: 1754,
+        onToggle: toggleGlacierInventory,
+        onOpacity: setGlacierInventoryOpacity,
+      },
+      {
+        id: 'protected-areas',
+        name: 'Границы ООПТ',
+        type: 'vector',
+        provider: 'Protected areas boundaries',
+        visible: protectedAreasVisible,
+        opacity01: protectedAreasOpacity,
+        onToggle: toggleProtectedAreas,
+        onOpacity: setProtectedAreasOpacity,
+      },
+      {
+        id: 'climate-zones',
+        name: 'Климатические зоны',
+        type: 'vector',
+        provider: 'Climate zones',
+        visible: climateZonesVisible,
+        opacity01: climateZonesOpacity,
+        onToggle: toggleClimateZones,
+        onOpacity: setClimateZonesOpacity,
+      },
+      {
+        id: 'peatlands',
+        name: 'Торфяники',
+        type: 'vector',
+        provider: 'Peatlands',
+        visible: peatlandsVisible,
+        opacity01: peatlandsOpacity,
+        onToggle: togglePeatlands,
+        onOpacity: setPeatlandsOpacity,
+      },
+    ].filter(Boolean);
+
+    const satelliteLayers = [
+      ...landsatLayers.map((layer) => ({
+        id: `landsat-${layer.id}`,
+        name: `Landsat - ${fmt(layer.acquisitionDate)}`,
+        type: 'raster',
+        provider: 'Planetary Computer',
+        visible: layer.visible,
+        opacity01: (layer.opacity ?? 80) / 100,
+        ...makeExplorerHandlers(layer, toggleLandsat, updateLandsatOpa),
+      })),
+      ...sentinelLayers.map((layer) => ({
+        id: `sentinel-${layer.id}`,
+        name: `Sentinel - ${fmt(layer.acquisitionDate)}`,
+        type: 'raster',
+        provider: 'Planetary Computer',
+        visible: layer.visible,
+        opacity01: (layer.opacity ?? 80) / 100,
+        ...makeExplorerHandlers(layer, toggleSentinel, updateSentinelOpa),
+      })),
+      ...sentinelOldLayers.map((layer) => ({
+        id: `sentinel-legacy-${layer.id}`,
+        name: `Sentinel Legacy - ${fmt(layer.acquisitionDate)}`,
+        type: 'raster',
+        provider: 'Copernicus / Sentinel Hub',
+        visible: layer.visible,
+        opacity01: layer.opacity ?? 0.8,
+        onToggle: () => {
+          const next = !layer.visible;
+          toggleSentinelOld(layer.id);
+          syncMapLayer(layer.layerId || layer.id, next, undefined);
+        },
+        onOpacity: (opacity01) => {
+          updateSentinelOldOpa(layer.id, opacity01);
+          syncMapLayer(layer.layerId || layer.id, undefined, opacity01);
+        },
+      })),
+      ...modisLayers.map((layer) => ({
+        id: `modis-${layer.id}`,
+        name: `MODIS - ${fmt(layer.acquisitionDate)}`,
+        type: 'raster',
+        provider: 'Planetary Computer',
+        visible: layer.visible,
+        opacity01: (layer.opacity ?? 80) / 100,
+        ...makeExplorerHandlers(layer, toggleModis, updateModisOpa),
+      })),
+      ...atmosphereLayers.map((layer) => ({
+        id: `atmosphere-${layer.id}`,
+        name: `${layer.name || 'Atmosphere'} - ${fmt(layer.acquisitionDate || layer.date)}`,
+        type: 'raster',
+        provider: layer.provider || 'NASA GIBS WMS',
+        visible: layer.visible,
+        opacity01: (layer.opacity ?? 80) / 100,
+        ...makeExplorerHandlers(layer, toggleAtmosphere, updateAtmosphereOpa),
+      })),
+      ...lstLayers.map((layer) => ({
+        id: `lst-${layer.id}`,
+        name: `LST - ${fmt(layer.acquisitionDate)}`,
+        type: 'raster',
+        provider: layer.collection === 'landsat-c2-l2'
+          ? 'Planetary Computer / Landsat'
+          : 'Planetary Computer / MODIS',
+        visible: layer.visible,
+        opacity01: (layer.opacity ?? 80) / 100,
+        ...makeExplorerHandlers(layer, toggleLst, updateLstOpa),
+      })),
+      ...waterMonitoringLayers.map((layer) => ({
+        id: `water-monitoring-${layer.id}`,
+        name: `${layer.indexLabel || 'Water'} - ${fmt(layer.acquisitionDate)}`,
+        type: 'raster',
+        provider: layer.collection?.includes('sentinel-3')
+          ? 'Planetary Computer / Sentinel-3 OLCI'
+          : 'Planetary Computer / Sentinel-2',
+        visible: layer.visible,
+        opacity01: (layer.opacity ?? 82) / 100,
+        ...makeExplorerHandlers(layer, toggleWaterMonitoring, updateWaterMonitoringOpa),
+      })),
+      ...glacierMonitoringLayers.map((layer) => ({
+        id: `glacier-monitoring-${layer.id}`,
+        name: `${layer.indexLabel || 'Glacier'} - ${fmt(layer.acquisitionDate)}`,
+        type: 'raster',
+        provider: 'Planetary Computer / Sentinel-2',
+        visible: layer.visible,
+        opacity01: (layer.opacity ?? 84) / 100,
+        ...makeExplorerHandlers(layer, toggleGlacierMonitoring, updateGlacierMonitoringOpa),
+      })),
+    ];
+
+    return [
+      { id: 'base', title: 'Base Layers', layers: baseLayers },
+      { id: 'emergency', title: 'Emergency Objects', layers: emergencyLayers },
+      { id: 'land-cover', title: 'Land Cover', layers: landCoverLayers },
+      { id: 'thematic', title: 'Relief & Thematic Layers', layers: thematicLayers },
+      { id: 'fire-analysis', title: 'Fire Analysis', layers: fireAnalysisLayers },
+      { id: 'satellite', title: 'Satellite & API Layers', layers: satelliteLayers },
+    ].filter((section) => section.layers.length > 0);
+  }, [
+    adminOpa,
+    adminVis,
+    atmosphereLayers,
+    changeAdminOpacity,
+    changeFirst,
+    changeKchsVis,
+    changeSecond,
+    changeThird,
+    climateZonesOpacity,
+    climateZonesVisible,
+    demAdded,
+    demOpacity,
+    demRenderer,
+    demVisible,
+    fireLength,
+    fireOpacity,
+    fireVisible,
+    fmLayers,
+    fuelMoistureLayers,
+    glacierInventoryOpacity,
+    glacierInventoryVisible,
+    glacierMonitoringLayers,
+    kchsLayers,
+    landsatLayers,
+    lstLayers,
+    lulcAdded,
+    lulcOpacity,
+    lulcPcAdded,
+    lulcPcOpacity,
+    lulcPcVisible,
+    lulcPcYear,
+    lulcVisible,
+    makeExplorerHandlers,
+    modisLayers,
+    riskDates,
+    sentinelLayers,
+    sentinelOldLayers,
+    setFireOpacity,
+    setFireVisible,
+    setClimateZonesOpacity,
+    setDemOpacity,
+    setGlacierInventoryOpacity,
+    setLulcOpacity,
+    setLulcPcOpacity,
+    setPeatlandsOpacity,
+    setProtectedAreasOpacity,
+    setSettOpacity,
+    settOpacity,
+    settVisible,
+    toggleAtmosphere,
+    toggleClimateZones,
+    toggleDem,
+    toggleFuelMoisture,
+    toggleGlacierInventory,
+    toggleGlacierMonitoring,
+    toggleLandsat,
+    toggleLst,
+    toggleLulc,
+    toggleLulcPc,
+    toggleModis,
+    togglePeatlands,
+    toggleProtectedAreas,
+    toggleSentinel,
+    toggleSentinelOld,
+    toggleSett,
+    updateAtmosphereOpa,
+    updateFm,
+    updateFuelMoistureOpa,
+    updateGlacierMonitoringOpa,
+    updateKchs,
+    updateLandsatOpa,
+    updateLstOpa,
+    updateModisOpa,
+    updateRiskOpa,
+    updateRiskVis,
+    updateSentinelOpa,
+    updateSentinelOldOpa,
+    setWaterBodiesOpacity,
+    toggleWaterBodies,
+    toggleWaterMonitoring,
+    updateWaterMonitoringOpa,
+    waterBodiesOpacity,
+    waterBodiesVisible,
+    waterMonitoringLayers,
+    peatlandsOpacity,
+    peatlandsVisible,
+    protectedAreasOpacity,
+    protectedAreasVisible,
+  ]);
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const filteredSections = useMemo(
+    () => sections
+      .map((section) => ({
+        ...section,
+        layers: section.layers.filter((layer) => filterLayer(layer, section.title, normalizedQuery, filter)),
+      }))
+      .filter((section) => section.layers.length > 0),
+    [filter, normalizedQuery, sections]
+  );
+
+  const allLayers = sections.flatMap((section) => section.layers);
+  const filteredCount = filteredSections.reduce((sum, section) => sum + section.layers.length, 0);
+  const visibleCount = allLayers.filter((layer) => layer.visible).length;
+  const dynamicCount = allLayers.length - 8;
+  const hasSearch = normalizedQuery.length > 0 || filter !== 'all';
 
   return (
     <div className="fire-controls">
-      {/* Header */}
       <div className="fire-controls__header">
         <div className="fire-controls__toggle" style={{ cursor: 'default' }}>
           <div className="fire-controls__toggle-icon">
             <Layers size={15} className="fire-controls__icon-active" />
           </div>
           <span className="fire-controls__toggle-label">Layer Management</span>
-          {totalVisible > 0 && (
-            <span className="lm-count-badge">{totalVisible} visible</span>
+          {visibleCount > 0 && (
+            <span className="lm-count-badge">{visibleCount} visible</span>
           )}
         </div>
       </div>
 
-      <div className="fire-controls__content" style={{ paddingTop: 6 }}>
-
-        {/* ── Base layers ─────────────────────────────────────── */}
-        <div className="lm-section">
-          <SectionTitle>Base Layers</SectionTitle>
-
-          <LayerRow
-            name="Fire Hotspots"
-            type="vector"
-            provider="NASA FIRMS / API"
-            visible={fireVisible}
-            opacity01={fireOpacity / 100}
-            onToggle={setFireVisible}
-            onOpacity={(v01) => setFireOpacity(Math.round(v01 * 100))}
-            featureCount={fireLength > 0 ? fireLength : null}
-          />
-
-          {[
-            { key: 'country_boundaries',  label: 'Kazakhstan Boundary', toggle: changeFirst },
-            { key: 'region_boundaries',   label: 'Regions',             toggle: changeSecond },
-            { key: 'district_boundaries', label: 'Districts',           toggle: changeThird },
-          ].map(({ key, label, toggle }) => (
-            <LayerRow
-              key={key}
-              name={label}
-              type="vector"
-              provider="OpenStreetMap / Local"
-              visible={adminVis[key] ?? false}
-              opacity01={adminOpa[key] ?? 1}
-              onToggle={toggle}
-              onOpacity={(v01) => changeAdminOpacity(key, v01)}
+      <div className="fire-controls__content lm-panel">
+        <div className="lm-toolbar">
+          <label className="lm-search">
+            <Search size={13} />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search layers"
             />
-          ))}
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                aria-label="Clear layer search"
+              >
+                <X size={12} />
+              </button>
+            )}
+          </label>
 
-          <LayerRow
-            name="Settlements"
-            type="vector"
-            provider="OpenStreetMap"
-            visible={settVisible}
-            opacity01={settOpacity}
-            onToggle={toggleSett}
-            onOpacity={setSettOpacity}
-          />
+          <div className="lm-filter-tabs" role="group" aria-label="Layer filters">
+            {STATUS_FILTERS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={filter === item.id ? 'lm-filter-tabs__item lm-filter-tabs__item--active' : 'lm-filter-tabs__item'}
+                onClick={() => setFilter(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="lm-summary">
+            <span>{filteredCount} shown</span>
+            <span>{allLayers.length} total</span>
+          </div>
         </div>
 
-        {/* ── Emergency / KCHS ─────────────────────────────────── */}
-        <div className="lm-section">
-          <SectionTitle>Emergency Objects</SectionTitle>
-          {kchsLayers.map((layer) => (
-            <LayerRow
-              key={layer.id}
-              name={layer.layerName}
-              type="vector"
-              provider="Local GeoJSON"
-              visible={layer.visible}
-              opacity01={layer.opacity ?? 1}
-                onToggle={() => changeKchsVis(layer.id)}
-                onOpacity={(v01) => {
-                  updateKchs(layer.id, { opacity: v01 });
-                }}
-              />
-          ))}
-        </div>
+        {filteredSections.map((section) => (
+          <div key={section.id} className="lm-section">
+            <SectionTitle title={section.title} count={section.layers.length} />
+            {section.layers.map((layer) => (
+              <LayerRow key={layer.id} layer={layer} />
+            ))}
+          </div>
+        ))}
 
-        {/* ── Land cover (only if a layer is added) ─────────────── */}
-        {(lulcPcAdded || lulcAdded) && (
-          <div className="lm-section">
-            <SectionTitle>Land Cover</SectionTitle>
-            {lulcPcAdded && (
-              <LayerRow
-                name={`ESRI LULC 10m — ${lulcPcYear}`}
-                type="raster"
-                provider="Planetary Computer / Sentinel-2"
-                visible={lulcPcVisible}
-                opacity01={lulcPcOpacity}
-                onToggle={toggleLulcPc}
-                onOpacity={setLulcPcOpacity}
-              />
-            )}
-            {lulcAdded && (
-              <LayerRow
-                name="ESRI Land Cover (legacy)"
-                type="raster"
-                provider="ArcGIS ImageServer"
-                visible={lulcVisible}
-                opacity01={lulcOpacity}
-                onToggle={toggleLulc}
-                onOpacity={setLulcOpacity}
-              />
-            )}
+        {filteredSections.length === 0 && (
+          <div className="lm-empty">
+            No layers match the current search.
+            <br />Try a layer name, provider, or type.
           </div>
         )}
 
-        {/* ── Fire analysis (only if active) ───────────────────── */}
-        {(riskDates.length > 0 || Object.keys(fmLayers).length > 0) && (
-          <div className="lm-section">
-            <SectionTitle>Fire Analysis</SectionTitle>
-            {riskDates.map((r) => (
-              <LayerRow
-                key={r.id}
-                name={`Fire Risk — ${r.date}`}
-                type="raster"
-                provider="Local / API"
-                visible={r.isVisible}
-                opacity01={r.opacity ?? 1}
-                onToggle={() => updateRiskVis(r.id, !r.isVisible)}
-                onOpacity={(v01) => updateRiskOpa(r.id, v01)}
-              />
-            ))}
-            {Object.values(fmLayers).map((fm) => (
-              <LayerRow
-                key={fm.id}
-                name={`Fire Model — ${fmt(fm.addedAt)}`}
-                type="raster"
-                provider="Local / API"
-                visible={fm.visible ?? true}
-                opacity01={fm.opacity ?? 1}
-                onToggle={() => {
-                  const next = !(fm.visible ?? true);
-                  updateFm(fm.id, { visible: next });
-                  syncMapLayers(fm.layerIds, next, undefined);
-                }}
-                onOpacity={(v01) => {
-                  updateFm(fm.id, { opacity: v01 });
-                  syncMapLayers(fm.layerIds, undefined, v01);
-                }}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* ── Explorer tile layers (only if any active) ─────────── */}
-        {hasExplorerLayers && (
-          <div className="lm-section">
-            <SectionTitle>Satellite Imagery</SectionTitle>
-
-            {landsatLayers.map((layer) => {
-              const { onToggle, onOpacity } = makeExplorerHandlers(layer, toggleLandsat, updateLandsatOpa);
-              return (
-                <LayerRow
-                  key={layer.id}
-                  name={`Landsat — ${fmt(layer.acquisitionDate)}`}
-                  type="raster"
-                  provider="Planetary Computer"
-                  visible={layer.visible}
-                  opacity01={(layer.opacity ?? 80) / 100}
-                  onToggle={onToggle}
-                  onOpacity={onOpacity}
-                />
-              );
-            })}
-
-            {sentinelLayers.map((layer) => {
-              const { onToggle, onOpacity } = makeExplorerHandlers(layer, toggleSentinel, updateSentinelOpa);
-              return (
-                <LayerRow
-                  key={layer.id}
-                  name={`Sentinel — ${fmt(layer.acquisitionDate)}`}
-                  type="raster"
-                  provider="Planetary Computer"
-                  visible={layer.visible}
-                  opacity01={(layer.opacity ?? 80) / 100}
-                  onToggle={onToggle}
-                  onOpacity={onOpacity}
-                />
-              );
-            })}
-
-            {sentinelOldLayers.map((layer) => (
-              <LayerRow
-                key={layer.id}
-                name={`Sentinel Legacy — ${fmt(layer.acquisitionDate)}`}
-                type="raster"
-                provider="Copernicus / Sentinel Hub"
-                visible={layer.visible}
-                opacity01={layer.opacity ?? 0.8}
-                onToggle={() => {
-                  const next = !layer.visible;
-                  toggleSentinelOld(layer.id);
-                  syncMapLayer(layer.layerId || layer.id, next, undefined);
-                }}
-                onOpacity={(v01) => {
-                  updateSentinelOldOpa(layer.id, v01);
-                  syncMapLayer(layer.layerId || layer.id, undefined, v01);
-                }}
-              />
-            ))}
-
-            {modisLayers.map((layer) => {
-              const { onToggle, onOpacity } = makeExplorerHandlers(layer, toggleModis, updateModisOpa);
-              return (
-                <LayerRow
-                  key={layer.id}
-                  name={`MODIS — ${fmt(layer.acquisitionDate)}`}
-                  type="raster"
-                  provider="Planetary Computer"
-                  visible={layer.visible}
-                  opacity01={(layer.opacity ?? 80) / 100}
-                  onToggle={onToggle}
-                  onOpacity={onOpacity}
-                />
-              );
-            })}
-
-            {atmosphereLayers.map((layer) => {
-              const { onToggle, onOpacity } = makeExplorerHandlers(layer, toggleAtmosphere, updateAtmosphereOpa);
-              return (
-                <LayerRow
-                  key={layer.id}
-                  name={`Atmosphere — ${fmt(layer.acquisitionDate)}`}
-                  type="raster"
-                  provider="Planetary Computer / Sentinel-5P"
-                  visible={layer.visible}
-                  opacity01={(layer.opacity ?? 80) / 100}
-                  onToggle={onToggle}
-                  onOpacity={onOpacity}
-                />
-              );
-            })}
-
-            {lstLayers.map((layer) => {
-              const { onToggle, onOpacity } = makeExplorerHandlers(layer, toggleLst, updateLstOpa);
-              const provider = layer.collection === 'landsat-c2-l2'
-                ? 'Planetary Computer / Landsat'
-                : 'Planetary Computer / MODIS';
-              return (
-                <LayerRow
-                  key={layer.id}
-                  name={`LST — ${fmt(layer.acquisitionDate)}`}
-                  type="raster"
-                  provider={provider}
-                  visible={layer.visible}
-                  opacity01={(layer.opacity ?? 80) / 100}
-                  onToggle={onToggle}
-                  onOpacity={onOpacity}
-                />
-              );
-            })}
-          </div>
-        )}
-
-        {!hasDynamicLayers && (
+        {!hasSearch && dynamicCount <= 0 && (
           <div className="lm-empty">
             No dynamic layers added yet.
             <br />Use the other tabs to add land cover,
             <br />fire analysis, or satellite imagery.
           </div>
         )}
-
       </div>
     </div>
   );

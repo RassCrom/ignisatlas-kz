@@ -3,7 +3,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import Button from "../shared/Button/Button";
 import styles from "./Hero.module.scss";
 
-const TAGLINE = "Спутниковый мониторинг лесных пожаров в Казахстане";
+const TAGLINE = "Спутниковый мониторинг окружающей среды в Казахстане";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -40,14 +40,6 @@ const actionsVariants = {
   },
 };
 
-const PARTICLES = Array.from({ length: 14 }, (_, i) => ({
-  id: i,
-  delay: (i * 0.37).toFixed(2),
-  left: `${6 + ((i * 6.5) % 88)}%`,
-  size: 3 + (i % 3),
-  duration: 3.5 + (i % 3) * 1.2,
-}));
-
 const Hero = () => {
   const heroRef = useRef(null);
   const shouldReduceMotion = useReducedMotion();
@@ -57,7 +49,16 @@ const Hero = () => {
   });
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
 
-  const words = TAGLINE.split(" ");
+  const rawWords = TAGLINE.split(" ");
+  // Keep "в Казахстане" together to prevent orphaned wrap
+  const words = rawWords.reduce((acc, w, i) => {
+    if (w === "Казахстане" && rawWords[i - 1] === "в") {
+      acc[acc.length - 1] = acc[acc.length - 1] + " " + w;
+    } else {
+      acc.push(w);
+    }
+    return acc;
+  }, []);
 
   return (
     <section className={styles.hero} ref={heroRef}>
@@ -65,27 +66,18 @@ const Hero = () => {
         className={styles.hero__bg}
         style={shouldReduceMotion ? undefined : { y: bgY }}
         aria-hidden="true"
-      />
+      >
+        <img
+          src="/hero.webp"
+          srcSet="/hero-800.webp 800w, /hero.webp 1600w"
+          sizes="100vw"
+          fetchPriority="high"
+          decoding="async"
+          alt=""
+          className={styles.hero__bgImg}
+        />
+      </motion.div>
       <div className={styles.hero__overlay} aria-hidden="true" />
-
-      {!shouldReduceMotion && (
-        <div className={styles.particles} aria-hidden="true">
-          {PARTICLES.map((p) => (
-            <span
-              key={p.id}
-              className={styles.particle}
-              style={{
-                "--delay": `${p.delay}s`,
-                "--duration": `${p.duration}s`,
-                left: p.left,
-                width: `${p.size}px`,
-                height: `${p.size}px`,
-                bottom: `${10 + ((p.id * 5) % 30)}%`,
-              }}
-            />
-          ))}
-        </div>
-      )}
 
       <div className={styles.hero__container}>
         <div className={styles.hero__content}>
@@ -95,7 +87,8 @@ const Hero = () => {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
             <h1 className={styles.hero__title}>
-              <span className={styles.hero__brand}>IgnisAtlas</span>
+              <span className={styles.hero__runes} aria-hidden="true">𐰔𐰐 𐱅𐰘𐰜𐰓</span>
+              <span className={styles.hero__brand}>Tabiat Küzeti</span>
             </h1>
           </motion.div>
 
@@ -122,7 +115,7 @@ const Hero = () => {
             initial="hidden"
             animate="visible"
           >
-            Открытые данные NASA FIRMS · MODIS · VIIRS · 2001–2024
+            NASA · ESA Copernicus · Sentinel · Landsat · 2001–2024
           </motion.p>
 
           <motion.div
@@ -141,12 +134,12 @@ const Hero = () => {
             </Button>
 
             <Button
-              href="#features"
+              href="/report"
               variant="secondary"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
-              Возможности
+              Аналитика
             </Button>
           </motion.div>
         </div>

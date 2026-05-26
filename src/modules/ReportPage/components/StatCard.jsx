@@ -30,7 +30,7 @@ function AnimatedNumber({ value, duration = 1500 }) {
   return <span ref={ref}>{fmt(display)}</span>;
 }
 
-export default function StatCard({ value, label, accent = "#ec4899" }) {
+export default function StatCard({ value, label, accent = "#E84025" }) {
   return (
     <div className={styles.card}>
       <div className={styles.value} style={{ color: accent }}>

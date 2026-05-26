@@ -1,10 +1,13 @@
 import { create } from 'zustand';
+import { getDefaultDateRange } from 'src/shared/utils/dateDefaults';
+
+const DEFAULT_DATE_RANGE = getDefaultDateRange();
 
 const useSentinelExplorerOldStore = create((set, get) => ({
   // ── Mission & Filter State ───────────────────────────────
   selectedMission: 'sentinel-2',
-  startDate: '',
-  endDate: '',
+  startDate: DEFAULT_DATE_RANGE.startDate,
+  endDate: DEFAULT_DATE_RANGE.endDate,
   cloudCoverage: 30,
   productType: '',
   orbitDirection: '',

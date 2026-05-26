@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { RefreshCw, Trash2, TrendingUp, X } from 'lucide-react';
-import * as turf from '@turf/turf';
+import { feature, length, along } from '@turf/turf';
 import axios from 'axios';
 import {
   Area,
@@ -79,12 +79,12 @@ const ProfileTool = () => {
     setStats(null);
 
     try {
-      const line = turf.feature(lineGeojson);
-      const lengthKm = turf.length(line, { units: 'kilometers' });
+      const line = feature(lineGeojson);
+      const lengthKm = length(line, { units: 'kilometers' });
       const n = clamp(Math.round(lengthKm * 5), 10, 100);
       const points = Array.from({ length: n }, (_, i) => {
         const dist = (lengthKm / (n - 1)) * i;
-        return turf.along(line, dist, { units: 'kilometers' });
+        return along(line, dist, { units: 'kilometers' });
       });
 
       const locations = points

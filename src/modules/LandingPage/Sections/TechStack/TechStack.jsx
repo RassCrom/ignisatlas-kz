@@ -1,16 +1,16 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Satellite, Globe, Map, Code2 } from 'lucide-react';
+import { Satellite, Globe, Layers } from 'lucide-react';
 import styles from './TechStack.module.scss';
 
 const techs = [
-  { label: 'NASA FIRMS',                    Icon: Satellite },
-  { label: 'MODIS',                         Icon: Satellite },
-  { label: 'VIIRS',                         Icon: Satellite },
-  { label: 'Microsoft Planetary Computer',  Icon: Globe },
-  { label: 'Copernicus',                    Icon: Globe },
-  { label: 'OpenLayers',                    Icon: Map },
-  { label: 'React',                         Icon: Code2 },
+  { label: 'NASA FIRMS',                   Icon: Satellite },
+  { label: 'MODIS',                        Icon: Satellite },
+  { label: 'VIIRS',                        Icon: Satellite },
+  { label: 'Sentinel-2',                   Icon: Globe },
+  { label: 'Landsat',                      Icon: Globe },
+  { label: 'Copernicus',                   Icon: Globe },
+  { label: 'Microsoft Planetary Computer', Icon: Layers },
 ];
 
 const containerVariants = {
@@ -42,9 +42,9 @@ const TechStack = () => {
           transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <h4 className={styles.tech__subtitle} aria-hidden="true">ТЕХНОЛОГИИ</h4>
-          <h2 className={styles.tech__title}>Технологии и источники данных</h2>
+          <h2 className={styles.tech__title}>Источники данных</h2>
           <p className={styles.tech__lead}>
-            IgnisAtlas строится на открытых данных крупнейших космических агентств и современных веб-технологиях.
+            Платформа построена на данных ведущих космических агентств и программ наблюдения Земли.
           </p>
         </motion.header>
 
@@ -66,15 +66,6 @@ const TechStack = () => {
             </motion.span>
           ))}
         </motion.div>
-
-        <motion.p
-          className={styles.tech__note}
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-        >
-          Проект с открытым исходным кодом. Данные предоставляются по лицензиям NASA и ESA.
-        </motion.p>
       </div>
     </section>
   );

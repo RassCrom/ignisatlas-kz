@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { KAZAKHSTAN_EXTENT_GEO } from '../modules/MapPage/utils/mapConstants';
+import { cachedRequest, createCacheKey } from './requestCache';
 
 const PC_MOSAIC_REGISTER = 'https://planetarycomputer.microsoft.com/api/data/v1/mosaic/register';
 const COLLECTION = 'cop-dem-glo-30';
@@ -35,11 +36,18 @@ export function buildDemTileUrl(searchid, renderer = 'terrain') {
  * Registers a global-coverage DEM mosaic for Kazakhstan and returns
  * the searchid together with the initial tile URL.
  */
-export async function fetchDemTileUrl(renderer = 'terrain') {
-  const { data: reg } = await axios.post(PC_MOSAIC_REGISTER, {
-    collections: [COLLECTION],
-    bbox: KAZAKHSTAN_EXTENT_GEO,
-  });
+export async function fetchDemTileUrl(renderer = 'terrain', { signal } = {}) {
+  const reg = await cachedRequest(
+    createCacheKey('pc-mosaic', COLLECTION, KAZAKHSTAN_EXTENT_GEO),
+    async () => {
+      const { data } = await axios.post(PC_MOSAIC_REGISTER, {
+        collections: [COLLECTION],
+        bbox: KAZAKHSTAN_EXTENT_GEO,
+      }, { signal });
+      return data;
+    },
+    { ttlMs: 60 * 60 * 1000, signal }
+  );
 
   const { searchid } = reg;
   if (!searchid) throw new Error('Mosaic registration did not return a searchid');

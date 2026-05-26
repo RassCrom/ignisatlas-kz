@@ -4,6 +4,7 @@ import {
 } from 'lucide-react';
 import './fireControls.scss';
 import useRiskMapStore from 'src/app/store/riskMapStore';
+import { getCurrentDate } from 'src/shared/utils/dateDefaults';
 
 const RISK_LABELS = { Low: 'Низкий', Medium: 'Средний', High: 'Высокий' };
 
@@ -49,7 +50,7 @@ const formatDate = (dateString) =>
 
 const FireRisk = () => {
   const [isExpanded,    setIsExpanded]    = useState(false);
-  const [selectedDate,  setSelectedDate]  = useState('');
+  const [selectedDate,  setSelectedDate]  = useState(getCurrentDate);
   const [availableDates, setAvailableDates] = useState([]);
   const [isLoadingDates, setIsLoadingDates] = useState(true);
 
@@ -74,7 +75,8 @@ const FireRisk = () => {
           .map(item => normalizeRiskDate(item[0]))
           .filter(Boolean))]
           .sort((a, b) => b.localeCompare(a));
-        setAvailableDates(dates);
+        const today = getCurrentDate();
+        setAvailableDates(dates.includes(today) ? dates : [today, ...dates]);
       } catch (err) {
         console.error('Error fetching fire dates:', err);
         setAvailableDates([]);
@@ -92,7 +94,7 @@ const FireRisk = () => {
       && !riskDates.some(item => item.date === normalizedDate)
     ) {
       addDate(normalizedDate);
-      setSelectedDate('');
+      setSelectedDate(getCurrentDate());
     }
   }, [selectedDate, riskDates, addDate]);
 

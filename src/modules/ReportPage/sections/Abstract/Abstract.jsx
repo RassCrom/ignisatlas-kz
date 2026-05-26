@@ -4,7 +4,7 @@ import styles from "./Abstract.module.scss";
 export default function Abstract() {
   return (
     <Section id="abstract" className={styles.abstract}>
-      <h2 className={styles.title}>Абстракт</h2>
+      <h2 className={styles.title}>Кратко о главном</h2>
       <div className={styles.grid}>
         <p>
           Исследование выполнено на основе архивов термальных аномалий NASA FIRMS: продукт MODIS (разрешение ~1 км, 2001–2024) и VIIRS (375 м, 2012–2024). Предобработка включала фильтрацию по типу события и уровню достоверности, перепроецирование в метрическую систему координат.

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import Nav from "./components/Nav";
 import { navItems } from "./components/navItems";
 import Hero from "./sections/Hero/Hero";
@@ -10,7 +10,10 @@ import LandCover from "./sections/LandCover/LandCover";
 import Infrastructure from "./sections/Infrastructure/Infrastructure";
 import Comparison from "./sections/Comparison/Comparison";
 import Conclusions from "./sections/Conclusions/Conclusions";
+import ReportFooter from "./components/ReportFooter";
 import styles from "./ReportPage.module.scss";
+
+const FireMap = lazy(() => import("./sections/FireMap/FireMap"));
 
 const ReportPage = () => {
   const [activeSection, setActiveSection] = useState("hero");
@@ -41,7 +44,11 @@ const ReportPage = () => {
       <LandCover />
       <Infrastructure />
       <Comparison />
+      <Suspense fallback={null}>
+        <FireMap />
+      </Suspense>
       <Conclusions />
+      <ReportFooter />
     </div>
   );
 };

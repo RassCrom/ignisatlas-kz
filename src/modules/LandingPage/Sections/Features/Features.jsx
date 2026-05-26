@@ -1,44 +1,44 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Flame, ShieldAlert, Satellite, Bookmark, Ruler, Pipette } from 'lucide-react';
+import { Flame, CloudSun, MountainSnow, Droplets, Satellite, ScanSearch } from 'lucide-react';
 import styles from './Features.module.scss';
 
 const features = [
   {
     id: 1,
     Icon: Flame,
-    title: 'Хитмап пожаров',
-    description: 'Тепловая карта плотности очагов возгораний по всему Казахстану. Визуализируйте концентрацию пожаров по регионам и сезонам.',
+    title: 'Мониторинг пожаров',
+    description: 'Тепловые аномалии MODIS и VIIRS, хитмап плотности очагов по всей территории Казахстана. Архив наблюдений с 2001 года.',
   },
   {
     id: 2,
-    Icon: ShieldAlert,
-    title: 'Анализ риска',
-    description: 'Оценка пожарной опасности на основе спутниковых снимков, исторических данных и метеорологических факторов.',
+    Icon: CloudSun,
+    title: 'Мониторинг засух',
+    description: 'Индексы NDVI и VHI на основе Sentinel и Landsat. Оценка дефицита влажности почвы и растительного стресса.',
   },
   {
     id: 3,
-    Icon: Satellite,
-    title: 'Спутниковые снимки',
-    description: 'Многоспектральные снимки Sentinel и Landsat с возможностью переключения между несколькими индексами — NDVI, NBR, свежие снимки.',
+    Icon: MountainSnow,
+    title: 'Мониторинг ледников',
+    description: 'Динамика площади ледников Казахстана по снимкам Sentinel-2. Отслеживание ежегодных изменений снежного покрова.',
   },
   {
     id: 4,
-    Icon: Bookmark,
-    title: 'Пространственные закладки',
-    description: 'Сохраняйте и мгновенно возвращайтесь к нужным участкам карты. Личная библиотека координат прямо в браузере.',
+    Icon: Droplets,
+    title: 'Водные ресурсы',
+    description: 'Мониторинг рек, озёр и водохранилищ. Спектральные индексы NDWI и MNDWI для оценки водного покрытия.',
   },
   {
     id: 5,
-    Icon: Ruler,
-    title: 'Инструмент измерений',
-    description: 'Измеряйте расстояния и площади непосредственно на карте. Полезно при оценке масштабов пожара или зоны риска.',
+    Icon: Satellite,
+    title: 'Спутниковые снимки',
+    description: 'Sentinel-2 и Landsat с переключением спектральных индексов — NDVI, NBR, RGB, NIR. Многолетний архив снимков.',
   },
   {
     id: 6,
-    Icon: Pipette,
-    title: 'Инспектор пикселей',
-    description: 'Получайте спектральные значения для любого пикселя на снимке. Инструмент для специалистов дистанционного зондирования.',
+    Icon: ScanSearch,
+    title: 'Инструменты анализа',
+    description: 'Инспектор пикселей, измерение площадей и расстояний, пространственные закладки. Набор инструментов для точного анализа.',
   },
 ];
 
@@ -65,9 +65,9 @@ const Features = () => {
       <div className={styles.features__container}>
         <header className={styles.features__header}>
           <h4 className={styles.features__subtitle} aria-hidden="true">ВОЗМОЖНОСТИ</h4>
-          <h2 className={styles.features__title}>Возможности геопортала</h2>
+          <h2 className={styles.features__title}>Возможности платформы</h2>
           <p className={styles.features__lead}>
-            Все инструменты для мониторинга, анализа и исследования пожаров в одном месте.
+            Инструменты для мониторинга пожаров, засух, ледников и водных ресурсов в одном месте.
           </p>
         </header>
 

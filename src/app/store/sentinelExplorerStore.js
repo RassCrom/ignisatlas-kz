@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { getDefaultDateRange } from 'src/shared/utils/dateDefaults';
 
 // Default band preset per mission (drives the band dropdown reset on mission change)
 const MISSION_DEFAULT_BAND = {
@@ -8,12 +9,13 @@ const MISSION_DEFAULT_BAND = {
   'sentinel-5p': 'no2',
   'all':         'true-color',
 };
+const DEFAULT_DATE_RANGE = getDefaultDateRange();
 
 const useSentinelExplorerStore = create((set, get) => ({
   // ── Mission & Filter State ───────────────────────────────
   selectedMission: 'sentinel-2',
-  startDate: '',
-  endDate: '',
+  startDate: DEFAULT_DATE_RANGE.startDate,
+  endDate: DEFAULT_DATE_RANGE.endDate,
   cloudCoverage: 30,
   selectedBands: 'true-color',
 

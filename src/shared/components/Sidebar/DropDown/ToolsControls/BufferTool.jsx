@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CircleDashed, Trash2, X } from 'lucide-react';
-import * as turf from '@turf/turf';
+import { feature, buffer, area } from '@turf/turf';
 import useAnalysisStore from 'src/app/store/analysisStore';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
 import { startMapLibreDraw } from 'src/modules/MapPage/utils/maplibreDraw';
@@ -131,8 +131,8 @@ const BufferTool = () => {
     }
 
     try {
-      const feature = turf.feature(inputGeojson);
-      const buffered = turf.buffer(feature, Number(distance), { units });
+      const feat = feature(inputGeojson);
+      const buffered = buffer(feat, Number(distance), { units });
       if (!buffered) {
         setError('Buffer failed. Check input geometry.');
         return;
@@ -140,7 +140,7 @@ const BufferTool = () => {
 
       ensureLayers(map);
       setSourceData(map, RESULT_SOURCE_ID, buffered);
-      const areaM2 = turf.area(buffered);
+      const areaM2 = area(buffered);
       setBufferArea(areaM2 > 1e6 ? `${(areaM2 / 1e6).toFixed(2)} km2` : `${areaM2.toFixed(0)} m2`);
     } catch (e) {
       setError(e.message || 'Buffer computation failed.');

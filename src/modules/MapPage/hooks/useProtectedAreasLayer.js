@@ -27,22 +27,22 @@ export const useProtectedAreasLayer = (mapInstance, isMapInitialized) => {
         id: 'protected-areas-fill',
         type: 'fill',
         source: 'protected-areas-source',
-        layout: { visibility: visible ? 'visible' : 'none' },
+        layout: { visibility: 'none' },
         paint: {
           'fill-color': 'rgba(52,211,153,0.12)',
-          'fill-opacity': opacity,
+          'fill-opacity': 1,
         },
       });
       mapInstance.addLayer({
         id: 'protected-areas-line',
         type: 'line',
         source: 'protected-areas-source',
-        layout: { visibility: visible ? 'visible' : 'none' },
+        layout: { visibility: 'none' },
         paint: {
           'line-color': 'rgba(52,211,153,0.65)',
           'line-width': 1.5,
           'line-dasharray': [2, 2],
-          'line-opacity': opacity,
+          'line-opacity': 1,
         },
       });
     }

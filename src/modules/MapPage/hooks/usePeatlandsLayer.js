@@ -27,21 +27,21 @@ export const usePeatlandsLayer = (mapInstance, isMapInitialized) => {
         id: 'peatlands-fill',
         type: 'fill',
         source: 'peatlands-source',
-        layout: { visibility: visible ? 'visible' : 'none' },
+        layout: { visibility: 'none' },
         paint: {
           'fill-color': ['match', ['to-string', ['get', 'DN']], '1', 'rgba(101,56,12,0.55)', '2', 'rgba(160,105,45,0.4)', 'rgba(130,80,28,0.45)'],
-          'fill-opacity': opacity,
+          'fill-opacity': 1,
         },
       });
       mapInstance.addLayer({
         id: 'peatlands-line',
         type: 'line',
         source: 'peatlands-source',
-        layout: { visibility: visible ? 'visible' : 'none' },
+        layout: { visibility: 'none' },
         paint: {
           'line-color': ['match', ['to-string', ['get', 'DN']], '1', 'rgba(101,56,12,0.9)', '2', 'rgba(160,105,45,0.8)', 'rgba(130,80,28,0.85)'],
           'line-width': 1,
-          'line-opacity': opacity,
+          'line-opacity': 1,
         },
       });
     }

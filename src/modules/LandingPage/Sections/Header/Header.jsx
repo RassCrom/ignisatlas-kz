@@ -2,8 +2,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import styles from "./Header.module.scss";
 
+const LANGS = ["RU", "EN", "KK"];
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeLang, setActiveLang] = useState("RU");
 
   const navigationLinks = [
     { label: "Возможности", href: "#features" },
@@ -41,8 +44,12 @@ const Header = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <a href="/" aria-label="IgnisAtlas — на главную">
-            <span className={styles.logo__text}>IgnisAtlas</span>
+          <a href="/" aria-label="Tabiat Küzeti — на главную" className={styles.logo__link}>
+            <img src="/temp_logo.png" alt="Tabiat Küzeti" className={styles.logo__icon} />
+            <div className={styles.logo__textblock}>
+              <span className={styles.logo__runes} aria-hidden="true">𐰔𐰐 𐱅𐰘𐰜𐰓</span>
+              <span className={styles.logo__name}>Tabiat Küzeti</span>
+            </div>
           </a>
         </motion.div>
 
@@ -63,18 +70,18 @@ const Header = () => {
           </motion.ul>
         </nav>
 
-        <motion.a
-          className={styles.header__cta}
-          href="/map"
-          rel="noopener noreferrer"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-        >
-          Открыть геопортал
-        </motion.a>
+        <div className={styles.header__lang} role="group" aria-label="Выбор языка">
+          {LANGS.map((lang) => (
+            <button
+              key={lang}
+              className={`${styles.lang__btn} ${activeLang === lang ? styles["lang__btn--active"] : ""}`}
+              onClick={() => setActiveLang(lang)}
+              aria-pressed={activeLang === lang}
+            >
+              {lang}
+            </button>
+          ))}
+        </div>
 
         <button
           className={styles.header__burger}
@@ -116,17 +123,6 @@ const Header = () => {
                   </a>
                 </li>
               ))}
-              <li>
-                <a
-                  href="/map"
-                  className={`${styles.mobile__link} ${styles["mobile__link--cta"]}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Открыть геопортал
-                </a>
-              </li>
             </ul>
           </motion.nav>
         )}

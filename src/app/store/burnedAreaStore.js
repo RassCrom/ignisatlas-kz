@@ -1,8 +1,7 @@
 import { create } from 'zustand';
+import { getCurrentMonth } from 'src/shared/utils/dateDefaults';
 
-// Latest month returned by the Planetary Computer MCD64A1 collection during
-// integration testing. Users can still choose other archive months manually.
-const DEFAULT_MONTH = '2025-07';
+const DEFAULT_MONTH = getCurrentMonth();
 
 const useBurnedAreaStore = create((set, get) => ({
   selectedDataset: 'Burn_Date',

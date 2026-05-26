@@ -1,10 +1,6 @@
-// Helper functions for default dates
-const formatDate = (date) => date.toISOString().split('T')[0];
+import { getDefaultDateRange } from 'src/shared/utils/dateDefaults';
 
-const today = new Date();
-const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
-const defaultDateStart = formatDate(sevenDaysAgo);
-const defaultDateEnd = formatDate(today);
+const { startDate: defaultDateStart, endDate: defaultDateEnd } = getDefaultDateRange();
 
 export const createFireSlice = (set, get) => ({
   // layer visibility

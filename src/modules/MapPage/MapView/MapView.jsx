@@ -1,12 +1,7 @@
-import { useRef, useState, useEffect } from "react";
+import { lazy, Suspense, useRef, useState, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
 import MapToolbar from "./components/MapToolbar.jsx";
-import FirePopup from "./components/FirePopup.jsx";
-import FireModelPopup from "./components/FireModelPopup.jsx";
-import EmergencyPopup from "./components/EmergencyPopup.jsx";
-import SettlementsPopup from "./components/SettlementsPopup.jsx";
-import WeatherPopup from "./components/WeatherPopup.jsx";
 import usePopupManager from "./components/PopupManager.jsx";
 
 import { DEFAULT_BASEMAP_KEY } from "../utils/basemaps.js";
@@ -39,15 +34,28 @@ import { useClimateZonesLayer } from "../hooks/useClimateZonesLayer.js";
 import { useProtectedAreasLayer } from "../hooks/useProtectedAreasLayer.js";
 import { usePeatlandsLayer } from "../hooks/usePeatlandsLayer.js";
 import { useDroughtLayer } from "../hooks/useDroughtLayer.js";
-import ClimateZonesPopup from "./components/ClimateZonesPopup.jsx";
-import ProtectedAreasPopup from "./components/ProtectedAreasPopup.jsx";
-import PeatlandsPopup from "./components/PeatlandsPopup.jsx";
-import DroughtPopup from "./components/DroughtPopup.jsx";
-
-import "maplibre-gl/dist/maplibre-gl.css";
+import { useHistoricalWildfireLayer } from "../hooks/useHistoricalWildfireLayer.js";
+import { useWindLayer } from "../hooks/useWindLayer.js";
+import { useAtmosphereLayers } from "../hooks/useAtmosphereLayers.js";
+import { useFuelMoistureLayers } from "../hooks/useFuelMoistureLayers.js";
+import { useWaterMonitoringLayers } from "../hooks/useWaterMonitoringLayers.js";
+import { useGlacierMonitoringLayers } from "../hooks/useGlacierMonitoringLayers.js";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./MapView.module.scss";
 import "./mapStyles.scss";
+
+const FirePopup = lazy(() => import("./components/FirePopup.jsx"));
+const FireModelPopup = lazy(() => import("./components/FireModelPopup.jsx"));
+const EmergencyPopup = lazy(() => import("./components/EmergencyPopup.jsx"));
+const SettlementsPopup = lazy(() => import("./components/SettlementsPopup.jsx"));
+const WeatherPopup = lazy(() => import("./components/WeatherPopup.jsx"));
+const ClimateZonesPopup = lazy(() => import("./components/ClimateZonesPopup.jsx"));
+const ProtectedAreasPopup = lazy(() => import("./components/ProtectedAreasPopup.jsx"));
+const PeatlandsPopup = lazy(() => import("./components/PeatlandsPopup.jsx"));
+const DroughtPopup = lazy(() => import("./components/DroughtPopup.jsx"));
+const HistoricalWildfireDashboard = lazy(() => import("./components/HistoricalWildfireDashboard.jsx"));
+const WaterBodyDetailsPanel = lazy(() => import("./components/WaterBodyDetailsPanel.jsx"));
+const GlacierDetailsPanel = lazy(() => import("./components/GlacierDetailsPanel.jsx"));
 
 const MapView = () => {
   const mapRef = useRef(null);
@@ -158,6 +166,12 @@ const MapView = () => {
     popupContent: droughtPopupContent,
     closePopup:   closeDroughtPopup,
   } = useDroughtLayer(mapInstance, isMapInitialized);
+  useAtmosphereLayers(mapInstance, isMapInitialized);
+  useFuelMoistureLayers(mapInstance, isMapInitialized);
+  useWaterMonitoringLayers(mapInstance, isMapInitialized);
+  useGlacierMonitoringLayers(mapInstance, isMapInitialized);
+  useHistoricalWildfireLayer(mapInstance, isMapInitialized);
+  useWindLayer(mapInstance, isMapInitialized);
 
   // Emergency layers popup
   const {
@@ -248,62 +262,68 @@ const MapView = () => {
           />
         )}
 
-        <FirePopup
-          popupRef={popupRef}
-          content={popupContent}
-          onClose={closePopup}
-          onWeather={(coord) => setWeatherCoordinate(coord)}
-          onFireModel={handleFireModelLayer}
-        />
-
-        <FireModelPopup
-          popupRef={fireModelPopupRef}
-          content={fireModelPopupContent}
-          onClose={closeFireModelPopup}
-        />
-
-        <EmergencyPopup
-          popupRef={emergencyPopupRef}
-          content={emergencyPopupContent}
-          onClose={closeEmergencyPopup}
-        />
-
-        <SettlementsPopup
-          popupRef={settlementsPopupRef}
-          content={settlementsPopupContent}
-          onClose={closeSettlementsPopup}
-        />
-
-        <ClimateZonesPopup
-          popupRef={czPopupRef}
-          content={czPopupContent}
-          onClose={closeCzPopup}
-        />
-
-        <ProtectedAreasPopup
-          popupRef={paPopupRef}
-          content={paPopupContent}
-          onClose={closePaPopup}
-        />
-
-        <PeatlandsPopup
-          popupRef={peatPopupRef}
-          content={peatPopupContent}
-          onClose={closePeatPopup}
-        />
-
-        <DroughtPopup
-          popupRef={droughtPopupRef}
-          content={droughtPopupContent}
-          onClose={closeDroughtPopup}
-        />
-
-        {weatherCoordinate && (
-          <WeatherPopup
-            coordinate={weatherCoordinate}
-            onClose={() => setWeatherCoordinate(null)}
+        <Suspense fallback={null}>
+          <FirePopup
+            popupRef={popupRef}
+            content={popupContent}
+            onClose={closePopup}
+            onWeather={(coord) => setWeatherCoordinate(coord)}
+            onFireModel={handleFireModelLayer}
           />
-        )}
+
+          <FireModelPopup
+            popupRef={fireModelPopupRef}
+            content={fireModelPopupContent}
+            onClose={closeFireModelPopup}
+          />
+
+          <EmergencyPopup
+            popupRef={emergencyPopupRef}
+            content={emergencyPopupContent}
+            onClose={closeEmergencyPopup}
+          />
+
+          <SettlementsPopup
+            popupRef={settlementsPopupRef}
+            content={settlementsPopupContent}
+            onClose={closeSettlementsPopup}
+          />
+
+          <ClimateZonesPopup
+            popupRef={czPopupRef}
+            content={czPopupContent}
+            onClose={closeCzPopup}
+          />
+
+          <ProtectedAreasPopup
+            popupRef={paPopupRef}
+            content={paPopupContent}
+            onClose={closePaPopup}
+          />
+
+          <PeatlandsPopup
+            popupRef={peatPopupRef}
+            content={peatPopupContent}
+            onClose={closePeatPopup}
+          />
+
+          <DroughtPopup
+            popupRef={droughtPopupRef}
+            content={droughtPopupContent}
+            onClose={closeDroughtPopup}
+          />
+
+          {weatherCoordinate && (
+            <WeatherPopup
+              coordinate={weatherCoordinate}
+              onClose={() => setWeatherCoordinate(null)}
+            />
+          )}
+
+          <HistoricalWildfireDashboard />
+          <WaterBodyDetailsPanel />
+          <GlacierDetailsPanel />
+        </Suspense>
       </div>
     </div>
   );

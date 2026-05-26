@@ -2,6 +2,30 @@ import maplibregl from 'maplibre-gl';
 
 const EARTH_RADIUS = 6378137;
 const MAX_LATITUDE = 85.0511287798066;
+const pendingPaintUpdates = new WeakMap();
+const pendingVisibilityUpdates = new WeakMap();
+
+const getPendingMap = (registry, map) => {
+  let pending = registry.get(map);
+  if (!pending) {
+    pending = new Map();
+    registry.set(map, pending);
+  }
+  return pending;
+};
+
+const scheduleMapMutation = (registry, map, key, callback) => {
+  if (!map) return;
+  const pending = getPendingMap(registry, map);
+  const existing = pending.get(key);
+  if (existing) cancelAnimationFrame(existing.frame);
+
+  const frame = requestAnimationFrame(() => {
+    pending.delete(key);
+    callback();
+  });
+  pending.set(key, { frame });
+};
 
 export const toLngLat = (coordinate) => {
   if (!coordinate) return null;
@@ -74,9 +98,12 @@ export const removeSourceWithLayers = (map, sourceId) => {
 };
 
 export const setLayerVisibility = (map, layerId, visible) => {
-  if (map?.getLayer(layerId)) {
-    map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
-  }
+  if (!map?.getLayer(layerId)) return;
+  scheduleMapMutation(pendingVisibilityUpdates, map, layerId, () => {
+    if (map.getLayer(layerId)) {
+      map.setLayoutProperty(layerId, 'visibility', visible ? 'visible' : 'none');
+    }
+  });
 };
 
 export const setLayerOpacity = (map, layerId, opacity, type = 'fill') => {
@@ -89,7 +116,10 @@ export const setLayerOpacity = (map, layerId, opacity, type = 'fill') => {
     raster: 'raster-opacity',
     symbol: 'icon-opacity',
   }[type];
-  if (paintProperty) map.setPaintProperty(layerId, paintProperty, opacity);
+  if (!paintProperty) return;
+  scheduleMapMutation(pendingPaintUpdates, map, `${layerId}:${paintProperty}`, () => {
+    if (map.getLayer(layerId)) map.setPaintProperty(layerId, paintProperty, opacity);
+  });
 };
 
 export const addOrUpdateGeoJsonSource = (map, sourceId, data) => {

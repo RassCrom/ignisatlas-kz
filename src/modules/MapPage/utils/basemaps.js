@@ -53,6 +53,26 @@ const getBasemap = (basemapKey = DEFAULT_BASEMAP_KEY) => (
   basemapOptions[basemapKey] || basemapOptions[DEFAULT_BASEMAP_KEY]
 );
 
+export const shouldReloadBasemapStyle = (
+  basemapKey,
+  previousBasemapKey = DEFAULT_BASEMAP_KEY
+) => {
+  const basemap = getBasemap(basemapKey);
+  const previousBasemap = getBasemap(previousBasemapKey);
+  return !(previousBasemap.type === 'raster' && basemap.type === 'raster');
+};
+
+const setStyleMetadata = (map, basemap) => {
+  const style = map.getStyle();
+  if (!style) return;
+
+  style.metadata = {
+    ...(style.metadata || {}),
+    basemapKey: basemap.key,
+    basemapType: basemap.type,
+  };
+};
+
 const createRasterStyle = (basemap) => ({
   version: 8,
   sources: {
@@ -88,10 +108,49 @@ export const createInitialStyle = (basemapKey = DEFAULT_BASEMAP_KEY) => {
 
 export const getAllBasemaps = () => Object.values(basemapOptions);
 
-export const applyBasemap = (map, basemapKey) => {
-  if (!map) return;
+const getFirstLayerId = (map) => map.getStyle()?.layers?.[0]?.id;
+
+const applyRasterBasemap = (map, basemap) => {
+  if (map.getLayer(BASEMAP_LAYER_ID)) {
+    map.removeLayer(BASEMAP_LAYER_ID);
+  }
+  if (map.getSource(BASEMAP_SOURCE_ID)) {
+    map.removeSource(BASEMAP_SOURCE_ID);
+  }
+
+  const beforeId = getFirstLayerId(map);
+
+  map.addSource(BASEMAP_SOURCE_ID, {
+    type: 'raster',
+    tiles: basemap.tiles,
+    tileSize: basemap.tileSize || 256,
+    attribution: basemap.attribution,
+  });
+
+  map.addLayer(
+    {
+      id: BASEMAP_LAYER_ID,
+      type: 'raster',
+      source: BASEMAP_SOURCE_ID,
+      minzoom: 0,
+      maxzoom: 22,
+    },
+    beforeId
+  );
+
+  setStyleMetadata(map, basemap);
+};
+
+export const applyBasemap = (map, basemapKey, previousBasemapKey = DEFAULT_BASEMAP_KEY) => {
+  if (!map) return false;
 
   const basemap = getBasemap(basemapKey);
+
+  if (!shouldReloadBasemapStyle(basemapKey, previousBasemapKey)) {
+    applyRasterBasemap(map, basemap);
+    return false;
+  }
+
   const style = basemap.type === 'vector' && basemap.style
     ? basemap.style
     : createRasterStyle(basemap);
@@ -100,12 +159,9 @@ export const applyBasemap = (map, basemapKey) => {
 
   if (basemap.type === 'vector') {
     map.once('styledata', () => {
-      const nextStyle = map.getStyle();
-      nextStyle.metadata = {
-        ...(nextStyle.metadata || {}),
-        basemapKey: basemap.key,
-        basemapType: basemap.type,
-      };
+      setStyleMetadata(map, basemap);
     });
   }
+
+  return true;
 };

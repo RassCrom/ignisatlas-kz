@@ -1,3 +1,103 @@
+.lm-panel {
+  padding-top: 6px;
+}
+
+.lm-toolbar {
+  padding: 0 12px 10px;
+  border-bottom: 1px solid rgba(136, 139, 224, 0.06);
+  margin-bottom: 10px;
+}
+
+.lm-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 8px;
+  border: 1px solid rgba(136, 139, 224, 0.14);
+  border-radius: 6px;
+  background: rgba(9, 10, 36, 0.45);
+  color: rgba(217, 218, 245, 0.38);
+
+  &:focus-within {
+    border-color: rgba(136, 139, 224, 0.34);
+    box-shadow: 0 0 0 2px rgba(136, 139, 224, 0.07);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: rgba(217, 218, 245, 0.84);
+    font-size: 12px;
+
+    &::placeholder {
+      color: rgba(217, 218, 245, 0.28);
+    }
+  }
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: rgba(217, 218, 245, 0.34);
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(136, 139, 224, 0.08);
+      color: rgba(217, 218, 245, 0.72);
+    }
+  }
+}
+
+.lm-filter-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.lm-filter-tabs__item {
+  min-width: 0;
+  height: 26px;
+  padding: 0 5px;
+  border: 1px solid rgba(136, 139, 224, 0.1);
+  border-radius: 5px;
+  background: rgba(9, 10, 36, 0.25);
+  color: rgba(217, 218, 245, 0.38);
+  font-size: 10px;
+  font-weight: 650;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(136, 139, 224, 0.07);
+    color: rgba(217, 218, 245, 0.68);
+  }
+
+  &--active {
+    background: rgba(136, 139, 224, 0.14);
+    border-color: rgba(136, 139, 224, 0.28);
+    color: rgba(136, 139, 224, 0.9);
+  }
+}
+
+.lm-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 7px;
+  color: rgba(217, 218, 245, 0.28);
+  font-size: 10px;
+  font-weight: 600;
+}
+
 .lm-section {
   margin-bottom: 14px;
 }
@@ -5,6 +105,7 @@
 .lm-section__title {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 5px;
   padding: 0 12px 6px;
   font-size: 9px;
@@ -12,6 +113,11 @@
   color: rgba(217, 218, 245, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.7px;
+}
+
+.lm-section__count {
+  color: rgba(217, 218, 245, 0.22);
+  font-size: 9px;
 }
 
 .lm-row {
@@ -105,7 +211,9 @@
   font-size: 9px;
   color: rgba(217, 218, 245, 0.26);
   font-weight: 500;
-  flex-shrink: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 

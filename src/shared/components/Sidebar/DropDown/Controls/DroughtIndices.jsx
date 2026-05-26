@@ -21,6 +21,7 @@ import {
 import styles from '../SentinelControls/SentinelExplorer.module.scss';
 import useAoiStore from 'src/app/store/aoiStore';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
+import { getDefaultDateRange } from 'src/shared/utils/dateDefaults';
 import {
   searchSentinelPc,
   buildS2TileUrl,
@@ -141,16 +142,6 @@ const DROUGHT_IMAGE_PRESETS = [
     },
   },
 ];
-
-const getDefaultDateRange = () => {
-  const end = new Date();
-  const start = new Date(end);
-  start.setDate(start.getDate() - 90);
-  return {
-    startDate: start.toISOString().slice(0, 10),
-    endDate: end.toISOString().slice(0, 10),
-  };
-};
 
 const safeLayerId = (value) => value.replace(/[^a-zA-Z0-9_-]/g, '_');
 

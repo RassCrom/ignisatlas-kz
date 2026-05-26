@@ -1,6 +1,7 @@
 import { create } from 'zustand';
+import { getCurrentDate } from 'src/shared/utils/dateDefaults';
 
-const today = new Date().toISOString().split('T')[0];
+const today = getCurrentDate();
 
 const useLstStore = create((set, get) => ({
   // ── Product & Filter State ───────────────────────────────
