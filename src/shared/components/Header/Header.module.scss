@@ -137,6 +137,44 @@
                 }
             }
         }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-lang {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+            padding: 0.15rem;
+            border: 1px solid rgba(136, 139, 224, 0.14);
+            border-radius: 8px;
+            background: rgba(136, 139, 224, 0.05);
+        }
+
+        .header-lang-btn {
+            min-width: 1.8rem;
+            height: 1.5rem;
+            padding: 0 0.35rem;
+            border-radius: 6px;
+            color: rgba(217, 218, 245, 0.58);
+            font-size: 0.64rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+
+            &:hover {
+                color: rgba(217, 218, 245, 0.9);
+                background: rgba(136, 139, 224, 0.1);
+            }
+        }
+
+        .header-lang-btn--active {
+            color: #06111a;
+            background: linear-gradient(135deg, #38bdf8, #34d399);
+        }
     }
 }
 

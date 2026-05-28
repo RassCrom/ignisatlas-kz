@@ -1,22 +1,24 @@
 import { memo, useRef } from "react";
 import { Droplets, Globe2, History, Layers, PencilRuler, Satellite, Sparkles, Wrench } from "lucide-react";
 import useMenuStore from "src/app/store/store";
+import { useI18n } from "src/shared/i18n/I18nProvider";
 import DropDown from "./DropDown/DropDown.jsx";
 import styles from "./Sidebar.module.scss";
 
 const TABS = [
-  { id: 2,  icon: Globe2,      tooltip: "Мониторинг природных явлений" },
-  { id: 3,  icon: Satellite,   tooltip: "Космические снимки" },
-  { id: 9,  icon: History,     tooltip: "Исторические пожары" },
-  { id: 10, icon: Droplets,    tooltip: "Исторические паводки" },
-  { id: 1,  icon: PencilRuler, tooltip: "Слои" },
-  { id: 7,  icon: Layers,      tooltip: "Управление слоями" },
-  { id: 4,  icon: Wrench,      tooltip: "Инструменты" },
-  { id: 8,  icon: Sparkles,    tooltip: "Пресеты" },
+  { id: 2, icon: Globe2, tooltipKey: "natural" },
+  { id: 3, icon: Satellite, tooltipKey: "satellite" },
+  { id: 9, icon: History, tooltipKey: "wildfires" },
+  { id: 10, icon: Droplets, tooltipKey: "floods" },
+  { id: 1, icon: PencilRuler, tooltipKey: "layers" },
+  { id: 7, icon: Layers, tooltipKey: "layerManagement" },
+  { id: 4, icon: Wrench, tooltipKey: "tools" },
+  { id: 8, icon: Sparkles, tooltipKey: "presets" },
 ];
 
 const Sidebar = memo(() => {
   const { isMenuOpen, openTabIndex, toggleMenu, setTabIndex } = useMenuStore();
+  const { t } = useI18n();
   const sidebarRef = useRef(null);
   const tabRefs = useRef([]);
 
@@ -63,9 +65,10 @@ const Sidebar = memo(() => {
         aria-label="Map sidebar tabs"
         aria-orientation="vertical"
       >
-        {TABS.map(({ id, icon: Icon, tooltip }, index) => {
+        {TABS.map(({ id, icon: Icon, tooltipKey }, index) => {
           const isActive = openTabIndex === id;
           const isExpanded = isMenuOpen && isActive;
+          const tooltip = t(`map.sidebarTabs.${tooltipKey}`);
 
           return (
             <button

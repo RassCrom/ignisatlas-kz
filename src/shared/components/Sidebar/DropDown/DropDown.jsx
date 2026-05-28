@@ -3,6 +3,8 @@ import { ChevronDown } from "lucide-react";
 
 import Options from "../Options/Options";
 import { newDD } from "./DropDownData";
+import { useI18n } from "src/shared/i18n/I18nProvider";
+import { getLocalizedValue } from "src/shared/i18n/localize";
 
 // Store hooks
 import useFireStore from "src/app/store/fireStore";
@@ -66,10 +68,15 @@ const GoToRegionTool = lazy(() => import("./ToolsControls/GoToRegionTool"));
 const GeolocateUserTool = lazy(() => import("./ToolsControls/GeolocateUserTool"));
 
 const LazyControl = ({ component: Component, option }) => (
-  <Suspense fallback={<div className={styles.dropdown__empty}>Loading...</div>}>
+  <Suspense fallback={<LoadingFallback />}>
     <Component option={option} />
   </Suspense>
 );
+
+const LoadingFallback = () => {
+  const { t } = useI18n();
+  return <div className={styles.dropdown__empty}>{t("map.controls.loading")}</div>;
+};
 
 /* ── Self-subscribed controls (need no props from DropDown) ── */
 const SELF_SUBSCRIBED = {
@@ -127,6 +134,7 @@ const DropDown = memo(({ openTabIndex }) => {
   const {
     toggleStates, toggleOption,
   } = useFireStore();
+  const { language, t } = useI18n();
   const expandedItems = useMenuStore((state) => state.expandedItems);
   const toggleExpandedItem = useMenuStore((state) => state.toggleExpandedItem);
 
@@ -204,7 +212,7 @@ const DropDown = memo(({ openTabIndex }) => {
   /* ── Render ──────────────────────────────────────────────── */
   const currentSection = newDD.find((section) => section.id === openTabIndex);
   if (!currentSection) {
-    return <div className={styles.dropdown__empty}>No data available</div>;
+    return <div className={styles.dropdown__empty}>{t("map.controls.noData")}</div>;
   }
 
   return (
@@ -220,7 +228,7 @@ const DropDown = memo(({ openTabIndex }) => {
               onClick={() => toggleExpandedItem(item.id)}
               aria-expanded={isExpanded}
             >
-              <h3>{item.label_ru}</h3>
+              <h3>{getLocalizedValue(item, "label", language)}</h3>
               <ChevronDown
                 size={18}
                 className={`${styles.dropdown__icon} ${

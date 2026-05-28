@@ -1,39 +1,32 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useI18n } from "src/shared/i18n/I18nProvider";
 import styles from "./Header.module.scss";
 
-const LANGS = ["RU", "EN", "KK"];
+const navVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: -20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
+
+const mobileMenuVariants = {
+  hidden: { opacity: 0, height: 0 },
+  visible: { opacity: 1, height: "auto", transition: { duration: 0.3 } },
+  exit: { opacity: 0, height: 0, transition: { duration: 0.2 } },
+};
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeLang, setActiveLang] = useState("RU");
-
-  const navigationLinks = [
-    { label: "Возможности", href: "#features" },
-    { label: "Данные", href: "#data" },
-    { label: "Для кого", href: "#audience" },
-    { label: "Технологии", href: "#tech" },
-  ];
-
-  const navVariants = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.1 } },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-  };
-
-  const mobileMenuVariants = {
-    hidden: { opacity: 0, height: 0 },
-    visible: { opacity: 1, height: "auto", transition: { duration: 0.3 } },
-    exit: { opacity: 0, height: 0, transition: { duration: 0.2 } },
-  };
+  const { language, languages, setLanguage, t } = useI18n();
+  const navigationLinks = t("landing.nav", []);
 
   return (
     <header className={styles.header}>
@@ -44,16 +37,18 @@ const Header = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <a href="/" aria-label="Tabiat Küzeti — на главную" className={styles.logo__link}>
-            <img src="/temp_logo.png" alt="Tabiat Küzeti" className={styles.logo__icon} />
+          <a href="/" aria-label={t("common.homeAria")} className={styles.logo__link}>
+            <img src="/hero-tabiat-v2.png" alt={t("common.brand")} className={styles.logo__icon} />
             <div className={styles.logo__textblock}>
-              <span className={styles.logo__runes} aria-hidden="true">𐰔𐰐 𐱅𐰘𐰜𐰓</span>
-              <span className={styles.logo__name}>Tabiat Küzeti</span>
+              <span className={styles.logo__runes} aria-hidden="true">
+                {t("common.brandRunes")}
+              </span>
+              <span className={styles.logo__name}>{t("common.brand")}</span>
             </div>
           </a>
         </motion.div>
 
-        <nav className={styles.header__nav} aria-label="Основная навигация">
+        <nav className={styles.header__nav} aria-label={t("landing.navAria")}>
           <motion.ul
             className={styles.nav__list}
             variants={navVariants}
@@ -70,23 +65,24 @@ const Header = () => {
           </motion.ul>
         </nav>
 
-        <div className={styles.header__lang} role="group" aria-label="Выбор языка">
-          {LANGS.map((lang) => (
+        <div className={styles.header__lang} role="group" aria-label={t("common.languageSelect")}>
+          {languages.map((lang) => (
             <button
-              key={lang}
-              className={`${styles.lang__btn} ${activeLang === lang ? styles["lang__btn--active"] : ""}`}
-              onClick={() => setActiveLang(lang)}
-              aria-pressed={activeLang === lang}
+              key={lang.code}
+              className={`${styles.lang__btn} ${language === lang.code ? styles["lang__btn--active"] : ""}`}
+              onClick={() => setLanguage(lang.code)}
+              aria-pressed={language === lang.code}
+              title={lang.name}
             >
-              {lang}
+              {lang.label}
             </button>
           ))}
         </div>
 
         <button
           className={styles.header__burger}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Открыть меню"
+          onClick={() => setIsMenuOpen((open) => !open)}
+          aria-label={isMenuOpen ? t("common.closeMenu") : t("common.openMenu")}
           aria-expanded={isMenuOpen}
         >
           <span
@@ -109,7 +105,7 @@ const Header = () => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            aria-label="Мобильное меню"
+            aria-label={t("landing.mobileNavAria")}
           >
             <ul className={styles.mobile__list}>
               {navigationLinks.map((link) => (

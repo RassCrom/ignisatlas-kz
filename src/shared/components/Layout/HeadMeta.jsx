@@ -1,59 +1,39 @@
 import { Helmet } from "react-helmet-async";
+import { useI18n } from "src/shared/i18n/I18nProvider";
 
 const HeadMeta = () => {
-  // Dynamically obtain current origins for canonical and OpenGraph fully-qualified absolute URLs
+  const { languageConfig, t } = useI18n();
   const currentOrigin = typeof window !== "undefined" ? window.location.origin : "https://fires.kz";
   const canonicalUrl = typeof window !== "undefined" ? window.location.href : "https://fires.kz/map/";
   const logoUrl = `${currentOrigin}/temp_logo.png`;
 
   return (
     <Helmet>
-      {/* Primary Page Title */}
-      <title>Tabiat Küzeti — Спутниковый мониторинг лесных пожаров в Казахстане</title>
+      <html lang={languageConfig.htmlLang} />
+      <title>{t("meta.title")}</title>
       <link rel="canonical" href={canonicalUrl} />
-      
-      {/* Standard Meta Tags */}
-      <meta
-        name="description"
-        content="Интерактивная ГИС-платформа Tabiat Küzeti для мониторинга лесных, степных пожаров и экологического состояния в Казахстане в реальном времени. Космомониторинг, архивные данные и прогнозирование рисков."
-      />
-      <meta
-        name="keywords"
-        content="Табиат Күзеті, Tabiat Kuzeti, лесные пожары в Казахстане, спутниковый мониторинг пожаров, космомониторинг пожаров, лесничество Казахстана, ГИС карта пожаров, экологическая безопасность Казахстан, OpenLayers GIS, лесные пожары онлайн, экологический мониторинг, мониторинг экологии"
-      />
-      <meta name="robots" content="index, follow" />
-      <meta name="author" content="Tabiat Küzeti Team" />
 
-      {/* Open Graph / Facebook (Kazakhstan's corporate and social media networks) */}
+      <meta name="description" content={t("meta.description")} />
+      <meta name="keywords" content={t("meta.keywords")} />
+      <meta name="robots" content="index, follow" />
+      <meta name="author" content={`${t("common.brand")} Team`} />
+
       <meta property="og:type" content="website" />
       <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:site_name" content="Tabiat Küzeti" />
-      <meta
-        property="og:title"
-        content="Tabiat Küzeti — Спутниковый экологический мониторинг пожаров в Казахстане"
-      />
-      <meta
-        property="og:description"
-        content="Интерактивный ГИС-портал для отслеживания очагов возгорания в реальном времени, анализа исторических пожаров и защиты лесного фонда Республики Казахстан."
-      />
+      <meta property="og:site_name" content={t("common.brand")} />
+      <meta property="og:title" content={t("meta.ogTitle")} />
+      <meta property="og:description" content={t("meta.ogDescription")} />
       <meta property="og:image" content={logoUrl} />
-      <meta property="og:locale" content="ru_RU" />
+      <meta property="og:locale" content={languageConfig.locale.replace("-", "_")} />
       <meta property="og:locale:alternate" content="kk_KZ" />
+      <meta property="og:locale:alternate" content="ru_RU" />
       <meta property="og:locale:alternate" content="en_US" />
 
-      {/* Twitter Card */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta
-        name="twitter:title"
-        content="Tabiat Küzeti — Спутниковый мониторинг пожаров и экологии Казахстана"
-      />
-      <meta
-        name="twitter:description"
-        content="Интерактивная карта и анализ лесных пожаров в Казахстане в реальном времени. Берегите природу вместе с нами!"
-      />
+      <meta name="twitter:title" content={t("meta.twitterTitle")} />
+      <meta name="twitter:description" content={t("meta.twitterDescription")} />
       <meta name="twitter:image" content={logoUrl} />
 
-      {/* Performance Prefetching & Preconnecting */}
       <link rel="preconnect" href="https://tile.openstreetmap.org" />
       <link rel="dns-prefetch" href="https://tile.openstreetmap.org" />
       <link rel="preconnect" href="https://api.open-meteo.com" />
@@ -61,32 +41,32 @@ const HeadMeta = () => {
       <link rel="preconnect" href="https://api.openweathermap.org" />
       <link rel="dns-prefetch" href="https://api.openweathermap.org" />
 
-      {/* Structured Schema.org Markup for Rich Results (SEO) */}
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebApplication",
-          "name": "Tabiat Küzeti",
-          "alternateName": ["Tabiat Kuzeti", "Nature Watch Kazakhstan", "Табиат Күзеті"],
-          "description": "Интерактивная ГИС-карта и система спутникового космического мониторинга лесных пожаров и экологических показателей в Республике Казахстан.",
-          "applicationCategory": "GISMappingApplication",
-          "operatingSystem": "All",
-          "url": currentOrigin,
-          "image": logoUrl,
-          "copyrightYear": new Date().getFullYear(),
-          "spatialCoverage": {
+          name: t("common.brand"),
+          alternateName: t("meta.alternateName", []),
+          description: t("meta.appDescription"),
+          applicationCategory: "GISMappingApplication",
+          operatingSystem: "All",
+          url: currentOrigin,
+          image: logoUrl,
+          copyrightYear: new Date().getFullYear(),
+          inLanguage: languageConfig.htmlLang,
+          spatialCoverage: {
             "@type": "Place",
-            "name": "Kazakhstan",
-            "address": {
+            name: "Kazakhstan",
+            address: {
               "@type": "PostalAddress",
-              "addressCountry": "KZ"
-            }
+              addressCountry: "KZ",
+            },
           },
-          "creator": {
+          creator: {
             "@type": "Organization",
-            "name": "Tabiat Küzeti Team",
-            "url": currentOrigin
-          }
+            name: `${t("common.brand")} Team`,
+            url: currentOrigin,
+          },
         })}
       </script>
     </Helmet>

@@ -1,9 +1,8 @@
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useI18n } from "src/shared/i18n/I18nProvider";
 import Button from "../shared/Button/Button";
 import styles from "./Hero.module.scss";
-
-const TAGLINE = "Спутниковый мониторинг окружающей среды в Казахстане";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -43,22 +42,13 @@ const actionsVariants = {
 const Hero = () => {
   const heroRef = useRef(null);
   const shouldReduceMotion = useReducedMotion();
+  const { t } = useI18n();
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
   });
   const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
-
-  const rawWords = TAGLINE.split(" ");
-  // Keep "в Казахстане" together to prevent orphaned wrap
-  const words = rawWords.reduce((acc, w, i) => {
-    if (w === "Казахстане" && rawWords[i - 1] === "в") {
-      acc[acc.length - 1] = acc[acc.length - 1] + " " + w;
-    } else {
-      acc.push(w);
-    }
-    return acc;
-  }, []);
+  const words = t("landing.hero.tagline").split(" ");
 
   return (
     <section className={styles.hero} ref={heroRef}>
@@ -87,8 +77,10 @@ const Hero = () => {
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
             <h1 className={styles.hero__title}>
-              <span className={styles.hero__runes} aria-hidden="true">𐰔𐰐 𐱅𐰘𐰜𐰓</span>
-              <span className={styles.hero__brand}>Tabiat Küzeti</span>
+              <span className={styles.hero__runes} aria-hidden="true">
+                {t("common.brandRunes")}
+              </span>
+              <span className={styles.hero__brand}>{t("common.brand")}</span>
             </h1>
           </motion.div>
 
@@ -99,11 +91,7 @@ const Hero = () => {
             animate="visible"
           >
             {words.map((word, i) => (
-              <motion.span
-                key={i}
-                className={styles.hero__word}
-                variants={wordVariants}
-              >
+              <motion.span key={`${word}-${i}`} className={styles.hero__word} variants={wordVariants}>
                 {word}
               </motion.span>
             ))}
@@ -115,7 +103,7 @@ const Hero = () => {
             initial="hidden"
             animate="visible"
           >
-            NASA · ESA Copernicus · Sentinel · Landsat · 2001–2024
+            {t("landing.hero.subtitle")}
           </motion.p>
 
           <motion.div
@@ -130,7 +118,7 @@ const Hero = () => {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
-              Открыть геопортал
+              {t("landing.hero.openGeoportal")}
             </Button>
 
             <Button
@@ -139,7 +127,7 @@ const Hero = () => {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
-              Аналитика
+              {t("landing.hero.analytics")}
             </Button>
           </motion.div>
         </div>

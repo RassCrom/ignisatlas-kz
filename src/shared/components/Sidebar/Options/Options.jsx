@@ -1,6 +1,8 @@
 import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
 import { useState } from 'react';
 import { Clock, Info, Eye, EyeOff, RefreshCw } from "lucide-react";
+import { useI18n } from "src/shared/i18n/I18nProvider";
+import { getLocalizedValue } from "src/shared/i18n/localize";
 
 import './Options.scss';
 import LayerInfoPopup from "./LayerInfoPopup";
@@ -16,6 +18,7 @@ const Options = ({
   onLayerRefresh,
   isLoading = false
 }) => {
+  const { language, t } = useI18n();
   const [showLayerInfo, setShowLayerInfo] = useState(false);
   const [opacityInputValue, setOpacityInputValue] = useState(getOpacityValue(option.id) * 100);
 
@@ -59,7 +62,7 @@ const Options = ({
                 isEnabled ? <Eye size={16} /> : <EyeOff size={16} />
               )}
             </div>
-            <span className="layer-label">{option.label}</span>
+            <span className="layer-label">{getLocalizedValue(option, "label", language)}</span>
           </div>
         </div>
         
@@ -80,7 +83,7 @@ const Options = ({
                 className={`refresh-btn ${isLoading ? 'loading' : ''}`}
                 onClick={handleRefresh}
                 disabled={isLoading}
-                title="Refresh layer data"
+                title={t("map.controls.refreshLayer")}
               >
                 <RefreshCw size={14} className={isLoading ? 'spinning' : ''} />
               </button>
@@ -102,7 +105,7 @@ const Options = ({
             <div className="opacity-header">
               <span className="opacity-label">
                 {opacityInputValue === 0 ? <EyeOff size={12} /> : <Eye size={12} />}
-                Opacity
+                {t("map.controls.opacity")}
               </span>
               <div className="opacity-input-container">
                 <input

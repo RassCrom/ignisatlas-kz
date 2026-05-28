@@ -137,6 +137,9 @@
 }
 
 .card__footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
     margin-top: 0.5rem;
 }
 

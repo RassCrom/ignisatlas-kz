@@ -7,10 +7,12 @@ import "./App.css";
 const MapPage = lazy(() => import("src/modules/MapPage/MapPage"));
 const NotFoundPage = lazy(() => import("src/shared/errors/NotFoundPage"));
 const ReportPage = lazy(() => import("src/modules/ReportPage/ReportPage"));
+const ResearchLibraryPage = lazy(() => import("src/modules/ResearchLibraryPage/ResearchLibraryPage"));
 
 import MainLayout from "src/shared/components/Layout/Layout";
 import LandingPage from "src/modules/LandingPage/LandingPage";
 import LoadingPage from "src/shared/components/LoadingPage/LoadingPage";
+import { I18nProvider } from "src/shared/i18n/I18nProvider";
 
 const pageVariants = {
   initial: { opacity: 0, y: 6 },
@@ -44,6 +46,7 @@ function AnimatedRoutes() {
       <AnimatePresence mode="wait" initial={false}>
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
+          <Route path="/research" element={<PageWrapper><ResearchLibraryPage /></PageWrapper>} />
           <Route path="/report" element={<PageWrapper><ReportPage /></PageWrapper>} />
           <Route path="/map" element={<PageWrapper><MainLayout><MapPage /></MainLayout></PageWrapper>} />
           <Route path="*" element={<PageWrapper><NotFoundPage /></PageWrapper>} />
@@ -56,9 +59,11 @@ function AnimatedRoutes() {
 function App() {
   return (
     <HelmetProvider>
-      <Router>
-        <AnimatedRoutes />
-      </Router>
+      <I18nProvider>
+        <Router>
+          <AnimatedRoutes />
+        </Router>
+      </I18nProvider>
     </HelmetProvider>
   );
 }

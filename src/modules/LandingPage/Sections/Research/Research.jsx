@@ -1,11 +1,11 @@
-import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
-import { FileText, Map } from 'lucide-react';
-import Button from '../shared/Button/Button';
-import styles from './Research.module.scss';
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { FileText, Map } from "lucide-react";
+import { useI18n } from "src/shared/i18n/I18nProvider";
+import Button from "../shared/Button/Button";
+import styles from "./Research.module.scss";
 
-// Placeholder — replace with the live URL when published
-const REPORT_URL = '/report';
+const REPORT_URL = "/report";
 
 const containerVariants = {
   hidden: {},
@@ -23,7 +23,8 @@ const cardVariants = {
 
 const Research = () => {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-80px 0px' });
+  const inView = useInView(ref, { once: true, margin: "-80px 0px" });
+  const { t } = useI18n();
 
   return (
     <section id="research" className={styles.research} ref={ref}>
@@ -32,67 +33,57 @@ const Research = () => {
           className={styles.research__header}
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <h4 className={styles.research__subtitle} aria-hidden="true">ИССЛЕДОВАНИЯ</h4>
-          <h2 className={styles.research__title}>Исследования</h2>
-          <p className={styles.research__lead}>
-            Аналитические материалы на основе данных Tabiat Küzeti.
-          </p>
+          <h4 className={styles.research__subtitle} aria-hidden="true">{t("landing.research.eyebrow")}</h4>
+          <h2 className={styles.research__title}>{t("landing.research.title")}</h2>
+          <p className={styles.research__lead}>{t("landing.research.lead")}</p>
         </motion.header>
 
         <motion.div
           className={styles.research__grid}
           variants={containerVariants}
           initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
+          animate={inView ? "visible" : "hidden"}
         >
-          {/* Card 1 — Report (available) */}
           <motion.article className={styles.card} variants={cardVariants}>
             <div className={styles.card__top}>
               <div className={styles.card__icon}>
                 <FileText size={24} strokeWidth={1.75} />
               </div>
-              <span className={`${styles.badge} ${styles['badge--available']}`}>
-                Доступен
+              <span className={`${styles.badge} ${styles["badge--available"]}`}>
+                {t("landing.research.available")}
               </span>
             </div>
-            <h3 className={styles.card__title}>Аналитический отчёт</h3>
-            <p className={styles.card__desc}>
-              Подробный анализ динамики пожаров в Казахстане на основе данных MODIS/VIIRS за 2001–2024 гг.
-            </p>
+            <h3 className={styles.card__title}>{t("landing.research.reportTitle")}</h3>
+            <p className={styles.card__desc}>{t("landing.research.reportDesc")}</p>
             <div className={styles.card__footer}>
-              <Button
-                href={REPORT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Читать отчёт
+              <Button href="/research" variant="secondary">
+                {t("landing.research.library")}
+              </Button>
+              <Button href={REPORT_URL} target="_blank" rel="noopener noreferrer">
+                {t("landing.research.readReport")}
               </Button>
             </div>
           </motion.article>
 
-          {/* Card 2 — Storyfires (coming soon) */}
-          {/* Internal route: ./storyfires — disabled pending implementation */}
           <motion.article
-            className={`${styles.card} ${styles['card--soon']}`}
+            className={`${styles.card} ${styles["card--soon"]}`}
             variants={cardVariants}
           >
             <div className={styles.card__top}>
               <div className={styles.card__icon}>
                 <Map size={24} strokeWidth={1.75} />
               </div>
-              <span className={`${styles.badge} ${styles['badge--wip']}`}>
-                В разработке
+              <span className={`${styles.badge} ${styles["badge--wip"]}`}>
+                {t("landing.research.inProgress")}
               </span>
             </div>
-            <h3 className={styles.card__title}>История пожаров Казахстана</h3>
-            <p className={styles.card__desc}>
-              Интерактивное визуальное повествование о том, как менялась пожарная обстановка в стране за 24 года.
-            </p>
+            <h3 className={styles.card__title}>{t("landing.research.storyTitle")}</h3>
+            <p className={styles.card__desc}>{t("landing.research.storyDesc")}</p>
             <div className={styles.card__footer}>
               <Button disabled variant="secondary">
-                Скоро
+                {t("landing.research.soon")}
               </Button>
             </div>
           </motion.article>
