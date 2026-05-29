@@ -58,11 +58,11 @@ const Sidebar = memo(() => {
   };
 
   return (
-    <aside className={styles.sidebar} ref={sidebarRef} aria-label="Map controls">
+    <aside className={styles.sidebar} ref={sidebarRef} aria-label={t("map.sidebarAria")}>
       <div
         className={`${styles.menu} ${isMenuOpen ? styles.open : ""}`}
         role="toolbar"
-        aria-label="Map sidebar tabs"
+        aria-label={t("map.sidebarTabsAria")}
         aria-orientation="vertical"
       >
         {TABS.map(({ id, icon: Icon, tooltipKey }, index) => {

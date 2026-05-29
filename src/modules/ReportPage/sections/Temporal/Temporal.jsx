@@ -8,6 +8,8 @@ import ChartCard from "../../components/ChartCard";
 import ToggleGroup from "../../components/ToggleGroup";
 import CustomTooltip from "../../components/CustomTooltip";
 import { fmtK, fmt } from "../../shared/utils";
+import { useIsMobile } from "../../shared/useIsMobile";
+import { useReportI18n } from "../../reportI18n";
 import { yearlyData, seasonData, monthlyData } from "./data";
 import styles from "./Temporal.module.scss";
 
@@ -21,17 +23,27 @@ const LEGEND = { color: "rgba(217,218,245,0.6)", fontSize: 12 };
 
 export default function Temporal() {
   const [view, setView] = useState("yearly");
+  const isMobile = useIsMobile();
+  const { text } = useReportI18n();
+  const localizedSeasonData = seasonData.map((item, index) => ({
+    ...item,
+    season: text.temporal.seasons[index] ?? item.season,
+  }));
+  const localizedMonthlyData = monthlyData.map((item, index) => ({
+    ...item,
+    month: text.temporal.months[index] ?? item.month,
+  }));
 
   return (
     <Section id="temporal" className={styles.wrapper}>
-      <h2 className={styles.title}>Временная динамика</h2>
-      <p className={styles.subtitle}>Годовые и сезонные тренды пожарной активности</p>
+      <h2 className={styles.title}>{text.temporal.title}</h2>
+      <p className={styles.subtitle}>{text.temporal.subtitle}</p>
 
       <ToggleGroup
         options={[
-          { value: "yearly",   label: "Годовая"  },
-          { value: "seasonal", label: "Сезонная" },
-          { value: "monthly",  label: "Месячная" },
+          { value: "yearly", label: text.temporal.yearly },
+          { value: "seasonal", label: text.temporal.seasonal },
+          { value: "monthly", label: text.temporal.monthly },
         ]}
         active={view}
         onChange={setView}
@@ -39,11 +51,11 @@ export default function Temporal() {
 
       {view === "yearly" && (
         <ChartCard
-          title="Годовая динамика (2001–2024)"
-          subtitle="Нисходящий тренд с пиком VIIRS в 2017 г. (~246 тыс. точек)"
+          title={text.temporal.yearlyTitle}
+          subtitle={text.temporal.yearlySubtitle}
         >
-          <ResponsiveContainer width="100%" height={400}>
-            <ComposedChart data={yearlyData} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
+          <ResponsiveContainer width="100%" height={isMobile ? 320 : 400}>
+            <ComposedChart data={yearlyData} margin={isMobile ? { top: 8, right: 4, left: 0, bottom: 8 } : { top: 10, right: 10, left: 10, bottom: 20 }}>
               <defs>
                 <linearGradient id="modisGradY" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={MODIS} stopOpacity={0.95} />
@@ -55,10 +67,10 @@ export default function Temporal() {
                 </linearGradient>
               </defs>
               <CartesianGrid {...GRID} />
-              <XAxis dataKey="year" tick={TICK_X} />
+              <XAxis dataKey="year" tick={{ ...TICK_X, fontSize: isMobile ? 9 : 11 }} interval={isMobile ? 2 : 0} />
               <YAxis tick={TICK_Y} tickFormatter={fmtK} />
               <Tooltip content={<CustomTooltip />} cursor={CURSOR} />
-              <Legend wrapperStyle={LEGEND} />
+              <Legend wrapperStyle={{ ...LEGEND, fontSize: isMobile ? 10 : 12 }} />
               <Bar
                 dataKey="modis" name="MODIS" fill="url(#modisGradY)"
                 radius={[4, 4, 0, 0]} maxBarSize={18}
@@ -76,11 +88,11 @@ export default function Temporal() {
 
       {view === "seasonal" && (
         <ChartCard
-          title="Сезонное распределение (MODIS)"
-          subtitle="Лето — пик (397 965), зима — минимум (5 575). Апрельский всплеск — сельхоз пал."
+          title={text.temporal.seasonalTitle}
+          subtitle={text.temporal.seasonalSubtitle}
         >
-          <ResponsiveContainer width="100%" height={360}>
-            <BarChart data={seasonData} margin={{ top: 10, right: 30, left: 30, bottom: 20 }}>
+          <ResponsiveContainer width="100%" height={isMobile ? 300 : 360}>
+            <BarChart data={localizedSeasonData} margin={isMobile ? { top: 8, right: 8, left: 0, bottom: 8 } : { top: 10, right: 30, left: 30, bottom: 20 }}>
               <CartesianGrid {...GRID} />
               <XAxis dataKey="season" tick={{ ...TICK_X, fontSize: 13 }} />
               <YAxis tick={TICK_Y} tickFormatter={fmtK} />
@@ -89,14 +101,14 @@ export default function Temporal() {
                 dataKey="modis" name="MODIS" radius={[8, 8, 0, 0]} maxBarSize={80}
                 activeBar={{ strokeWidth: 2, stroke: "rgba(255,255,255,0.3)" }}
               >
-                {seasonData.map((e, i) => (
+                {localizedSeasonData.map((e, i) => (
                   <Cell key={i} fill={e.color} fillOpacity={0.9} />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
           <div className={styles.legend}>
-            {seasonData.map((s) => (
+            {localizedSeasonData.map((s) => (
               <div key={s.season} className={styles.legendItem}>
                 <div className={styles.legendDot} style={{ background: s.color }} />
                 <span>{s.season}: <strong>{fmt(s.modis)}</strong></span>
@@ -108,27 +120,27 @@ export default function Temporal() {
 
       {view === "monthly" && (
         <ChartCard
-          title="Месячное распределение (MODIS)"
-          subtitle="Пик активности — апрель и сентябрь. Зимние месяцы — минимум."
+          title={text.temporal.monthlyTitle}
+          subtitle={text.temporal.monthlySubtitle}
         >
-          <ResponsiveContainer width="100%" height={360}>
-            <BarChart data={monthlyData} margin={{ top: 10, right: 20, left: 20, bottom: 20 }}>
+          <ResponsiveContainer width="100%" height={isMobile ? 320 : 360}>
+            <BarChart data={localizedMonthlyData} margin={isMobile ? { top: 8, right: 4, left: 0, bottom: 8 } : { top: 10, right: 20, left: 20, bottom: 20 }}>
               <CartesianGrid {...GRID} />
-              <XAxis dataKey="month" tick={{ ...TICK_X, fontSize: 12 }} />
+              <XAxis dataKey="month" tick={{ ...TICK_X, fontSize: isMobile ? 10 : 12 }} interval={0} />
               <YAxis tick={TICK_Y} tickFormatter={fmtK} />
               <Tooltip content={<CustomTooltip />} cursor={CURSOR} />
               <Bar
                 dataKey="modis" name="MODIS" radius={[5, 5, 0, 0]} maxBarSize={38}
                 activeBar={{ strokeWidth: 2, stroke: "rgba(255,255,255,0.3)" }}
               >
-                {monthlyData.map((e, i) => (
+                {localizedMonthlyData.map((e, i) => (
                   <Cell key={i} fill={e.color} fillOpacity={0.9} />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
           <div className={styles.legend}>
-            {monthlyData.map((m) => (
+            {localizedMonthlyData.map((m) => (
               <div key={m.month} className={styles.legendItem}>
                 <div className={styles.legendDot} style={{ background: m.color }} />
                 <span>{m.month}: <strong>{fmt(m.modis)}</strong></span>

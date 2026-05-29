@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react';
 import { Eye, EyeOff, Sliders, Info, Leaf } from 'lucide-react';
 import usePeatlandsStore from 'src/app/store/peatlandsStore';
 import LayerInfoPopup from 'src/shared/components/Sidebar/Options/LayerInfoPopup';
+import { useI18n } from 'src/shared/i18n/I18nProvider';
+import { getLocalizedValue } from 'src/shared/i18n/localize';
 import './FireControls/fireControls.scss';
 import '../../Options/Options.scss'
 
@@ -13,6 +15,7 @@ const LEGEND = [
 const PeatlandsControls = ({ option }) => {
   const [isExpanded, setIsExpanded]     = useState(false);
   const [showLayerInfo, setShowLayerInfo] = useState(false);
+  const { language, t } = useI18n();
 
   const visible       = usePeatlandsStore((s) => s.visible);
   const opacity       = usePeatlandsStore((s) => s.opacity);
@@ -34,7 +37,9 @@ const PeatlandsControls = ({ option }) => {
               : <EyeOff size={16} className="fire-controls__icon-inactive" />
             }
           </div>
-          <span className="fire-controls__toggle-label">Торфяники</span>
+          <span className="fire-controls__toggle-label">
+            {getLocalizedValue(option, "label", language)}
+          </span>
           <Leaf
             size={16}
             className={`fire-controls__flame-icon ${visible ? 'fire-controls__flame-icon--active' : ''}`}
@@ -69,7 +74,7 @@ const PeatlandsControls = ({ option }) => {
 
           <div className="fire-controls__section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span className="fire-controls__label" style={{ margin: 0 }}>Непрозрачность</span>
+              <span className="fire-controls__label" style={{ margin: 0 }}>{t("map.controls.opacity")}</span>
               <span style={{ fontSize: '10px', color: 'rgba(217,218,245,0.6)', fontWeight: 600 }}>
                 {Math.round(opacity * 100)}%
               </span>

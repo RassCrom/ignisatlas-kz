@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Eye, EyeOff, Sliders, Layers, Plus, Trash2, Info } from 'lucide-react';
 import useLulcStore from 'src/app/store/lulcStore';
+import { useI18n } from 'src/shared/i18n/I18nProvider';
 import './FireControls/fireControls.scss';
 
 // ESRI Sentinel-2 10m Land Cover class colours (official palette)
@@ -18,6 +19,7 @@ const LULC_CLASSES = [
 
 const LulcControls = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useI18n();
 
   const visible       = useLulcStore((state) => state.visible);
   const opacity       = useLulcStore((state) => state.opacity);
@@ -48,7 +50,7 @@ const LulcControls = () => {
           <button
             className="fire-controls__expand-btn"
             onClick={addLayer}
-            title="Добавить на карту"
+            title={t("map.controls.addToMap")}
             style={{ background: 'rgba(52,211,153,0.12)', borderColor: 'rgba(52,211,153,0.3)' }}
           >
             <Plus size={14} style={{ color: 'rgba(52,211,153,0.9)' }} />
@@ -89,7 +91,7 @@ const LulcControls = () => {
           <button
             className="fire-controls__expand-btn"
             onClick={removeLayer}
-            title="Удалить с карты"
+            title={t("map.controls.removeFromMap")}
             style={{ color: 'rgba(248,113,113,0.8)' }}
           >
             <Trash2 size={14} />
@@ -140,7 +142,7 @@ const LulcControls = () => {
             <div className="fire-modelling__control-row" style={{ marginBottom: 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span className="fire-controls__label" style={{ margin: 0 }}>
-                  Непрозрачность
+                  {t("map.controls.opacity")}
                 </span>
                 <span style={{ fontSize: '10px', color: 'rgba(217,218,245,0.6)', fontWeight: 600 }}>
                   {Math.round(opacity * 100)}%

@@ -2,6 +2,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import Section from "../../components/Section";
 import ChartCard from "../../components/ChartCard";
 import CustomTooltip from "../../components/CustomTooltip";
+import { useIsMobile } from "../../shared/useIsMobile";
+import { useReportI18n } from "../../reportI18n";
 import { countryData } from "./data";
 import styles from "./Comparison.module.scss";
 
@@ -10,17 +12,24 @@ const CURSOR = { stroke: "rgba(255,255,255,0.07)", strokeWidth: 1, fill: "rgba(2
 const GRID   = { strokeDasharray: "3 3", stroke: "rgba(255,255,255,0.05)", horizontal: false };
 
 export default function Comparison() {
+  const isMobile = useIsMobile();
+  const { text } = useReportI18n();
+  const chartData = countryData.map((item, index) => ({
+    ...item,
+    country: text.comparison.countries[index] ?? item.country,
+  }));
+
   return (
     <Section id="compare" className={styles.wrapper}>
-      <h2 className={styles.title}>Межстрановое сравнение</h2>
-      <p className={styles.subtitle}>Казахстан — лидер Центральной Азии, в 4–16 раз превышает показатели соседей</p>
+      <h2 className={styles.title}>{text.comparison.title}</h2>
+      <p className={styles.subtitle}>{text.comparison.subtitle}</p>
 
-      <ChartCard title="Нормализованная плотность (MODIS, точки / млн км²)">
-        <ResponsiveContainer width="100%" height={450}>
+      <ChartCard title={text.comparison.chartTitle}>
+        <ResponsiveContainer width="100%" height={isMobile ? 520 : 450}>
           <BarChart
-            data={countryData}
+            data={chartData}
             layout="vertical"
-            margin={{ top: 5, right: 40, left: 10, bottom: 5 }}
+            margin={isMobile ? { top: 4, right: 8, left: 0, bottom: 4 } : { top: 5, right: 40, left: 10, bottom: 5 }}
           >
             <defs>
               <linearGradient id="kzGrad" x1="0" y1="0" x2="1" y2="0">
@@ -35,23 +44,23 @@ export default function Comparison() {
             <CartesianGrid {...GRID} />
             <XAxis
               type="number"
-              tick={{ fill: "rgba(217,218,245,0.5)", fontSize: 11 }}
+              tick={{ fill: "rgba(217,218,245,0.5)", fontSize: isMobile ? 10 : 11 }}
             />
             <YAxis
               type="category" dataKey="country"
-              tick={{ fill: "rgba(217,218,245,0.6)", fontSize: 12 }}
-              width={140}
+              tick={{ fill: "rgba(217,218,245,0.6)", fontSize: isMobile ? 10 : 12 }}
+              width={isMobile ? 86 : 140}
             />
             <Tooltip content={<CustomTooltip />} cursor={CURSOR} />
             <Bar
-              dataKey="density" name="Плотность"
-              radius={[0, 6, 6, 0]} maxBarSize={24}
+              dataKey="density" name={text.common.density}
+              radius={[0, 6, 6, 0]} maxBarSize={isMobile ? 18 : 24}
               activeBar={{ strokeWidth: 1.5, stroke: "rgba(255,255,255,0.25)" }}
             >
-              {countryData.map((c, i) => (
+              {chartData.map((c, i) => (
                 <Cell
                   key={i}
-                  fill={c.country === "Казахстан" ? "url(#kzGrad)" : "url(#restGrad)"}
+                  fill={i === 5 ? "url(#kzGrad)" : "url(#restGrad)"}
                 />
               ))}
             </Bar>

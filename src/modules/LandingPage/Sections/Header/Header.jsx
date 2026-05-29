@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import LanguageSwitcher from "src/shared/components/LanguageSwitcher/LanguageSwitcher";
 import { useI18n } from "src/shared/i18n/I18nProvider";
 import styles from "./Header.module.scss";
 
@@ -25,7 +26,7 @@ const mobileMenuVariants = {
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { language, languages, setLanguage, t } = useI18n();
+  const { t } = useI18n();
   const navigationLinks = t("landing.nav", []);
 
   return (
@@ -65,19 +66,7 @@ const Header = () => {
           </motion.ul>
         </nav>
 
-        <div className={styles.header__lang} role="group" aria-label={t("common.languageSelect")}>
-          {languages.map((lang) => (
-            <button
-              key={lang.code}
-              className={`${styles.lang__btn} ${language === lang.code ? styles["lang__btn--active"] : ""}`}
-              onClick={() => setLanguage(lang.code)}
-              aria-pressed={language === lang.code}
-              title={lang.name}
-            >
-              {lang.label}
-            </button>
-          ))}
-        </div>
+        <LanguageSwitcher className={styles.header__lang} />
 
         <button
           className={styles.header__burger}

@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
 import { Eye, EyeOff, Sliders, MapPin } from 'lucide-react';
 import useSettlementsStore from 'src/app/store/settlementsStore';
+import { useI18n } from 'src/shared/i18n/I18nProvider';
+import { getLocalizedValue } from 'src/shared/i18n/localize';
 import './FireControls/fireControls.scss';
 
 const FCLASS_LEGEND = [
@@ -11,8 +13,9 @@ const FCLASS_LEGEND = [
   { fclass: 'suburb',           label: 'Пригород', color: '#94a3b8', shape: 'circle' },
 ];
 
-const SettlementsControls = () => {
+const SettlementsControls = ({ option }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { language, t } = useI18n();
 
   const visible       = useSettlementsStore((state) => state.visible);
   const opacity       = useSettlementsStore((state) => state.opacity);
@@ -34,7 +37,9 @@ const SettlementsControls = () => {
               : <EyeOff size={16} className="fire-controls__icon-inactive" />
             }
           </div>
-          <span className="fire-controls__toggle-label">Населённые пункты</span>
+          <span className="fire-controls__toggle-label">
+            {getLocalizedValue(option, "label", language)}
+          </span>
           <MapPin
             size={16}
             className={`fire-controls__flame-icon ${visible ? 'fire-controls__flame-icon--active' : ''}`}
@@ -57,7 +62,7 @@ const SettlementsControls = () => {
             <div className="fire-modelling__control-row" style={{ marginBottom: 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span className="fire-controls__label" style={{ margin: 0 }}>
-                  Непрозрачность
+                  {t("map.controls.opacity")}
                 </span>
                 <span style={{ fontSize: '10px', color: 'rgba(217,218,245,0.6)', fontWeight: 600 }}>
                   {Math.round(opacity * 100)}%

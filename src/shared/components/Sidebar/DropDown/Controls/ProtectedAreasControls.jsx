@@ -1,10 +1,13 @@
 import { useState, useCallback } from 'react';
 import { Eye, EyeOff, Sliders, Shield } from 'lucide-react';
 import useProtectedAreasStore from 'src/app/store/protectedAreasStore';
+import { useI18n } from 'src/shared/i18n/I18nProvider';
+import { getLocalizedValue } from 'src/shared/i18n/localize';
 import './FireControls/fireControls.scss';
 
-const ProtectedAreasControls = () => {
+const ProtectedAreasControls = ({ option }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { language, t } = useI18n();
 
   const visible       = useProtectedAreasStore((s) => s.visible);
   const opacity       = useProtectedAreasStore((s) => s.opacity);
@@ -26,7 +29,9 @@ const ProtectedAreasControls = () => {
               : <EyeOff size={16} className="fire-controls__icon-inactive" />
             }
           </div>
-          <span className="fire-controls__toggle-label">ООПТ Казахстана</span>
+          <span className="fire-controls__toggle-label">
+            {getLocalizedValue(option, "label", language)}
+          </span>
           <Shield
             size={16}
             className={`fire-controls__flame-icon ${visible ? 'fire-controls__flame-icon--active' : ''}`}
@@ -46,7 +51,7 @@ const ProtectedAreasControls = () => {
 
           <div className="fire-controls__section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span className="fire-controls__label" style={{ margin: 0 }}>Непрозрачность</span>
+              <span className="fire-controls__label" style={{ margin: 0 }}>{t("map.controls.opacity")}</span>
               <span style={{ fontSize: '10px', color: 'rgba(217,218,245,0.6)', fontWeight: 600 }}>
                 {Math.round(opacity * 100)}%
               </span>

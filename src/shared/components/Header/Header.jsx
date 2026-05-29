@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from "react";
 import { Menu, CircleHelp, X, Keyboard, Mouse, Layers, Flame, Satellite, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import useMenuStore from "src/app/store/store";
+import LanguageSwitcher from "src/shared/components/LanguageSwitcher/LanguageSwitcher";
 import { useI18n } from "src/shared/i18n/I18nProvider";
 
 import styles from "./Header.module.scss";
@@ -89,7 +90,7 @@ const HelpModal = ({ onClose }) => {
 const Header = memo(() => {
   const { isMenuOpen, toggleMenu } = useMenuStore();
   const [helpOpen, setHelpOpen] = useState(false);
-  const { language, languages, setLanguage, t } = useI18n();
+  const { t } = useI18n();
 
   useEffect(() => {
     const handler = (e) => {
@@ -147,20 +148,7 @@ const Header = memo(() => {
           </div>
 
           <div className={styles["header-right"]}>
-            <div className={styles["header-lang"]} role="group" aria-label={t("common.languageSelect")}>
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  type="button"
-                  className={`${styles["header-lang-btn"]} ${language === lang.code ? styles["header-lang-btn--active"] : ""}`}
-                  onClick={() => setLanguage(lang.code)}
-                  aria-pressed={language === lang.code}
-                  title={lang.name}
-                >
-                  {lang.label}
-                </button>
-              ))}
-            </div>
+            <LanguageSwitcher compact />
             <div className={styles["header-info"]}>
               <button
                 className={styles["header-info-btn"]}

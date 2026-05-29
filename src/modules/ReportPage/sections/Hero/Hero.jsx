@@ -1,22 +1,21 @@
 import Section from "../../components/Section";
 import StatCard from "../../components/StatCard";
+import { useReportI18n } from "../../reportI18n";
 import styles from "./Hero.module.scss";
 
 const tags = ["MODIS", "VIIRS", "FIRMS", "QGIS", "Python", "ESA WorldCover"];
 
 export default function Hero() {
+  const { text } = useReportI18n();
+
   return (
     <Section id="hero" className={styles.hero}>
-      <h1 className={styles.title}>
-        Пространственно-временной анализ пожарной активности в Казахстане
-      </h1>
-      <p className={styles.subtitle}>
-        Комплексное исследование по данным MODIS и VIIRS за 2001–2024 гг. с использованием спутниковых данных NASA FIRMS
-      </p>
+      <h1 className={styles.title}>{text.hero.title}</h1>
+      <p className={styles.subtitle}>{text.hero.subtitle}</p>
       <div className={styles.stats}>
-        <StatCard value={1122137} label="Точек MODIS (2001–2024)" accent="#E84025" />
-        <StatCard value={1461877} label="Точек VIIRS (2012–2024)" accent="#4787E3" />
-        <StatCard value="2.72 млн" label="км² территории" accent="#34d399" />
+        <StatCard value={1122137} label={text.hero.stats.modis} accent="#E84025" />
+        <StatCard value={1461877} label={text.hero.stats.viirs} accent="#4787E3" />
+        <StatCard value={text.hero.stats.territoryValue} label={text.hero.stats.territory} accent="#34d399" />
       </div>
       <div className={styles.tags}>
         {tags.map((t) => (

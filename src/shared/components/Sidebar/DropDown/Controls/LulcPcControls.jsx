@@ -5,10 +5,12 @@ import {
 } from 'lucide-react';
 import useLulcPcStore from 'src/app/store/lulcPcStore';
 import { LULC_YEARS, LULC_CLASSES } from 'src/utils/lulcService';
+import { useI18n } from 'src/shared/i18n/I18nProvider';
 import './FireControls/fireControls.scss';
 
 const LulcPcControls = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useI18n();
 
   const year          = useLulcPcStore((s) => s.year);
   const isAdded       = useLulcPcStore((s) => s.isAdded);
@@ -108,8 +110,8 @@ const LulcPcControls = () => {
             }}
           >
             {isLoading
-              ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Загрузка…</>
-              : <><Plus size={14} /> Добавить на карту</>
+              ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> {t("map.controls.loading")}</>
+              : <><Plus size={14} /> {t("map.controls.addToMap")}</>
             }
           </button>
 
@@ -154,7 +156,7 @@ const LulcPcControls = () => {
           <button
             className="fire-controls__expand-btn"
             onClick={removeLayer}
-            title="Удалить с карты"
+            title={t("map.controls.removeFromMap")}
             style={{ color: 'rgba(248,113,113,0.8)' }}
           >
             <Trash2 size={14} />
@@ -248,7 +250,7 @@ const LulcPcControls = () => {
             <div className="fire-modelling__control-row" style={{ marginBottom: 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span className="fire-controls__label" style={{ margin: 0 }}>
-                  Непрозрачность
+                  {t("map.controls.opacity")}
                 </span>
                 <span style={{ fontSize: '10px', color: 'rgba(217,218,245,0.6)', fontWeight: 600 }}>
                   {Math.round(opacity * 100)}%

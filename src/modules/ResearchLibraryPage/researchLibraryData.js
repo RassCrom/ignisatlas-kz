@@ -1,5 +1,6 @@
 export const RESEARCH_LIBRARY_COPY = {
   kk: {
+    eyebrow: "ZERTTEULER",
     title: "Qazaqstan klimaty boiynsha zertteuler",
     lead: "Analitikalyq eseptter men interaktivti storytelling materialdaryn bir zherden tabyngyz.",
     searchPlaceholder: "Kilt soz, aumaq, taqyryp boiynsha izdeu",
@@ -33,6 +34,7 @@ export const RESEARCH_LIBRARY_COPY = {
     },
   },
   en: {
+    eyebrow: "RESEARCH",
     title: "Kazakhstan Climate Research",
     lead: "Find analytical reports and interactive storytelling materials in one searchable library.",
     searchPlaceholder: "Search by keyword, region, or topic",
@@ -66,6 +68,7 @@ export const RESEARCH_LIBRARY_COPY = {
     },
   },
   ru: {
+    eyebrow: "ИССЛЕДОВАНИЯ",
     title: "Исследования климата Казахстана",
     lead: "Каталог аналитических отчетов и интерактивных storytelling-материалов с поиском и фильтрами.",
     searchPlaceholder: "Поиск по ключевым словам, региону или теме",

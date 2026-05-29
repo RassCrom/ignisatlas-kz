@@ -67,11 +67,20 @@
   display: flex;
   gap: 2px;
   overflow-x: auto;
-  max-width: 72%;
+  min-width: 0;
 
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.navRight {
+  min-width: 0;
+  max-width: 74%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 .link {
@@ -114,5 +123,24 @@
 
   &::after {
     transform: scaleX(1);
+  }
+}
+
+@media (max-width: 760px) {
+  .nav {
+    padding: 0 12px;
+  }
+
+  .logo__text {
+    display: none;
+  }
+
+  .navRight {
+    max-width: calc(100% - 44px);
+    gap: 8px;
+  }
+
+  .link {
+    padding: 6px 10px;
   }
 }

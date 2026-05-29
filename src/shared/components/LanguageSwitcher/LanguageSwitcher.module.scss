@@ -1,0 +1,120 @@
+.switcher {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.trigger {
+  min-width: 76px;
+  height: 32px;
+  padding: 0 9px;
+  border: 1px solid rgba(136, 139, 224, 0.16);
+  border-radius: 8px;
+  background: rgba(136, 139, 224, 0.06);
+  color: rgba(217, 218, 245, 0.78);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 700;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+
+  svg {
+    flex: 0 0 auto;
+  }
+
+  &:hover,
+  &:focus-visible,
+  &.open {
+    color: rgba(217, 218, 245, 0.95);
+    border-color: rgba(52, 211, 153, 0.35);
+    background: rgba(136, 139, 224, 0.12);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(56, 189, 248, 0.7);
+    outline-offset: 2px;
+  }
+}
+
+.chevron {
+  transition: transform 0.2s ease;
+
+  .open & {
+    transform: rotate(180deg);
+  }
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  padding: 6px;
+  border: 1px solid rgba(136, 139, 224, 0.18);
+  border-radius: 10px;
+  background: rgba(9, 10, 36, 0.98);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  z-index: 1200;
+}
+
+.option {
+  width: 100%;
+  min-height: 38px;
+  padding: 7px 8px;
+  border-radius: 7px;
+  color: rgba(217, 218, 245, 0.7);
+  display: grid;
+  grid-template-columns: 28px 1fr 16px;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s ease, color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    color: rgba(217, 218, 245, 0.95);
+    background: rgba(136, 139, 224, 0.1);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(56, 189, 248, 0.65);
+    outline-offset: -2px;
+  }
+
+  svg {
+    color: #34d399;
+  }
+}
+
+.active {
+  background: rgba(52, 211, 153, 0.1);
+  color: rgba(217, 218, 245, 0.96);
+}
+
+.optionLabel {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.optionName {
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compact {
+  .trigger {
+    min-width: 68px;
+    height: 30px;
+  }
+}

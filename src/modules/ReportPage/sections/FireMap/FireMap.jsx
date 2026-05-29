@@ -2,17 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import { Protocol } from "pmtiles";
 import Section from "../../components/Section";
+import { useReportI18n } from "../../reportI18n";
 import styles from "./FireMap.module.scss";
 
 const MIN_YEAR = 2001;
 const MAX_YEAR = 2024;
-
-const CONFIDENCE_OPTIONS = [
-  { value: "all",    label: "Все уровни" },
-  { value: "high",   label: "Высокая" },
-  { value: "medium", label: "Средняя" },
-  { value: "low",    label: "Низкая" },
-];
 
 const SENSOR_OPTIONS = [
   { value: "all",   label: "MODIS + VIIRS" },
@@ -41,6 +35,7 @@ let pmtilesRegistered = false;
 const FireMap = () => {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
+  const { text } = useReportI18n();
   const [yearRange, setYearRange] = useState([MIN_YEAR, MAX_YEAR]);
   const [confidence, setConfidence] = useState("all");
   const [sensor, setSensor] = useState("all");
@@ -153,15 +148,12 @@ const FireMap = () => {
 
   return (
     <Section id="firemap" className={styles.wrapper}>
-      <h2 className={styles.title}>Карта пожаров 2001–2024</h2>
-      <p className={styles.subtitle}>
-        Интерактивная карта термальных аномалий по данным NASA FIRMS (MODIS + VIIRS).
-        Используйте фильтры и временной диапазон для исследования пространственного распределения.
-      </p>
+      <h2 className={styles.title}>{text.fireMap.title}</h2>
+      <p className={styles.subtitle}>{text.fireMap.subtitle}</p>
 
       <div className={styles.controls}>
         <div className={styles.controlGroup}>
-          <label className={styles.label}>Период</label>
+          <label className={styles.label}>{text.common.period}</label>
           <div className={styles.yearRow}>
             <span className={styles.yearVal}>{yearRange[0]}</span>
             <div className={styles.sliderTrack}>
@@ -193,9 +185,14 @@ const FireMap = () => {
         </div>
 
         <div className={styles.controlGroup}>
-          <label className={styles.label}>Достоверность</label>
+          <label className={styles.label}>{text.common.confidence}</label>
           <div className={styles.pills}>
-            {CONFIDENCE_OPTIONS.map((opt) => (
+            {[
+              { value: "all", label: text.common.allLevels },
+              { value: "high", label: text.common.high },
+              { value: "medium", label: text.common.medium },
+              { value: "low", label: text.common.low },
+            ].map((opt) => (
               <button
                 key={opt.value}
                 type="button"
@@ -209,7 +206,7 @@ const FireMap = () => {
         </div>
 
         <div className={styles.controlGroup}>
-          <label className={styles.label}>Сенсор</label>
+          <label className={styles.label}>{text.common.sensor}</label>
           <div className={styles.pills}>
             {SENSOR_OPTIONS.map((opt) => (
               <button
@@ -229,25 +226,24 @@ const FireMap = () => {
         <div ref={mapRef} className={styles.map} />
 
         <div className={styles.legend}>
-          <div className={styles.legendTitle}>Плотность / точки</div>
+          <div className={styles.legendTitle}>{text.fireMap.densityPoints}</div>
           <div className={styles.legendBar} />
           <div className={styles.legendLabels}>
-            <span>Низкая</span>
-            <span>Высокая</span>
+            <span>{text.common.low}</span>
+            <span>{text.common.high}</span>
           </div>
         </div>
 
         {!isLoaded && (
           <div className={styles.loading}>
             <div className={styles.spinner} />
-            <span>Загрузка данных о пожарах…</span>
+            <span>{text.common.loadingFireData}</span>
           </div>
         )}
       </div>
 
       <p className={styles.note}>
-        Источник: NASA FIRMS — Fire Information for Resource Management System.
-        Файл данных: <code>firms-01-24.pmtiles</code> (PMTiles v3, вектор).
+        {text.fireMap.note} <code>firms-01-24.pmtiles</code> (PMTiles v3, {text.fireMap.vector}).
       </p>
     </Section>
   );

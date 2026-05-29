@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { Map as MapIcon, X } from "lucide-react";
 import { basemapOptions, getAllBasemaps } from "../../utils/basemaps";
+import { useI18n } from "src/shared/i18n/I18nProvider";
 import styles from './BasemapSwitcher.module.scss';
 
 const BasemapSwitcher = ({ currentBasemap, onBasemapChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef(null);
+  const { t } = useI18n();
 
   const allBasemaps = getAllBasemaps();
 
@@ -96,8 +98,8 @@ const BasemapSwitcher = ({ currentBasemap, onBasemapChange }) => {
       <button
         className={`${styles.basemapButton} ${isOpen ? styles.active : ''}`}
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? "Закрыть подложки" : "Открыть подложки"}
-        title="Подложка карты"
+        aria-label={isOpen ? t("map.basemap.close") : t("map.basemap.open")}
+        title={t("map.basemap.title")}
         aria-expanded={isOpen}
         aria-haspopup="menu"
         disabled={isLoading}
@@ -109,16 +111,16 @@ const BasemapSwitcher = ({ currentBasemap, onBasemapChange }) => {
         <div 
           className={styles.basemapOptions} 
           role="menu"
-          aria-label="Basemap options"
+          aria-label={t("map.basemap.options")}
         >
           {isLoading ? (
             <div className={styles.loading}>
-              Смена подложки...
+              {t("map.basemap.loading")}
             </div>
           ) : (
             <>
-              {renderBasemapGroup(rasterBasemaps, 'Растровые')}
-              {renderBasemapGroup(vectorBasemaps, 'Векторные')}
+              {renderBasemapGroup(rasterBasemaps, t("map.basemap.raster"))}
+              {renderBasemapGroup(vectorBasemaps, t("map.basemap.vector"))}
               
               {/* Fallback if no categorized basemaps */}
               {rasterBasemaps.length === 0 && vectorBasemaps.length === 0 && (

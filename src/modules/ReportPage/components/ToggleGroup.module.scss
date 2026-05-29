@@ -35,3 +35,32 @@
     transform: translateY(-2px);
   }
 }
+
+@media (max-width: 640px) {
+  .group {
+    gap: 8px;
+    justify-content: flex-start;
+    margin-bottom: 18px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .btn {
+    flex: 0 0 auto;
+    min-height: 36px;
+    padding: 8px 14px;
+    font-size: 12px;
+    border-radius: 9px;
+    white-space: nowrap;
+  }
+
+  .active,
+  .inactive:hover {
+    transform: none;
+  }
+}

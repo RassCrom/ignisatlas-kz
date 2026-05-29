@@ -1,5 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from "react";
-import Nav from "./components/Nav";
+import ReportHeader from "./components/ReportHeader";
 import { navItems } from "./components/navItems";
 import Hero from "./sections/Hero/Hero";
 import Abstract from "./sections/Abstract/Abstract";
@@ -35,7 +35,7 @@ const ReportPage = () => {
 
   return (
     <div className={styles.report}>
-      <Nav activeSection={activeSection} />
+      <ReportHeader activeSection={activeSection} />
       <Hero />
       <Abstract />
       <Regions />

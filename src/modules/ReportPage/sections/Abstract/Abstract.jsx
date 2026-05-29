@@ -1,17 +1,16 @@
 import Section from "../../components/Section";
+import { useReportI18n } from "../../reportI18n";
 import styles from "./Abstract.module.scss";
 
 export default function Abstract() {
+  const { text } = useReportI18n();
+
   return (
     <Section id="abstract" className={styles.abstract}>
-      <h2 className={styles.title}>Кратко о главном</h2>
+      <h2 className={styles.title}>{text.abstract.title}</h2>
       <div className={styles.grid}>
-        <p>
-          Исследование выполнено на основе архивов термальных аномалий NASA FIRMS: продукт MODIS (разрешение ~1 км, 2001–2024) и VIIRS (375 м, 2012–2024). Предобработка включала фильтрацию по типу события и уровню достоверности, перепроецирование в метрическую систему координат.
-        </p>
-        <p>
-          Наибольшая плотность пожаров приходится на степные регионы северного Казахстана. Выявлена двухфазная сезонность: весенний пик (сельскохозяйственный пал) и летний (климатические факторы). Более 80% аномалий — на высотах 0–500 м. Казахстан лидирует в Центральной Азии по плотности пожаров.
-        </p>
+        <p>{text.abstract.p1}</p>
+        <p>{text.abstract.p2}</p>
       </div>
     </Section>
   );

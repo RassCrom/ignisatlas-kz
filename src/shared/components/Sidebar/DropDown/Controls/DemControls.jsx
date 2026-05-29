@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import useDemStore from 'src/app/store/demStore';
 import { DEM_RENDERERS, DEM_RENDERER_GRADIENTS } from 'src/utils/demService';
+import { useI18n } from 'src/shared/i18n/I18nProvider';
 import './FireControls/fireControls.scss';
 
 const SELECT_STYLE = {
@@ -33,6 +34,7 @@ const SECTION_TITLE = {
 
 const DemControls = () => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { t } = useI18n();
 
   const renderer       = useDemStore((s) => s.renderer);
   const isAdded        = useDemStore((s) => s.isAdded);
@@ -117,8 +119,8 @@ const DemControls = () => {
             }}
           >
             {isLoading
-              ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> Загрузка…</>
-              : <><Plus size={14} /> Добавить на карту</>
+              ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> {t("map.controls.loading")}</>
+              : <><Plus size={14} /> {t("map.controls.addToMap")}</>
             }
           </button>
 
@@ -163,7 +165,7 @@ const DemControls = () => {
           <button
             className="fire-controls__expand-btn"
             onClick={removeLayer}
-            title="Удалить с карты"
+            title={t("map.controls.removeFromMap")}
             style={{ color: 'rgba(248,113,113,0.8)' }}
           >
             <Trash2 size={14} />
@@ -213,7 +215,7 @@ const DemControls = () => {
           {/* Opacity slider */}
           <div className="fire-controls__section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span className="fire-controls__label" style={{ margin: 0 }}>Непрозрачность</span>
+              <span className="fire-controls__label" style={{ margin: 0 }}>{t("map.controls.opacity")}</span>
               <span style={{ fontSize: '10px', color: 'rgba(217,218,245,0.6)', fontWeight: 600 }}>
                 {Math.round(opacity * 100)}%
               </span>

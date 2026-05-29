@@ -13,6 +13,8 @@ import {
   X,
 } from "lucide-react";
 import { useI18n } from "src/shared/i18n/I18nProvider";
+import Footer from "../LandingPage/Sections/Footer/Footer";
+import Header from "../LandingPage/Sections/Header/Header";
 import {
   RESEARCH_LIBRARY_COPY,
   RESEARCH_MATERIALS,
@@ -45,7 +47,7 @@ const TypeIcon = ({ type }) => {
 };
 
 const ResearchLibraryPage = () => {
-  const { language, languages, setLanguage, t } = useI18n();
+  const { language, t } = useI18n();
   const copy = getCopy(language);
   const [query, setQuery] = useState("");
   const [type, setType] = useState("all");
@@ -73,6 +75,8 @@ const ResearchLibraryPage = () => {
     setStatus("all");
   };
 
+  const hasActiveFilters = query || type !== "all" || topic !== "all" || status !== "all";
+
   return (
     <div className={styles.page}>
       <Helmet>
@@ -80,73 +84,66 @@ const ResearchLibraryPage = () => {
         <meta name="description" content={copy.lead} />
       </Helmet>
 
-      <header className={styles.header}>
-        <a href="/" className={styles.brand} aria-label={t("common.homeAria")}>
-          <img src="/hero-tabiat-v2.png" alt={t("common.brand")} />
-          <span>{t("common.brand")}</span>
-        </a>
-
-        <nav className={styles.nav} aria-label={t("landing.navAria")}>
-          <a href="/">{copy.backHome}</a>
-          <a href="/map">{copy.map}</a>
-        </nav>
-
-        <div className={styles.lang} role="group" aria-label={t("common.languageSelect")}>
-          {languages.map((lang) => (
-            <button
-              key={lang.code}
-              type="button"
-              className={language === lang.code ? styles.activeLang : ""}
-              onClick={() => setLanguage(lang.code)}
-              aria-pressed={language === lang.code}
-              title={lang.name}
-            >
-              {lang.label}
-            </button>
-          ))}
-        </div>
-      </header>
+      {/* Reuse the Landing page Header component */}
+      <Header />
 
       <main className={styles.main}>
+        {/* ── Hero ── */}
         <section className={styles.hero}>
           <div className={styles.heroText}>
+            <div className={styles.hero__eyebrow}>
+              <span className={styles.eyebrow__dot} aria-hidden="true" />
+              <span className={styles.eyebrow__label}>{copy.eyebrow ?? "RESEARCH"}</span>
+            </div>
             <h1>{copy.title}</h1>
             <p>{copy.lead}</p>
           </div>
 
           <div className={styles.summary} aria-label={copy.results}>
-            <div>
-              <BarChart3 size={18} />
+            <div className={styles.summaryCard}>
+              <BarChart3 size={18} className={styles.summaryCard__icon} />
               <strong>{RESEARCH_MATERIALS.length}</strong>
               <span>{copy.results}</span>
             </div>
-            <div>
-              <FileText size={18} />
+            <div className={styles.summaryCard}>
+              <FileText size={18} className={styles.summaryCard__icon} />
               <strong>{RESEARCH_MATERIALS.filter((item) => item.type === "report").length}</strong>
               <span>{copy.typeLabels.report}</span>
             </div>
-            <div>
-              <BookOpen size={18} />
+            <div className={styles.summaryCard}>
+              <BookOpen size={18} className={styles.summaryCard__icon} />
               <strong>{RESEARCH_MATERIALS.filter((item) => item.type === "storytelling").length}</strong>
               <span>{copy.typeLabels.storytelling}</span>
             </div>
           </div>
         </section>
 
+        {/* ── Filters ── */}
         <section className={styles.filters} aria-label={copy.filters}>
           <div className={styles.searchBox}>
-            <Search size={18} />
+            <Search size={16} className={styles.searchBox__icon} />
             <input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder={copy.searchPlaceholder}
               type="search"
+              aria-label={copy.searchPlaceholder}
             />
+            {query && (
+              <button
+                className={styles.searchBox__clear}
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
 
           <div className={styles.selects}>
-            <label>
-              <Filter size={15} />
+            <label className={styles.selectLabel}>
+              <Filter size={14} className={styles.selectLabel__icon} />
               <select value={type} onChange={(event) => setType(event.target.value)}>
                 <option value="all">{copy.allTypes}</option>
                 {MATERIAL_TYPES.map((value) => (
@@ -155,8 +152,8 @@ const ResearchLibraryPage = () => {
               </select>
             </label>
 
-            <label>
-              <Tag size={15} />
+            <label className={styles.selectLabel}>
+              <Tag size={14} className={styles.selectLabel__icon} />
               <select value={topic} onChange={(event) => setTopic(event.target.value)}>
                 <option value="all">{copy.allTopics}</option>
                 {TOPICS.map((value) => (
@@ -165,8 +162,8 @@ const ResearchLibraryPage = () => {
               </select>
             </label>
 
-            <label>
-              <CalendarDays size={15} />
+            <label className={styles.selectLabel}>
+              <CalendarDays size={14} className={styles.selectLabel__icon} />
               <select value={status} onChange={(event) => setStatus(event.target.value)}>
                 <option value="all">{copy.allStatuses}</option>
                 {STATUSES.map((value) => (
@@ -176,16 +173,24 @@ const ResearchLibraryPage = () => {
             </label>
           </div>
 
-          <button className={styles.reset} type="button" onClick={resetFilters}>
-            <X size={15} />
+          <button
+            className={`${styles.reset} ${hasActiveFilters ? styles["reset--active"] : ""}`}
+            type="button"
+            onClick={resetFilters}
+            aria-label={copy.reset}
+          >
+            <X size={14} />
             {copy.reset}
           </button>
         </section>
 
-        <div className={styles.resultCount}>
-          {filteredMaterials.length} {copy.results}
+        {/* ── Result count ── */}
+        <div className={styles.resultCount} aria-live="polite" aria-atomic="true">
+          <span className={styles.resultCount__number}>{filteredMaterials.length}</span>
+          {" "}{copy.results}
         </div>
 
+        {/* ── Cards grid ── */}
         {filteredMaterials.length > 0 ? (
           <section className={styles.grid} aria-live="polite">
             {filteredMaterials.map((material) => {
@@ -196,11 +201,17 @@ const ResearchLibraryPage = () => {
 
               return (
                 <article key={material.id} className={styles.card}>
+                  {/* Card glow for available items */}
+                  {isAvailable && <div className={styles.card__glow} aria-hidden="true" />}
+
                   <div className={styles.cardTop}>
-                    <div className={styles.icon}>
+                    <div className={`${styles.icon} ${isAvailable ? styles["icon--active"] : ""}`}>
                       <TypeIcon type={material.type} />
                     </div>
                     <span className={`${styles.status} ${styles[`status_${material.status}`]}`}>
+                      {material.status === "available" && (
+                        <span className={styles.status__dot} aria-hidden="true" />
+                      )}
                       {copy.statusLabels[material.status]}
                     </span>
                   </div>
@@ -223,7 +234,7 @@ const ResearchLibraryPage = () => {
                   {isAvailable ? (
                     <a className={styles.action} href={material.href}>
                       {copy.open}
-                      <ArrowRight size={16} />
+                      <ArrowRight size={15} strokeWidth={2} />
                     </a>
                   ) : (
                     <span className={`${styles.action} ${styles.disabledAction}`}>
@@ -236,12 +247,20 @@ const ResearchLibraryPage = () => {
           </section>
         ) : (
           <section className={styles.empty} aria-live="polite">
-            <Search size={30} />
+            <div className={styles.empty__icon}>
+              <Search size={28} strokeWidth={1.5} />
+            </div>
             <h2>{copy.noResults}</h2>
             <p>{copy.noResultsHint}</p>
+            <button className={styles.empty__reset} type="button" onClick={resetFilters}>
+              {copy.reset}
+            </button>
           </section>
         )}
       </main>
+
+      {/* Reuse the Landing page Footer */}
+      <Footer />
     </div>
   );
 };
