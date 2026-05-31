@@ -123,6 +123,21 @@
   }
 }
 
+.rasterHit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.rasterName {
+  color: rgba(136, 139, 224, 0.8);
+  font-size: 0.68rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .statsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;

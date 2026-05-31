@@ -88,6 +88,7 @@ export default defineConfig({
     alias: {
       src: "/src",
     },
+    dedupe: ['react', 'react-dom'],
     extensions: ['.js', '.jsx'],
   },
 })

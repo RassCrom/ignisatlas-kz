@@ -17,21 +17,27 @@ export function isModisProduct(productId) {
   return productId !== 'landsat-c2-l2';
 }
 
-// MODIS 11A1/11A2: T(K) = DN × 0.02  →  rescale 13500–16500 covers −3°C to 57°C
-// Landsat C2 L2:   T(K) = DN × 0.00341802 + 149  →  rescale 35400–52940 covers same range
+// Convert source DN values to Celsius before rendering so tile colors and point
+// inspection use the same temperature scale as the legend.
 export function buildLstTileUrl(collection, itemId, obsTime = 'day') {
-  const base =
-    `${PC_TILE_BASE}/{z}/{x}/{y}@1x.png` +
-    `?collection=${encodeURIComponent(collection)}` +
-    `&item=${encodeURIComponent(itemId)}` +
-    `&colormap_name=${encodeURIComponent(COLORMAP)}`;
+  const params = new URLSearchParams({
+    collection,
+    item: itemId,
+    colormap_name: COLORMAP,
+    rescale: `${LST_RANGE_C.min},${LST_RANGE_C.max}`,
+    asset_as_band: 'true',
+  });
 
   if (collection === 'landsat-c2-l2') {
-    return `${base}&assets=lwir11&rescale=35400,50940`;
+    params.set('assets', 'lwir11');
+    params.set('expression', 'lwir11*0.00341802+149-273.15');
+    return `${PC_TILE_BASE}/{z}/{x}/{y}@1x.png?${params.toString()}`;
   }
 
   const asset = obsTime === 'night' ? 'LST_Night_1km' : 'LST_Day_1km';
-  return `${base}&assets=${asset}&rescale=13500,16500`;
+  params.set('assets', asset);
+  params.set('expression', `${asset}*0.02-273.15`);
+  return `${PC_TILE_BASE}/{z}/{x}/{y}@1x.png?${params.toString()}`;
 }
 
 // How many days back from the selected date to open the search window

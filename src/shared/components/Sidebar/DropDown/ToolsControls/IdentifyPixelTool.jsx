@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Crosshair, X } from 'lucide-react';
 import useAnalysisStore from 'src/app/store/analysisStore';
 import { getMapInstance } from 'src/modules/MapPage/services/mapService';
+import { inspectRasterPixel } from 'src/utils/rasterPixelService';
 import baseStyles from './ToolsControls.module.scss';
 import styles from './AnalysisTools.module.scss';
 
@@ -13,10 +14,28 @@ const visibleStyleLayers = (map, types) =>
     .filter((layer) => map.getLayoutProperty(layer.id, 'visibility') !== 'none')
     .map((layer) => layer.id);
 
+const getRasterTileUrl = (map, layerId) => {
+  const style = map.getStyle();
+  const layer = style.layers.find((item) => item.id === layerId);
+  const source = typeof layer?.source === 'string' ? style.sources?.[layer.source] : layer?.source;
+  return source?.tiles?.[0] || null;
+};
+
+const formatPixelValue = (value, unit) => {
+  if (value == null || !Number.isFinite(Number(value))) return 'No data';
+  const numericValue = Number(value);
+  const formatted = Math.abs(numericValue) >= 100
+    ? numericValue.toFixed(0)
+    : numericValue.toFixed(4).replace(/\.?0+$/, '');
+  return `${formatted}${unit ? ` ${unit}` : ''}`;
+};
+
 const IdentifyPixelTool = () => {
   const [isActive, setIsActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
   const listenerRef = useRef(null);
+  const requestSeqRef = useRef(0);
   const { activeToolId, setActiveTool } = useAnalysisStore();
   const blocked = activeToolId !== null && activeToolId !== TOOL_ID;
 
@@ -37,12 +56,33 @@ const IdentifyPixelTool = () => {
         .filter((feature) => Object.keys(feature.props).length > 0)
       : [];
 
+    const requestSeq = requestSeqRef.current + 1;
+    requestSeqRef.current = requestSeq;
+    setIsLoading(true);
+
+    const rasterHits = await Promise.all(rasterLayerIds.map(async (id) => {
+      try {
+        return {
+          label: id,
+          ...await inspectRasterPixel(getRasterTileUrl(map, id), lngLat),
+        };
+      } catch (error) {
+        return {
+          label: id,
+          status: 'error',
+          message: error.message || 'Failed to load pixel value.',
+        };
+      }
+    }));
+
+    if (requestSeq !== requestSeqRef.current) return;
     setResult({
       lon: Number(lngLat.lng).toFixed(6),
       lat: Number(lngLat.lat).toFixed(6),
-      rasterHits: rasterLayerIds.map((id) => ({ label: id })),
+      rasterHits,
       vectorHits,
     });
+    setIsLoading(false);
   }, []);
 
   const activate = useCallback(() => {
@@ -64,6 +104,8 @@ const IdentifyPixelTool = () => {
       map.getCanvas().style.cursor = '';
     }
     setIsActive(false);
+    setIsLoading(false);
+    requestSeqRef.current += 1;
     setActiveTool(null);
   }, [setActiveTool]);
 
@@ -78,6 +120,7 @@ const IdentifyPixelTool = () => {
     window.addEventListener('cm:identify_pixel', handleContextIdentify);
     return () => {
       window.removeEventListener('cm:identify_pixel', handleContextIdentify);
+      requestSeqRef.current += 1;
       const map = getMapInstance();
       if (map && listenerRef.current) {
         map.off('click', listenerRef.current);
@@ -116,9 +159,20 @@ const IdentifyPixelTool = () => {
               <p className={baseStyles.toolDesc} style={{ margin: 0 }}>No visible raster layer at this point.</p>
             ) : (
               result.rasterHits.map((h) => (
-                <div key={h.label} className={styles.resultRow}>
-                  <span>{h.label}</span>
-                  <span>visible</span>
+                <div key={h.label} className={styles.rasterHit}>
+                  <div className={styles.rasterName}>{h.label}</div>
+                  {h.status === 'ready' && h.values.length > 0 ? (
+                    h.values.map((item) => (
+                      <div key={item.band} className={styles.resultRow}>
+                        <span>{item.band}</span>
+                        <span>{formatPixelValue(item.value, item.unit)}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className={baseStyles.toolDesc} style={{ margin: 0 }}>
+                      {h.message || 'No data at this point.'}
+                    </p>
+                  )}
                 </div>
               ))
             )}
@@ -147,6 +201,12 @@ const IdentifyPixelTool = () => {
               ))}
             </div>
           )}
+        </div>
+      )}
+      {isLoading && (
+        <div className={styles.loadingRow}>
+          <span className={styles.spinner} />
+          Loading pixel values…
         </div>
       )}
     </div>

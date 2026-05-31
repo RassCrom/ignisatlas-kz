@@ -17,6 +17,16 @@ const getInitialLanguage = () => {
 const readPath = (source, path) =>
   path.split(".").reduce((value, key) => (value == null ? undefined : value[key]), source);
 
+const createTranslator = (language) => (path, fallback = "") => {
+  const valueByLanguage = readPath(translations[language], path);
+  if (valueByLanguage !== undefined) return valueByLanguage;
+
+  const defaultValue = readPath(translations[DEFAULT_LANGUAGE], path);
+  return defaultValue ?? fallback;
+};
+
+const LANGUAGE_CHANGE_EVENT = "fires-kz-language-change";
+
 export const I18nProvider = ({ children }) => {
   const [language, setLanguageState] = useState(getInitialLanguage);
 
@@ -35,31 +45,75 @@ export const I18nProvider = ({ children }) => {
   }, [language]);
 
   const value = useMemo(() => {
-    const t = (path, fallback = "") => {
-      const valueByLanguage = readPath(translations[language], path);
-      if (valueByLanguage !== undefined) return valueByLanguage;
-
-      const defaultValue = readPath(translations[DEFAULT_LANGUAGE], path);
-      return defaultValue ?? fallback;
-    };
-
     return {
       language,
       languageConfig: LANGUAGES.find(({ code }) => code === language) ?? LANGUAGES[0],
       languages: LANGUAGES,
       setLanguage,
-      t,
+      t: createTranslator(language),
     };
   }, [language, setLanguage]);
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 };
 
+const useStandaloneI18n = () => {
+  const [language, setLanguageState] = useState(getInitialLanguage);
+
+  const setLanguage = useCallback((nextLanguage) => {
+    if (!isSupportedLanguage(nextLanguage)) return;
+
+    setLanguageState(nextLanguage);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, nextLanguage);
+      window.dispatchEvent(new CustomEvent(LANGUAGE_CHANGE_EVENT, { detail: nextLanguage }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const handleLanguageChange = (event) => {
+      if (isSupportedLanguage(event.detail)) {
+        setLanguageState(event.detail);
+      }
+    };
+
+    const handleStorage = (event) => {
+      if (event.key === LANGUAGE_STORAGE_KEY && isSupportedLanguage(event.newValue)) {
+        setLanguageState(event.newValue);
+      }
+    };
+
+    window.addEventListener(LANGUAGE_CHANGE_EVENT, handleLanguageChange);
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener(LANGUAGE_CHANGE_EVENT, handleLanguageChange);
+      window.removeEventListener("storage", handleStorage);
+    };
+  }, []);
+
+  useEffect(() => {
+    const activeLanguage = LANGUAGES.find(({ code }) => code === language);
+    document.documentElement.lang = activeLanguage?.htmlLang ?? language;
+  }, [language]);
+
+  return useMemo(
+    () => ({
+      language,
+      languageConfig: LANGUAGES.find(({ code }) => code === language) ?? LANGUAGES[0],
+      languages: LANGUAGES,
+      setLanguage,
+      t: createTranslator(language),
+    }),
+    [language, setLanguage]
+  );
+};
+
 export const useI18n = () => {
   const context = useContext(I18nContext);
-  if (!context) {
-    throw new Error("useI18n must be used inside I18nProvider");
-  }
+  const fallback = useStandaloneI18n();
 
-  return context;
+  return context ?? fallback;
 };
