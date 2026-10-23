@@ -1,0 +1,19 @@
+{
+  "nav": {
+    "story": "Story",
+    "atlas": "Atlas",
+    "map": "Map",
+    "data": "Data"
+  },
+  "lang": {
+    "kk": "Қазақша",
+    "ru": "Русский",
+    "en": "English"
+  },
+  "langShort": {
+    "kk": "ҚАЗ",
+    "ru": "РУС",
+    "en": "ENG"
+  },
+  "skipToContent": "Skip to content"
+}

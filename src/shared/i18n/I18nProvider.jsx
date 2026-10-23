@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { DEFAULT_LANGUAGE, LANGUAGE_CODES, LANGUAGE_STORAGE_KEY, LANGUAGES, translations } from "./config";
 
 const I18nContext = createContext(null);
@@ -27,22 +27,48 @@ const createTranslator = (language) => (path, fallback = "") => {
 
 const LANGUAGE_CHANGE_EVENT = "fires-kz-language-change";
 
-export const I18nProvider = ({ children }) => {
-  const [language, setLanguageState] = useState(getInitialLanguage);
+// Without `language` the provider owns the language: it reads and saves it in localStorage and sets
+// <html lang>. With `language` it is controlled: the value follows the prop, setLanguage(code) only
+// calls onLanguageChange(code), and localStorage and <html lang> are left to the owner of the value
+// (the locale-prefixed routes). The mode is chosen by the first render and is not meant to change.
+export const I18nProvider = ({ children, language: controlledLanguage, onLanguageChange }) => {
+  const isControlled = controlledLanguage !== undefined;
+  const [ownLanguage, setLanguageState] = useState(() => (isControlled ? DEFAULT_LANGUAGE : getInitialLanguage()));
+  const language = isControlled
+    ? isSupportedLanguage(controlledLanguage)
+      ? controlledLanguage
+      : DEFAULT_LANGUAGE
+    : ownLanguage;
 
-  const setLanguage = useCallback((nextLanguage) => {
-    if (!isSupportedLanguage(nextLanguage)) return;
-    setLanguageState(nextLanguage);
-  }, []);
+  // Read through a ref so an inline callback does not change setLanguage and the context value.
+  const onLanguageChangeRef = useRef(onLanguageChange);
+  useEffect(() => {
+    onLanguageChangeRef.current = onLanguageChange;
+  });
+
+  const setLanguage = useCallback(
+    (nextLanguage) => {
+      if (!isSupportedLanguage(nextLanguage)) return;
+
+      if (isControlled) {
+        onLanguageChangeRef.current?.(nextLanguage);
+        return;
+      }
+      setLanguageState(nextLanguage);
+    },
+    [isControlled]
+  );
 
   useEffect(() => {
+    if (isControlled) return;
+
     if (typeof window !== "undefined") {
       window.localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
     }
 
     const activeLanguage = LANGUAGES.find(({ code }) => code === language);
     document.documentElement.lang = activeLanguage?.htmlLang ?? language;
-  }, [language]);
+  }, [isControlled, language]);
 
   const value = useMemo(() => {
     return {
@@ -57,8 +83,10 @@ export const I18nProvider = ({ children }) => {
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 };
 
-const useStandaloneI18n = () => {
-  const [language, setLanguageState] = useState(getInitialLanguage);
+// Only used when there is no provider above (`enabled`). Hooks cannot be skipped, so under a provider
+// it is kept inert: it does not read localStorage, listen for changes or touch <html lang>.
+const useStandaloneI18n = (enabled) => {
+  const [language, setLanguageState] = useState(() => (enabled ? getInitialLanguage() : DEFAULT_LANGUAGE));
 
   const setLanguage = useCallback((nextLanguage) => {
     if (!isSupportedLanguage(nextLanguage)) return;
@@ -71,7 +99,7 @@ const useStandaloneI18n = () => {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return undefined;
+    if (!enabled || typeof window === "undefined") return undefined;
 
     const handleLanguageChange = (event) => {
       if (isSupportedLanguage(event.detail)) {
@@ -92,12 +120,14 @@ const useStandaloneI18n = () => {
       window.removeEventListener(LANGUAGE_CHANGE_EVENT, handleLanguageChange);
       window.removeEventListener("storage", handleStorage);
     };
-  }, []);
+  }, [enabled]);
 
   useEffect(() => {
+    if (!enabled) return;
+
     const activeLanguage = LANGUAGES.find(({ code }) => code === language);
     document.documentElement.lang = activeLanguage?.htmlLang ?? language;
-  }, [language]);
+  }, [enabled, language]);
 
   return useMemo(
     () => ({
@@ -113,7 +143,7 @@ const useStandaloneI18n = () => {
 
 export const useI18n = () => {
   const context = useContext(I18nContext);
-  const fallback = useStandaloneI18n();
+  const fallback = useStandaloneI18n(context === null);
 
   return context ?? fallback;
 };
