@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:glyphs": "node scripts/check-kazakh-glyphs.mjs"
+    "check:glyphs": "node scripts/check-kazakh-glyphs.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs"
   },
   "dependencies": {
     "@fontsource-variable/onest": "^5.3.1",
