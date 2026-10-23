@@ -8,6 +8,18 @@ importers:
 
   .:
     dependencies:
+      '@fontsource-variable/onest':
+        specifier: ^5.3.1
+        version: 5.3.1
+      '@fontsource-variable/roboto-flex':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/ibm-plex-mono':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource/spectral':
+        specifier: ^5.3.0
+        version: 5.3.0
       '@openeo/js-client':
         specifier: ^2.7.0
         version: 2.12.0
@@ -96,6 +108,9 @@ importers:
       eslint-plugin-react-refresh:
         specifier: ^0.4.18
         version: 0.4.26(eslint@9.39.4)
+      fontkit:
+        specifier: ^2.0.4
+        version: 2.0.4
       globals:
         specifier: ^15.14.0
         version: 15.15.0
@@ -459,6 +474,18 @@ packages:
       '@noble/hashes':
         optional: true
 
+  '@fontsource-variable/onest@5.3.1':
+    resolution: {integrity: sha512-xaaw6G4HDB2/RczsWLD/2bnib4ykmQlTlBUN3GOEOiyErilZukQWVJG95h9zwAy0i8KY+QzDa+COPfqhI72Acw==}
+
+  '@fontsource-variable/roboto-flex@5.3.0':
+    resolution: {integrity: sha512-bOxckUy0qXNRjhV6e4pcHGSvptix4ZRD1uaj5Za8h+p3qrb2GL4U4TQdpVmPSy0SmqwldfD+JJqEKdF68EyiAw==}
+
+  '@fontsource/ibm-plex-mono@5.3.0':
+    resolution: {integrity: sha512-eTgnZjZEGk1QtD3ZstF+Vclo2HLAni8YMy34/DxllwZvyz1lR/1RF/xTiAquOBO7MvqBx8D2Ig2WCPMVfdZu7Q==}
+
+  '@fontsource/spectral@5.3.0':
+    resolution: {integrity: sha512-2TL5WWGOZj4SIsBmPFEzKeA60tXXd1Qp1OqaaVEWkJL8IfSGLk6YmiusmC441iFkdJDIuFelu1r8lhCmQUU3mw==}
+
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
     engines: {node: '>=18.18.0'}
@@ -795,6 +822,9 @@ packages:
 
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
+
+  '@swc/helpers@0.5.23':
+    resolution: {integrity: sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==}
 
   '@testing-library/dom@10.4.2':
     resolution: {integrity: sha512-yzr2S9HyAIdhz2/6qHgbs665Q7PKVcDF05vsOlHPxG1mo36gKVesdYVeDLnXgfjJ03CrKRk08knc6+E/9m8v2Q==}
@@ -1397,6 +1427,9 @@ packages:
   brace-expansion@1.1.14:
     resolution: {integrity: sha512-MWPGfDxnyzKU7rNOW9SP/c50vi3xrmrua/+6hfPbCS2ABNWfx24vPidzvC7krjU/RTo235sV776ymlsMtGKj8g==}
 
+  brotli@1.3.3:
+    resolution: {integrity: sha512-oTKjJdShmDuGW94SyyaoQvAjf30dZaHnjJ8uAF+u2/vGJkJbJPJAT1gDiOJP5v1Zb6f9KEyW/1HpuaWIXtGHPg==}
+
   browserslist@4.28.2:
     resolution: {integrity: sha512-48xSriZYYg+8qXna9kwqjIVzuQxi+KYWp2+5nCYnYKPTr0LvD89Jqk2Or5ogxz0NUMfIjhh2lIUX/LyX9B4oIg==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
@@ -1436,6 +1469,10 @@ packages:
   cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
+
+  clone@2.1.2:
+    resolution: {integrity: sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w==}
+    engines: {node: '>=0.8'}
 
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
@@ -1611,6 +1648,9 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
+
+  dfa@1.2.0:
+    resolution: {integrity: sha512-ED3jP8saaweFTjeGX8HQPjeC1YYyZs98jGNZx6IiBvxW7JG5v492kamAQB3m2wop07CvU/RQmzcKr6bgcC5D/Q==}
 
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
@@ -1846,6 +1886,9 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+
+  fontkit@2.0.4:
+    resolution: {integrity: sha512-syetQadaUEDNdxdugga9CpEYVaQIxOwk7GlwZWWZ19//qW4zE5bknOKeMBDYAASwnpaSHKJITRLMF9m1fp3s6g==}
 
   for-each@0.3.5:
     resolution: {integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==}
@@ -2345,6 +2388,9 @@ packages:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
     engines: {node: '>=10'}
 
+  pako@0.2.9:
+    resolution: {integrity: sha512-NUcwaKxUxWrZLpDG+z/xZaCgQITkA/Dv4V/T6bw7VON6l1Xz/VnrBqrYjZQ12TamKHzITTfOEIYUj48y2KXImA==}
+
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
@@ -2562,6 +2608,9 @@ packages:
     engines: {node: '>= 0.4'}
     hasBin: true
 
+  restructure@3.0.2:
+    resolution: {integrity: sha512-gSfoiOEA0VPE6Tukkrr7I0RBdE0s7H1eFCDBk05l1KIQT1UIKNc5JZy6jdyW6eYH3aR3g5b3PuL77rq0hvwtAw==}
+
   robust-predicates@2.0.4:
     resolution: {integrity: sha512-l4NwboJM74Ilm4VKfbAtFeGq7aEjWL+5kVFcmgFA2MrdnQWx9iE/tUGvxY5HyMI7o/WpSIUFLbC5fbeaHgSCYg==}
 
@@ -2722,6 +2771,9 @@ packages:
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
 
+  tiny-inflate@1.0.3:
+    resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
+
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
 
@@ -2806,6 +2858,12 @@ packages:
   undici@7.30.1:
     resolution: {integrity: sha512-03KrMbjIFDWQR5RNPrSw3bd1r12JpyFQl9/yxjUbJtqkjmllqC5lFjZh6ujeuJCKr8EOQvRW872Oy/az+nLYxg==}
     engines: {node: '>=20.18.1'}
+
+  unicode-properties@1.4.1:
+    resolution: {integrity: sha512-CLjCCLQ6UuMxWnbIylkisbRj31qxHPAurvena/0iwSVbQ2G1VY5/HjV0IRabOEbDHlzZlRdCrD4NhB0JtU40Pg==}
+
+  unicode-trie@2.0.0:
+    resolution: {integrity: sha512-x7bc76x0bm4prf1VLg79uhAzKw8DVboClSN5VxJuQ+LKDOVEW9CdH+VY7SP+vX7xCYQqzzgQpFqz15zeLvAtZQ==}
 
   update-browserslist-db@1.2.3:
     resolution: {integrity: sha512-Js0m9cx+qOgDxo0eMiFGEueWztz+d4+M3rGlmKPT+T4IS/jP4ylw3Nwpu6cpTTP8R1MAC1kF4VbdLt3ARf209w==}
@@ -3300,6 +3358,14 @@ snapshots:
 
   '@exodus/bytes@1.16.0': {}
 
+  '@fontsource-variable/onest@5.3.1': {}
+
+  '@fontsource-variable/roboto-flex@5.3.0': {}
+
+  '@fontsource/ibm-plex-mono@5.3.0': {}
+
+  '@fontsource/spectral@5.3.0': {}
+
   '@humanfs/core@0.19.2':
     dependencies:
       '@humanfs/types': 0.15.0
@@ -3561,6 +3627,10 @@ snapshots:
   '@standard-schema/spec@1.1.0': {}
 
   '@standard-schema/utils@0.3.0': {}
+
+  '@swc/helpers@0.5.23':
+    dependencies:
+      tslib: 2.8.1
 
   '@testing-library/dom@10.4.2':
     dependencies:
@@ -4982,6 +5052,10 @@ snapshots:
       balanced-match: 1.0.2
       concat-map: 0.0.1
 
+  brotli@1.3.3:
+    dependencies:
+      base64-js: 1.5.1
+
   browserslist@4.28.2:
     dependencies:
       baseline-browser-mapping: 2.10.32
@@ -5027,6 +5101,8 @@ snapshots:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
+
+  clone@2.1.2: {}
 
   clsx@2.1.1: {}
 
@@ -5183,6 +5259,8 @@ snapshots:
 
   detect-libc@2.1.2:
     optional: true
+
+  dfa@1.2.0: {}
 
   doctrine@2.1.0:
     dependencies:
@@ -5531,6 +5609,18 @@ snapshots:
   flatted@3.4.2: {}
 
   follow-redirects@1.16.0: {}
+
+  fontkit@2.0.4:
+    dependencies:
+      '@swc/helpers': 0.5.23
+      brotli: 1.3.3
+      clone: 2.1.2
+      dfa: 1.2.0
+      fast-deep-equal: 3.1.3
+      restructure: 3.0.2
+      tiny-inflate: 1.0.3
+      unicode-properties: 1.4.1
+      unicode-trie: 2.0.0
 
   for-each@0.3.5:
     dependencies:
@@ -6066,6 +6156,8 @@ snapshots:
     dependencies:
       p-limit: 3.1.0
 
+  pako@0.2.9: {}
+
   parent-module@1.0.1:
     dependencies:
       callsites: 3.1.0
@@ -6286,6 +6378,8 @@ snapshots:
       object-keys: 1.1.1
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
+
+  restructure@3.0.2: {}
 
   robust-predicates@2.0.4: {}
 
@@ -6514,6 +6608,8 @@ snapshots:
 
   symbol-tree@3.2.4: {}
 
+  tiny-inflate@1.0.3: {}
+
   tiny-invariant@1.3.3: {}
 
   tinybench@6.2.2: {}
@@ -6614,6 +6710,16 @@ snapshots:
       which-boxed-primitive: 1.1.1
 
   undici@7.30.1: {}
+
+  unicode-properties@1.4.1:
+    dependencies:
+      base64-js: 1.5.1
+      unicode-trie: 2.0.0
+
+  unicode-trie@2.0.0:
+    dependencies:
+      pako: 0.2.9
+      tiny-inflate: 1.0.3
 
   update-browserslist-db@1.2.3(browserslist@4.28.2):
     dependencies:

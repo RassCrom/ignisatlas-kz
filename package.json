@@ -10,9 +10,14 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check:glyphs": "node scripts/check-kazakh-glyphs.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/onest": "^5.3.1",
+    "@fontsource-variable/roboto-flex": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@fontsource/spectral": "^5.3.0",
     "@openeo/js-client": "^2.7.0",
     "@turf/turf": "^7.2.0",
     "axios": "^1.7.9",
@@ -44,6 +49,7 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.18",
+    "fontkit": "^2.0.4",
     "globals": "^15.14.0",
     "jsdom": "^29.1.1",
     "vite": "^6.1.0",

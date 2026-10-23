@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import 'src/design/tokens.css';
+import 'src/design/fonts';
 import App from 'src/app/App';
 
 createRoot(document.getElementById('root')).render(
