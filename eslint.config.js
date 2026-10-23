@@ -23,7 +23,7 @@ const NEW_CODE = [
 const OLD_MAP = ['./src/modules', './src/shared/components/Sidebar', './src/app/store']
 
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'playwright-report', 'test-results'] },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
@@ -84,5 +84,9 @@ export default [
         },
       ],
     },
+  },
+  {
+    files: ['playwright.config.js'],
+    languageOptions: { globals: globals.node },
   },
 ]
