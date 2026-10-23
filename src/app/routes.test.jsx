@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { RouterProvider, createMemoryRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter, createMemoryRouter } from 'react-router-dom';
 import { useLocale } from 'src/i18n/LocaleProvider.jsx';
 import { useI18n } from 'src/shared/i18n/I18nProvider';
 import { createAppRoutes } from './routes.jsx';
@@ -89,6 +89,17 @@ describe('createAppRoutes', () => {
     await screen.findByText('landing');
     expect(r.state.location).toMatchObject({ pathname: '/en/', search: '?utm=a', hash: '#h' });
   });
+
+  it('sends an unprefixed URL to the language the visitor is currently using', async () => {
+    // renderAt forces the browser language to German, so only the saved choice can say 'ru'.
+    const r = renderAt('/ru/map/legacy');
+    await screen.findByText('legacy-map');
+    expect(localStorage.getItem('fires-kz-language')).toBe('ru');
+
+    await act(() => r.navigate('/report'));
+    await screen.findByText('report');
+    expect(r.state.location.pathname).toBe('/ru/report');
+  });
 });
 
 describe('providers under a locale route', () => {
@@ -109,8 +120,8 @@ describe('providers under a locale route', () => {
     renderAt('/ru/map/legacy', 'kk', probePages);
     expect(await screen.findByTestId('state')).toHaveTextContent('ru/ru');
     expect(document.documentElement.lang).toBe('ru');
-    // The old provider is controlled by the URL, so it neither reads nor rewrites the saved choice.
-    expect(localStorage.getItem('fires-kz-language')).toBe('kk');
+    // The saved choice follows the URL: the visitor is now using Russian, whatever was saved before.
+    expect(localStorage.getItem('fires-kz-language')).toBe('ru');
   });
 
   it('turns a language picked in the old UI into a navigation that keeps path, query and hash', async () => {
@@ -120,5 +131,37 @@ describe('providers under a locale route', () => {
     expect(screen.getByTestId('state')).toHaveTextContent('en/en');
     expect(document.documentElement.lang).toBe('en');
     expect(localStorage.getItem('fires-kz-language')).toBe('en');
+  });
+});
+
+describe('language switch with a real browser history', () => {
+  // Same shape as the legacy map: it moves the address bar with history.pushState(), which the
+  // router does not hear about.
+  function Map() {
+    const { setLanguage } = useI18n();
+    return (
+      <>
+        <button onClick={() => window.history.pushState(null, '', '#map=6.00/71.00000/49.00000/0.0')}>pan</button>
+        <button onClick={() => setLanguage('en')}>to-en</button>
+      </>
+    );
+  }
+
+  afterEach(() => {
+    window.history.replaceState(null, '', '/');
+  });
+
+  it('keeps the map view written by pushState when the old UI switches language', async () => {
+    vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['de-DE']);
+    localStorage.clear();
+    window.history.replaceState(null, '', '/ru/map/legacy#map=5.00/70.00000/48.00000/0.0');
+    const router = createBrowserRouter(createAppRoutes({ ...pages, LegacyMap: Map }));
+    render(<RouterProvider router={router} />);
+
+    await userEvent.click(await screen.findByRole('button', { name: 'pan' }));
+    await userEvent.click(screen.getByRole('button', { name: 'to-en' }));
+
+    expect(window.location.pathname + window.location.hash).toBe('/en/map/legacy#map=6.00/71.00000/49.00000/0.0');
+    expect(router.state.location.hash).toBe('#map=6.00/71.00000/49.00000/0.0');
   });
 });
