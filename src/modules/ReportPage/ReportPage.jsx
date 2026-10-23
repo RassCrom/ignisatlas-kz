@@ -11,7 +11,6 @@ import Infrastructure from "./sections/Infrastructure/Infrastructure";
 import Comparison from "./sections/Comparison/Comparison";
 import Conclusions from "./sections/Conclusions/Conclusions";
 import ReportFooter from "./components/ReportFooter";
-import { I18nProvider } from "src/shared/i18n/I18nProvider";
 import styles from "./ReportPage.module.scss";
 
 const FireMap = lazy(() => import("./sections/FireMap/FireMap"));
@@ -54,10 +53,6 @@ const ReportContent = () => {
   );
 };
 
-const ReportPage = () => (
-  <I18nProvider>
-    <ReportContent />
-  </I18nProvider>
-);
+const ReportPage = () => <ReportContent />;
 
 export default ReportPage;

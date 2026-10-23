@@ -48,4 +48,25 @@ export default [
       'import/no-unresolved': 'error',
     },
   },
+  {
+    // The new code (design system, i18n, data, features, the globe) must not import the old map.
+    // App.jsx is not listed: it is where the old pages are plugged into the new routes.
+    files: [
+      'src/{design,i18n,data,dev,features,map}/**/*.{js,jsx}',
+      'src/app/{routes,LocaleLayout,RootRedirect}.jsx',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['src/modules/*', 'src/shared/components/Sidebar/*', 'src/app/store/*'],
+              message: 'Новый код не зависит от старой карты (план M0)',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]

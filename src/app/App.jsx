@@ -1,7 +1,7 @@
 import { Suspense, lazy } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { HelmetProvider } from "react-helmet-async";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, useLocation, useRoutes } from "react-router-dom";
 import "./App.css";
 
 const MapPage = lazy(() => import("src/modules/MapPage/MapPage"));
@@ -12,7 +12,8 @@ const ResearchLibraryPage = lazy(() => import("src/modules/ResearchLibraryPage/R
 import MainLayout from "src/shared/components/Layout/Layout";
 import LandingPage from "src/modules/LandingPage/LandingPage";
 import LoadingPage from "src/shared/components/LoadingPage/LoadingPage";
-import { I18nProvider } from "src/shared/i18n/I18nProvider";
+import { splitLocalePath } from "src/i18n/paths";
+import { createAppRoutes } from "./routes";
 
 const pageVariants = {
   initial: { opacity: 0, y: 6 },
@@ -39,31 +40,52 @@ const PageWrapper = ({ children }) => (
   </motion.div>
 );
 
+function LegacyMap() {
+  return (
+    <MainLayout>
+      <MapPage />
+    </MainLayout>
+  );
+}
+
+// The old pages the locale-prefixed routes still serve (see routes.jsx).
+const PAGES = {
+  Landing: LandingPage,
+  LegacyMap,
+  Report: ReportPage,
+  Research: ResearchLibraryPage,
+  NotFound: NotFoundPage,
+};
+
+const ROUTES = createAppRoutes(PAGES);
+
+function PageRoutes({ location }) {
+  const routes = useRoutes(ROUTES, location);
+  return <PageWrapper>{routes}</PageWrapper>;
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
+  // The page changes with the path after the language prefix. Switching only the language
+  // ('/ru/map/legacy' -> '/en/map/legacy') keeps the same key, so the page is re-rendered in place
+  // instead of being faded out and mounted again (which would reload the map).
+  const pageKey = splitLocalePath(location.pathname).rest;
   return (
     <Suspense fallback={<LoadingPage />}>
       <AnimatePresence mode="wait" initial={false}>
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<PageWrapper><LandingPage /></PageWrapper>} />
-          <Route path="/research" element={<PageWrapper><ResearchLibraryPage /></PageWrapper>} />
-          <Route path="/report" element={<PageWrapper><ReportPage /></PageWrapper>} />
-          <Route path="/map" element={<PageWrapper><MainLayout><MapPage /></MainLayout></PageWrapper>} />
-          <Route path="*" element={<PageWrapper><NotFoundPage /></PageWrapper>} />
-        </Routes>
+        <PageRoutes location={location} key={pageKey} />
       </AnimatePresence>
     </Suspense>
   );
 }
 
+// I18nProvider and LocaleProvider need the router, so LocaleLayout mounts them per language route.
 function App() {
   return (
     <HelmetProvider>
-      <I18nProvider>
-        <Router>
-          <AnimatedRoutes />
-        </Router>
-      </I18nProvider>
+      <Router>
+        <AnimatedRoutes />
+      </Router>
     </HelmetProvider>
   );
 }
