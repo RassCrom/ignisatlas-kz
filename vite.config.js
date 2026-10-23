@@ -91,4 +91,9 @@ export default defineConfig({
     dedupe: ['react', 'react-dom'],
     extensions: ['.js', '.jsx'],
   },
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['src/test/setup.js'],
+    include: ['src/**/*.test.{js,jsx}', 'scripts/**/*.test.mjs'],
+  },
 })
