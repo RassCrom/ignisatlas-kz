@@ -59,7 +59,7 @@ const Hero = () => {
       >
         <img
           src="/hero.webp"
-          srcSet="/hero-800.webp 800w, /hero.webp 1600w"
+          srcSet="/hero.webp 1600w"
           sizes="100vw"
           fetchPriority="high"
           decoding="async"
