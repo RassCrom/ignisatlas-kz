@@ -15,20 +15,28 @@ const blocks = [...css.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((m) => ({
   body: m[2],
 }));
 
-const SURFACE_SELECTOR = {
-  night: '[data-surface="night"]',
-  paper: '[data-surface="paper"]',
-  root: ':root',
+const NIGHT = '[data-surface="night"]';
+const PAPER = '[data-surface="paper"]';
+
+// A surface is every block whose selector list contains its selector, merged in source order
+// (Night is split into a variables block shared with :root and a color-scheme block).
+// 'root' is the shared block that is selected by :root alone.
+const SURFACE_BLOCKS = {
+  night: (b) => b.selectors.includes(NIGHT),
+  paper: (b) => b.selectors.includes(PAPER),
+  root: (b) => b.selectors.length === 1 && b.selectors[0] === ':root',
 };
 
-// Returns every declaration of the block whose selector list contains the surface selector.
-function surfaceVars(surface) {
-  const want = SURFACE_SELECTOR[surface];
-  const block = blocks.find((b) => b.selectors.includes(want));
-  if (!block) throw new Error(`no block for ${surface}`);
+function declarations(matchingBlocks) {
   return Object.fromEntries(
-    [...block.body.matchAll(/([\w-]+)\s*:\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]),
+    matchingBlocks.flatMap((b) => [...b.body.matchAll(/([\w-]+)\s*:\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()])),
   );
+}
+
+function surfaceVars(surface) {
+  const matching = blocks.filter(SURFACE_BLOCKS[surface]);
+  if (matching.length === 0) throw new Error(`no block for ${surface}`);
+  return declarations(matching);
 }
 
 // Hex values are compared in upper case, as written in the spec.
@@ -94,6 +102,22 @@ describe('palette values', () => {
   it('declares color-scheme per surface', () => {
     expect(token('night', 'color-scheme')).toBe('dark');
     expect(token('paper', 'color-scheme')).toBe('light');
+  });
+
+  // color-scheme is not a custom property: on :root it would re-theme native controls on every existing page.
+  it('never sets color-scheme on :root', () => {
+    expect(surfaceVars('root')).not.toHaveProperty('color-scheme');
+    const rootBlocks = blocks.filter((b) => b.selectors.includes(':root'));
+    expect(rootBlocks.length).toBeGreaterThan(0);
+    for (const b of rootBlocks) expect(declarations([b])).not.toHaveProperty('color-scheme');
+  });
+
+  it('sets color-scheme only in rules scoped to a [data-surface] selector', () => {
+    const withScheme = blocks.filter((b) => 'color-scheme' in declarations([b]));
+    expect(withScheme.length).toBeGreaterThan(0);
+    for (const b of withScheme) {
+      for (const selector of b.selectors) expect(selector).toMatch(/^\[data-surface="(night|paper)"\]$/);
+    }
   });
 });
 

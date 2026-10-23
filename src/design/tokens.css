@@ -1,11 +1,15 @@
 /*
-  Design tokens for Tabiat Küzeti (spec §6). Custom properties only: nothing here
-  styles an element, so importing this file does not change existing pages.
+  Design tokens for Tabiat Küzeti (spec §6). Custom properties are defined on :root,
+  so importing this file does not change existing pages. The only non-variable
+  declarations are the two color-scheme rules below, and both are scoped to a
+  [data-surface] attribute that nothing sets yet. color-scheme must never be set
+  on :root: it would re-theme every native control on the existing light pages.
 
   Two surfaces, chosen per section rather than by a theme toggle:
-    Night (history, map)   -> :root and [data-surface="night"]
-    Paper (atlas, dossier) -> [data-surface="paper"]
-  Put data-surface on a section root to switch the palette for its subtree.
+    Night (history, map)   -> variables on :root and [data-surface="night"]
+    Paper (atlas, dossier) -> variables on [data-surface="paper"]
+  Put data-surface on a section root to switch the palette (and color-scheme)
+  for its subtree.
 
   Colours match spec §6.2 except Paper --ink-dim: #6B6E72 gives 4.35:1 on #ECEDE7
   and fails AA, so it is #5F6266. tokens.test.js checks every text/background pair.
@@ -44,11 +48,9 @@
   --dur-scene: 750ms;
 }
 
-/* Night: default surface */
+/* Night: default palette on :root, and the explicit surface */
 :root,
 [data-surface="night"] {
-  color-scheme: dark;
-
   --bg: #05060A;
   --surface: #0C0E15;
   --surface-2: #151821;
@@ -59,6 +61,11 @@
   --fire-hot: #FFC36B;
   --scar: #96280C;
   --sky: #3FA9FF;
+}
+
+/* color-scheme only where a surface is requested explicitly, never on :root */
+[data-surface="night"] {
+  color-scheme: dark;
 }
 
 /* Paper */
