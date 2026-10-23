@@ -55,6 +55,9 @@ const PAGES = {
   Report: ReportPage,
   Research: ResearchLibraryPage,
   NotFound: NotFoundPage,
+  // Dev-only feasibility page (/:lang/dev/globe-spike). import.meta.env.DEV is a literal `false` in
+  // the production build, so the branch and the deck.gl code behind it are dropped from the bundle.
+  ...(import.meta.env.DEV ? { GlobeSpike: lazy(() => import("src/dev/GlobeSpike")) } : {}),
 };
 
 const ROUTES = createAppRoutes(PAGES);
