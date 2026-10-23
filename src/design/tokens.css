@@ -1,0 +1,76 @@
+/*
+  Design tokens for Tabiat Küzeti (spec §6). Custom properties only: nothing here
+  styles an element, so importing this file does not change existing pages.
+
+  Two surfaces, chosen per section rather than by a theme toggle:
+    Night (history, map)   -> :root and [data-surface="night"]
+    Paper (atlas, dossier) -> [data-surface="paper"]
+  Put data-surface on a section root to switch the palette for its subtree.
+
+  Colours match spec §6.2 except Paper --ink-dim: #6B6E72 gives 4.35:1 on #ECEDE7
+  and fails AA, so it is #5F6266. tokens.test.js checks every text/background pair.
+  Data scales live in scales.json (shared with the M1 data pipeline).
+*/
+
+/* Shared across both surfaces */
+:root {
+  /* Shanyrak palette: used only inside the shanyrak graphic */
+  --sh-night: #16153A;
+  --sh-saffron: #E8A33D;
+  --sh-felt: #EAD9B6;
+  --sh-ember: #D2401E;
+
+  /* Font families (fontsource names) */
+  --font-display: "Roboto Flex Variable", "Onest Variable", system-ui, sans-serif;
+  --font-text: "Onest Variable", system-ui, sans-serif;
+  --font-serif: "Spectral", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Type scale */
+  --fs-12: 12px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-18: 18px;
+  --fs-22: 22px;
+  --fs-28: 28px;
+  --fs-36: 36px;
+  --fs-48: 48px;
+  --fs-72: 72px;
+  --fs-104: 104px;
+
+  /* Motion */
+  --ease-ui: cubic-bezier(.16,1,.3,1);
+  --dur-ui: 180ms;
+  --dur-scene: 750ms;
+}
+
+/* Night: default surface */
+:root,
+[data-surface="night"] {
+  color-scheme: dark;
+
+  --bg: #05060A;
+  --surface: #0C0E15;
+  --surface-2: #151821;
+  --line: #1C1F2A;
+  --ink: #F2EDE6;
+  --ink-dim: #8A8D97;
+  --fire: #FF6A1A;
+  --fire-hot: #FFC36B;
+  --scar: #96280C;
+  --sky: #3FA9FF;
+}
+
+/* Paper */
+[data-surface="paper"] {
+  color-scheme: light;
+
+  --bg: #ECEDE7;
+  --surface: #F6F6F2;
+  --surface-2: #FFFFFF;
+  --line: #C9CBC3;
+  --ink: #14161A;
+  --ink-dim: #5F6266;
+  --fire: #D2261C;
+  --steppe: #A9853B;
+}

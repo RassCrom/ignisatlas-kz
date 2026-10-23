@@ -1,0 +1,15 @@
+{
+  "ember": ["#1D1C42", "#6E2D40", "#D2401E", "#E8A33D", "#FFE6B0"],
+  "ink": ["#DEDBD0", "#E7B79E", "#DE7F5C", "#C7432A", "#8E1F12"],
+  "diverging": ["#3FA9FF", "#1C1F2A", "#FF6A1A"],
+  "landcover": {
+    "cropland": "#E8C547",
+    "crop_mosaic": "#B8963A",
+    "grassland": "#9CC45A",
+    "shrubland": "#5F8F5B",
+    "forest": "#2E7D4F",
+    "wetland": "#3FA9F5",
+    "sparse_bare": "#B08968",
+    "other": "#6B7075"
+  }
+}
